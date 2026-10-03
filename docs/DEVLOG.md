@@ -456,3 +456,24 @@ Newest entries go at the bottom.
 - **Checked:** production build passes; screenshot of the Trades page in demo mode shows the gap.
 - **Note:** I fixed it globally on purpose rather than only on that one select, so the dropdowns do not end up
   looking different from each other. The other dropdowns were not individually screenshotted.
+
+## 32. feat(i18n): language switch with English and Georgian
+
+- **What:** a small translation system (no library): `src/i18n/en.ts` (English, the source of truth),
+  `ka.ts` (Georgian, typed so it must have exactly the same keys), `LanguageProvider` and `useI18n()` giving
+  `t(key, params)`, `tn(key, n)` for singular/plural, and the date locale. A language button sits above "Sign
+  out" in the sidebar and in the corner of the login page; it shows the name of the other language ("ქართული"
+  / "English"). The choice is saved in the browser (`localStorage`), defaults to Georgian if the browser is
+  set to Georgian, and also sets `<html lang>` and the browser tab title.
+- **Translated in this commit:** sidebar, login page, "Supabase is not configured" screen, demo banner.
+  The remaining pages follow in the next commits, one area at a time.
+- **Safety nets:** a missing Georgian string falls back to English, then to the key itself, so the UI never
+  goes blank. 8 new tests (33 pass in total) check that Georgian has exactly the English keys, nothing is
+  empty, placeholders like `{n}` match in both languages, and every `_one` has an `_other`.
+- **Decisions:** money stays `$1,234.56` in both languages. Dates and month names will follow the language.
+  Things you type yourself (notes, setup names, tags) are never translated. The built-in emotion names will
+  be shown in Georgian while the stored value stays English, so old trades and reports keep working.
+- **Checked in the browser (demo mode):** pressing the button switched the sidebar, banner and tab title to
+  Georgian, saved the choice, set `lang="ka"`, and the Georgian letters render correctly.
+- **Caveat:** I wrote the Georgian text myself. It should be read by a Georgian speaker (you); wording that
+  sounds unnatural is easy to change in `ka.ts` and I would like your corrections.

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useI18n } from '../i18n/context'
 import { useAuth } from '../lib/authContext'
 import { DEMO } from '../lib/demo'
 import { isConfigured } from '../lib/supabase'
@@ -6,19 +7,20 @@ import Login from '../pages/Login'
 
 export default function AuthGate({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
+  const { t } = useI18n()
 
   if (DEMO) return <>{children}</>
   if (!isConfigured) {
     return (
       <div className="p-6">
-        <h1 className="mb-2 text-xl font-semibold">Supabase is not configured</h1>
+        <h1 className="mb-2 text-xl font-semibold">{t('setup.title')}</h1>
         <p className="text-muted">
-          Copy <code className="text-fg">.env.example</code> to <code className="text-fg">.env.local</code> and fill in
-          VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server.
+          {t('setup.before')} <code className="text-fg">.env.example</code> {t('setup.middle')} <code className="text-fg">.env.local</code>{' '}
+          {t('setup.after')}
         </p>
       </div>
     )
   }
-  if (loading) return <div className="p-6 text-muted">Loading…</div>
+  if (loading) return <div className="p-6 text-muted">{t('common.loading')}</div>
   return session ? <>{children}</> : <Login />
 }
