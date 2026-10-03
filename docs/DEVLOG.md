@@ -881,3 +881,15 @@ Newest entries go at the bottom.
   not exist yet in the real database (saving a trade would fail). Push only after the migrations are run.
 - **Final checks:** type-check, lint, 68 tests and a production build pass; the production bundle was not
   re-inspected for demo data after this change (it was before, and demo code is only enabled in development).
+
+## 53. test(accounts): the owner's real Tradeify account
+
+- **What:** three tests built from the owner's own Tradeify dashboard (Select 50k: balance $48,994.50, trailing
+  max drawdown level $48,034.00, profit target -$1,005.50 of $3,000.00): the engine reproduces the firm's balance,
+  profit and loss limit exactly, and shows 960.50 of room left and 4,005.50 to the goal. A loss of exactly 960.50
+  fails the account.
+- **Correction to what I told the owner earlier:** I had worked from "about 49k and 1k left to lose". The real
+  figures are 960.50 of room, because the highest balance was 50,034 (not 50,000), which put the limit at 48,034
+  (not 48,000). The app needs that highest balance entered to match the firm.
+- **What I do not know:** whether this firm's limit stops trailing at the starting balance (and at what level);
+  it does not matter until the balance passes 52,000.

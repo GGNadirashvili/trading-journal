@@ -43,6 +43,29 @@ describe('your account: 50k, drawdown 2k, goal 53k, currently 49k', () => {
   })
 })
 
+describe('your real Tradeify Select 50k account (from its dashboard)', () => {
+  // Dashboard: balance $48,994.50, trailing max drawdown level $48,034.00, profit target -$1,005.50 / $3,000.00.
+  // The level 48,034 = 2,000 below a highest balance of 50,034, so that peak is entered as "highest balance so far".
+  const real: Account = { ...base, name: 'Select 50k', drawdownType: 'trailing_eod', adjustment: -1005.5, peakBaseline: 50034 }
+  const s = evaluateAccount(real, [], TODAY)
+  it('reproduces what the firm shows', () => {
+    expect(s.balance).toBe(48994.5)
+    expect(s.profit).toBe(-1005.5) // the "-$1,005.50" next to "/ $3,000.00"
+    expect(s.floor).toBe(48034) // the "Trailing Max Drawdown $48,034.00"
+    expect(s.status).toBe('active')
+  })
+  it('shows the true room left and the true distance to the goal', () => {
+    expect(s.buffer).toBe(960.5) // not a round 1,000: the peak was 50,034
+    expect(s.toGoal).toBe(4005.5) // 3,000 target + the 1,005.50 already lost
+    expect(s.drawdownUsedPct).toBeCloseTo(0.51975)
+  })
+  it('a loss of exactly the remaining room fails the account', () => {
+    const t = evaluateAccount(real, [trade(-960.5, 9, 7)], TODAY)
+    expect(t.status).toBe('failed')
+    expect(t.balance).toBe(48034)
+  })
+})
+
 describe('floors', () => {
   it('static stays put', () => {
     expect(floorFor({ ...base, drawdownType: 'static' }, 53000)).toBe(48000)
