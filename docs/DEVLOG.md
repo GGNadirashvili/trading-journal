@@ -10,13 +10,13 @@ Newest entries go at the bottom.
 - Mistakes are written down here. Fixes get their own commit; pushed history is not rewritten
   without asking first.
 
-## 0. Initial commit (`9c12b80`)
+## 0. Initial commit (`66eef72`)
 
 - **What:** `git init`, README placeholder, `.gitignore`, private GitHub repo created and pushed.
 - **Goal:** have a repo to build in.
-- **Mistake:** the commit message carries a `Co-Authored-By: Claude` trailer. The project rule
-  (set right after) is that commits must not mention Claude. The commit predates the rule and is already
-  pushed, so it stays until the owner decides whether to rewrite it with a force push.
+- **Mistake (fixed in entry 40):** the original commit message carried an AI co-author line, which broke the
+  project rule that commit messages must not mention the assistant. The rule was given right after this commit.
+  The commit ID shown here is the one after the history was rewritten to remove that line.
 
 ## 1. docs: add project goals and devlog
 
@@ -614,3 +614,21 @@ Newest entries go at the bottom.
   first (with both names), then pick them on the trade form.
 - **Owner action:** run `0003_option_names_ka.sql` once in the Supabase SQL editor (the README lists it now).
   Not verified against the real database until then.
+
+## 40. chore: rewrite history before publishing, then publish
+
+- **What:** before making the repository public, I removed the co-author line from the first commit message.
+  It was the only commit message that mentioned the assistant. That required rewriting history with
+  `git filter-branch` and a force push (`--force-with-lease`), which changes every commit ID.
+- **Done only with the owner's explicit approval** (they chose "Yes, remove it") because a force push cannot be
+  undone for anyone who has a copy.
+- **Verified before pushing:** a local backup branch of the old history was kept and compared with the result:
+  still 40 commits, the file contents of the latest commit are identical (empty diff), all 40 commit subjects
+  and dates are unchanged, and no commit message mentions the assistant any more.
+- **Pre-publish checks:** no keys, tokens or environment files are in any file or in any commit of the history;
+  the `.env.local` file is ignored; only the public (publishable) Supabase key is ever used, and it is supplied
+  through GitHub secrets at build time. The unit tests (47) and the production build pass.
+- **Mistake risk I avoided:** I did not rewrite history on the first attempt to "tidy" the repo; I asked first,
+  made a backup, verified the result and only then pushed.
+- **Note:** this devlog still describes the removed line in words (entries 0 and 40), because you asked for
+  mistakes to be documented. It does not appear in any commit message.
