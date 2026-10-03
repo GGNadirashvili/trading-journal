@@ -1,12 +1,16 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import ReviewList, { type ReviewListItem } from '../components/ReviewList'
 import { money, pnlColor } from '../lib/format'
-import { BIASES, emptyReview, getReview, saveReview, type Bias, type WeeklyReview } from '../lib/reviewsApi'
+import { BIASES, deleteReview, emptyReview, getReview, isReviewEmpty, listReviews, saveReview, type Bias, type WeeklyReview } from '../lib/reviewsApi'
 import { computeStats, dayKey } from '../lib/stats'
 import { useTrades } from '../lib/tradesContext'
+import type { Trade } from '../lib/types'
 import { addWeeks, formatWeek, inWeek, weekStartOf } from '../lib/weeks'
 
 const area = 'w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-green'
+
+const tradesOfWeek = (trades: Trade[], week: string) => trades.filter((t) => inWeek(dayKey(t.entryTime), week))
 
 function Box({ label, hint, value, onChange, rows = 5 }: { label: string; hint?: string; value: string; onChange: (v: string) => void; rows?: number }) {
   return (
@@ -43,82 +47,166 @@ function WeekView() {
   // Open on the week of the newest trade, otherwise the week before today.
   const [week, setWeek] = useState(() => (trades[0] ? weekStartOf(new Date(trades[0].entryTime)) : addWeeks(weekStartOf(new Date()), -1)))
   const [dirty, setDirty] = useState(false)
+  const [reviews, setReviews] = useState<WeeklyReview[]>([])
+  const [listError, setListError] = useState<string | null>(null)
+  // After a save the form starts empty (blank) instead of reloading what was just saved.
+  const [blank, setBlank] = useState(false)
+  const [editorKey, setEditorKey] = useState(0)
+  const [notice, setNotice] = useState<string | null>(null)
 
-  const goTo = (w: string) => {
-    if (dirty && !window.confirm('You have unsaved changes. Leave this week without saving?')) return
+  useEffect(() => {
+    listReviews()
+      .then((r) => setReviews(r))
+      .catch((e: Error) => setListError(e.message))
+  }, [])
+
+  const items: ReviewListItem[] = useMemo(
+    () =>
+      [...reviews]
+        .sort((a, b) => b.weekStart.localeCompare(a.weekStart))
+        .map((review) => {
+          const stats = computeStats(tradesOfWeek(trades, review.weekStart))
+          return { review, netPnl: stats.netPnl, trades: stats.trades }
+        }),
+    [reviews, trades],
+  )
+
+  const leaveOk = () => !dirty || window.confirm('You have unsaved changes. Leave without saving?')
+
+  function open(w: string) {
+    if (!leaveOk()) return
     setDirty(false)
+    setBlank(false)
+    setNotice(null)
     setWeek(w)
+    setEditorKey((k) => k + 1)
+  }
+
+  function saved(r: WeeklyReview) {
+    setReviews((cur) => [...cur.filter((x) => x.weekStart !== r.weekStart), r])
+    setDirty(false)
+    setBlank(true)
+    setEditorKey((k) => k + 1)
+    setNotice(`Saved the review for ${formatWeek(r.weekStart)}. It is in the "Saved reviews" list; click it to read or edit.`)
+  }
+
+  async function remove(w: string) {
+    if (!window.confirm(`Delete the review for ${formatWeek(w)}? This cannot be undone.`)) return
+    try {
+      await deleteReview(w)
+      setReviews((cur) => cur.filter((x) => x.weekStart !== w))
+      if (w === week) {
+        setDirty(false)
+        setBlank(true)
+        setEditorKey((k) => k + 1)
+      }
+    } catch (e) {
+      setListError((e as Error).message)
+    }
   }
 
   return (
-    <div className="max-w-4xl space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <h1 className="mr-auto text-xl font-semibold">Weekly review</h1>
-        <button onClick={() => goTo(addWeeks(week, -1))} title="Previous week" className="rounded p-1 text-muted hover:text-green">
-          <ChevronLeft size={20} />
-        </button>
-        <span className="min-w-44 text-center text-sm font-semibold">{formatWeek(week)}</span>
-        <button onClick={() => goTo(addWeeks(week, 1))} title="Next week" className="rounded p-1 text-muted hover:text-green">
-          <ChevronRight size={20} />
-        </button>
-        <button onClick={() => goTo(addWeeks(weekStartOf(new Date()), -1))} className="rounded border border-line px-2 py-1 text-xs text-muted hover:text-green">
-          Last week
-        </button>
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="max-w-4xl space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="mr-auto text-xl font-semibold">Weekly review</h1>
+          <button onClick={() => open(addWeeks(week, -1))} title="Previous week" className="rounded p-1 text-muted hover:text-green">
+            <ChevronLeft size={20} />
+          </button>
+          <span className="min-w-44 text-center text-sm font-semibold">{formatWeek(week)}</span>
+          <button onClick={() => open(addWeeks(week, 1))} title="Next week" className="rounded p-1 text-muted hover:text-green">
+            <ChevronRight size={20} />
+          </button>
+          <button onClick={() => open(addWeeks(weekStartOf(new Date()), -1))} className="rounded border border-line px-2 py-1 text-xs text-muted hover:text-green">
+            Last week
+          </button>
+        </div>
+        {notice && <p className="rounded-lg border border-green p-3 text-sm text-green">{notice}</p>}
+        <ReviewEditor
+          key={`${week}-${editorKey}`}
+          week={week}
+          startBlank={blank}
+          alreadySaved={reviews.some((r) => r.weekStart === week)}
+          onDirty={(d) => {
+            setDirty(d)
+            if (d) setNotice(null)
+          }}
+          onSaved={saved}
+        />
       </div>
-      {/* key remounts the editor, so each week loads its own text */}
-      <ReviewEditor key={week} week={week} onDirty={setDirty} />
+      <aside className="space-y-2">
+        {listError && <p className="text-sm text-loss">{listError}</p>}
+        <ReviewList items={items} activeWeek={week} onOpen={open} onDelete={remove} />
+      </aside>
     </div>
   )
 }
 
-function ReviewEditor({ week, onDirty }: { week: string; onDirty: (d: boolean) => void }) {
+function ReviewEditor({
+  week,
+  startBlank,
+  alreadySaved,
+  onDirty,
+  onSaved,
+}: {
+  week: string
+  startBlank: boolean
+  alreadySaved: boolean
+  onDirty: (d: boolean) => void
+  onSaved: (r: WeeklyReview) => void
+}) {
   const { trades } = useTrades()
   const [review, setReview] = useState<WeeklyReview>(() => emptyReview(week))
   const [previous, setPrevious] = useState<WeeklyReview | null>(null)
-  const [state, setState] = useState<'loading' | 'ready' | 'saving' | 'saved'>('loading')
+  const [loaded, setLoaded] = useState(false)
+  const [loadedExisting, setLoadedExisting] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getReview(week), getReview(addWeeks(week, -1))])
+    Promise.all([startBlank ? Promise.resolve(null) : getReview(week), getReview(addWeeks(week, -1))])
       .then(([current, prev]) => {
         if (cancelled) return
-        if (current) setReview(current)
+        if (current) {
+          setReview(current)
+          setLoadedExisting(true)
+        }
         setPrevious(prev)
-        setState('ready')
+        setLoaded(true)
       })
       .catch((e: Error) => {
         if (cancelled) return
         setError(e.message)
-        setState('ready')
+        setLoaded(true)
       })
     return () => {
       cancelled = true
     }
-  }, [week])
+  }, [week, startBlank])
 
-  const stats = useMemo(() => computeStats(trades.filter((t) => inWeek(dayKey(t.entryTime), week))), [trades, week])
+  const stats = useMemo(() => computeStats(tradesOfWeek(trades, week)), [trades, week])
 
   const set = <K extends keyof WeeklyReview>(key: K, value: WeeklyReview[K]) => {
     setReview((r) => ({ ...r, [key]: value }))
-    setState('ready')
     onDirty(true)
   }
 
   async function save() {
-    setState('saving')
+    // Typing into a blank form for a week that already has a saved review would replace it, so ask first.
+    if (alreadySaved && !loadedExisting && !window.confirm(`A review for ${formatWeek(week)} is already saved. Replace it with this one?`)) return
+    setSaving(true)
     setError(null)
     try {
       await saveReview(review)
-      onDirty(false)
-      setState('saved')
+      onSaved(review)
     } catch (e) {
       setError((e as Error).message)
-      setState('ready')
+      setSaving(false)
     }
   }
 
-  if (state === 'loading') return <p className="text-muted">Loading…</p>
+  if (!loaded) return <p className="text-muted">Loading…</p>
 
   const expected = previous && (previous.bias || previous.outlook || previous.plan || previous.keyLevels) ? previous : null
 
@@ -175,10 +263,10 @@ function ReviewEditor({ week, onDirty }: { week: string; onDirty: (d: boolean) =
 
       {error && <p className="text-sm text-loss">{error}</p>}
       <div className="flex items-center gap-3">
-        <button onClick={save} disabled={state === 'saving'} className="rounded-lg bg-green px-5 py-2 font-semibold text-black disabled:opacity-50">
-          {state === 'saving' ? 'Saving…' : 'Save review'}
+        <button onClick={save} disabled={saving || isReviewEmpty(review)} className="rounded-lg bg-green px-5 py-2 font-semibold text-black disabled:opacity-40">
+          {saving ? 'Saving…' : 'Save review'}
         </button>
-        {state === 'saved' && <span className="text-sm text-green">Saved</span>}
+        {isReviewEmpty(review) && <span className="text-xs text-muted">Write something to enable saving.</span>}
       </div>
     </div>
   )

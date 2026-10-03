@@ -405,3 +405,26 @@ Newest entries go at the bottom.
   and the JSON download with real data.
 - **Mistake:** lint flagged setting state synchronously inside the effect for the signup check; I made the
   initial state depend on configuration instead.
+
+## 29. feat(review): saved reviews list, clear form after saving
+
+- **What:** the Weekly review page now has a "Saved reviews" list (newest first; week, bias for next week,
+  number of trades and P&L of that week, and the first lines of text). Click an entry to open it for reading or
+  editing; the trash icon deletes it after confirmation. After a successful save the form is cleared and a
+  green note confirms where the review went.
+- **Where reviews are stored:** in the Supabase table `weekly_reviews`, one row per week (the Monday date is
+  the key). Only the logged-in owner can read it (row-level security), and the Admin backup includes it.
+- **Why it was missing:** the first version only showed one week at a time; there was no way to see which
+  weeks had a saved review. The owner asked for the list and for the form to clear after saving.
+- **Data-loss guards (added deliberately because of the clearing):**
+  1. The Save button is disabled while the form is empty, so a cleared form can never overwrite a saved review
+     with blank text (`isReviewEmpty`, 2 new tests, 25 pass in total).
+  2. If you type into a cleared form for a week that already has a saved review, saving asks "Replace it?".
+- **Checked end to end in demo mode:** typed a mistake note and saved: all 7 boxes were empty afterwards, the
+  confirmation showed, the list showed the week with 7 trades and -$92.10 and the note's text, Save was
+  disabled; clicking the list entry reloaded the text and re-enabled Save.
+- **Mistake in the first version:** a review could only be reached by paging to its week, so saved work felt
+  lost. Clearing a form that auto-reloads the same week would also have re-filled it, so the editor now
+  starts blank after a save instead of reloading.
+- **Not verified yet:** the same flow against the real database (migration 0002 must be applied; the owner's
+  last message showed it was still missing).

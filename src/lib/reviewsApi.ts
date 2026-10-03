@@ -31,6 +31,10 @@ export const emptyReview = (weekStart: string): WeeklyReview => ({
   plan: '',
 })
 
+/** True when nothing has been written. Used to stop an empty form from overwriting a saved review. */
+export const isReviewEmpty = (r: WeeklyReview): boolean =>
+  r.bias === null && ![r.emotional, r.technical, r.mistakes, r.lessons, r.outlook, r.keyLevels, r.plan].some((t) => t.trim() !== '')
+
 interface Row {
   week_start: string
   emotional: string | null
@@ -93,4 +97,13 @@ export async function listReviews(): Promise<WeeklyReview[]> {
   const { data, error } = await supabase.from('weekly_reviews').select('*').order('week_start')
   if (error) throw new Error(error.message)
   return (data as Row[]).map(fromRow)
+}
+
+export async function deleteReview(weekStart: string): Promise<void> {
+  if (DEMO) {
+    demoStore.delete(weekStart)
+    return
+  }
+  const { error } = await supabase.from('weekly_reviews').delete().eq('week_start', weekStart)
+  if (error) throw new Error(error.message)
 }
