@@ -42,7 +42,6 @@ export default function AccountForm({ initial, currentState, accountTrades = NO_
   const [drawdown, setDrawdown] = useState(String(initial?.maxDrawdown ?? 2000))
   const [goal, setGoal] = useState(String(initial?.profitGoal ?? 53000))
   const [type, setType] = useState<DrawdownType>(initial?.drawdownType ?? 'trailing')
-  const [lock, setLock] = useState(initial?.lockAtStart ?? true)
   const originalCurrent = currentState ? String(currentState.balance) : ''
   const [current, setCurrent] = useState(originalCurrent)
   const [peak, setPeak] = useState(initial?.peakBaseline != null ? String(initial.peakBaseline) : '')
@@ -80,13 +79,12 @@ export default function AccountForm({ initial, currentState, accountTrades = NO_
         maxDrawdown: d,
         profitGoal: g,
         drawdownType: type,
-        lockAtStart: lock,
         adjustment,
         peakBaseline: pk !== null && !Number.isNaN(pk) ? pk : null,
         openedAt: opened,
       },
     }
-  }, [name, size, drawdown, goal, type, lock, current, peak, opened, trailing, tradesInPlay, initial, originalCurrent])
+  }, [name, size, drawdown, goal, type, current, peak, opened, trailing, tradesInPlay, initial, originalCurrent])
 
   const preview = useMemo(() => {
     if (draft.problem) return null
@@ -134,12 +132,6 @@ export default function AccountForm({ initial, currentState, accountTrades = NO_
             ))}
           </select>
         </Field>
-        {trailing && (
-          <label className="flex items-start gap-2 text-sm sm:col-span-2">
-            <input type="checkbox" checked={lock} onChange={(e) => setLock(e.target.checked)} className="mt-1" />
-            <span>{t('accounts.form.lock')}</span>
-          </label>
-        )}
         <Field label={t('accounts.form.current')} hint={t('accounts.form.currentHint')}>
           <input className={input} type="number" step="any" value={current} onChange={(e) => setCurrent(e.target.value)} />
         </Field>

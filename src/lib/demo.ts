@@ -11,8 +11,8 @@ export const DEMO_ACCOUNT_OLD = 'acc-demo-old'
 
 export function demoAccounts(): Account[] {
   return [
-    { id: DEMO_ACCOUNT_NOW, name: 'DEMO-50K-002', startBalance: 50000, maxDrawdown: 2000, profitGoal: 53000, drawdownType: 'trailing', lockAtStart: true, adjustment: 0, peakBaseline: null, manualStatus: null, manualClosedAt: null, openedAt: '2026-09-01' },
-    { id: DEMO_ACCOUNT_OLD, name: 'DEMO-50K-001', startBalance: 50000, maxDrawdown: 2000, profitGoal: 53000, drawdownType: 'trailing', lockAtStart: true, adjustment: 0, peakBaseline: null, manualStatus: null, manualClosedAt: null, openedAt: '2026-08-01' },
+    { id: DEMO_ACCOUNT_NOW, name: 'DEMO-50K-002', startBalance: 50000, maxDrawdown: 2000, profitGoal: 53000, drawdownType: 'trailing', adjustment: 0, peakBaseline: null, manualStatus: null, manualClosedAt: null, openedAt: '2026-09-01' },
+    { id: DEMO_ACCOUNT_OLD, name: 'DEMO-50K-001', startBalance: 50000, maxDrawdown: 2000, profitGoal: 53000, drawdownType: 'trailing', adjustment: 0, peakBaseline: null, manualStatus: null, manualClosedAt: null, openedAt: '2026-08-01' },
   ]
 }
 

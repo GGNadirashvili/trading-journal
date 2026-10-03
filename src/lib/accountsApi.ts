@@ -13,7 +13,6 @@ interface Row {
   max_drawdown: number | string
   profit_goal: number | string
   drawdown_type: DrawdownType
-  lock_at_start: boolean
   adjustment: number | string
   peak_baseline: number | string | null
   manual_status: 'passed' | 'failed' | null
@@ -29,7 +28,6 @@ const fromRow = (r: Row): Account => ({
   maxDrawdown: Number(r.max_drawdown),
   profitGoal: Number(r.profit_goal),
   drawdownType: r.drawdown_type,
-  lockAtStart: r.lock_at_start,
   adjustment: Number(r.adjustment),
   peakBaseline: r.peak_baseline === null ? null : Number(r.peak_baseline),
   manualStatus: r.manual_status,
@@ -43,7 +41,6 @@ const toRow = (a: AccountInput) => ({
   max_drawdown: a.maxDrawdown,
   profit_goal: a.profitGoal,
   drawdown_type: a.drawdownType,
-  lock_at_start: a.lockAtStart,
   adjustment: a.adjustment,
   peak_baseline: a.peakBaseline,
   opened_at: a.openedAt,

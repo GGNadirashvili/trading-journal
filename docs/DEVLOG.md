@@ -893,3 +893,17 @@ Newest entries go at the bottom.
   (not 48,000). The app needs that highest balance entered to match the firm.
 - **What I do not know:** whether this firm's limit stops trailing at the starting balance (and at what level);
   it does not matter until the balance passes 52,000.
+
+## 54. refactor(accounts): remove the "stop trailing at the starting balance" checkbox
+
+- **What:** the checkbox is gone from the account form, and the rule it controlled is now always on: a trailing
+  loss limit (both trailing types) follows the highest balance but stops rising once it reaches the starting
+  balance. Removed from the account type, the API mapping, the demo data, the translations, the tests (one test
+  that covered the "off" setting) and migration 0006 (the `lock_at_start` column).
+- **Goal:** the owner asked to remove it; it only matters once the balance passes 52,000 on a 50k account, and it
+  is how most firms work.
+- **Edited the migration in place, on purpose:** 0006 has not been run on the real database (checked), so no
+  database holds the old column. Had it been run, this would have needed a new migration instead.
+- **Trade-off I told the owner about:** if a firm's rules ever say the limit trails forever, the app is wrong for
+  that account and there is no setting to change it.
+- **Checked:** type-check, lint and 70 tests pass (one fewer test, plus an end-of-day case added to the floor test).

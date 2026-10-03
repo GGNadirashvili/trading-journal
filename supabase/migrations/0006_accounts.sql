@@ -8,8 +8,7 @@ create table public.accounts (
   start_balance  numeric(14, 2) not null check (start_balance > 0),       -- account size, e.g. 50000
   max_drawdown   numeric(14, 2) not null check (max_drawdown > 0),        -- e.g. 2000
   profit_goal    numeric(14, 2) not null,                                 -- the BALANCE to reach, e.g. 53000
-  drawdown_type  text not null default 'trailing' check (drawdown_type in ('static', 'trailing', 'trailing_eod')),
-  lock_at_start  boolean not null default true,                           -- trailing floor stops rising at the start balance
+  drawdown_type  text not null default 'trailing' check (drawdown_type in ('static', 'trailing', 'trailing_eod')), -- trailing types stop rising at the start balance
   adjustment     numeric(14, 2) not null default 0,                       -- results made before journaling / a correction
   peak_baseline  numeric(14, 2),                                          -- highest balance before the first journaled trade
   manual_status  text check (manual_status in ('passed', 'failed')),      -- set by hand, overrides the numbers

@@ -346,7 +346,6 @@ export const en = {
   'accounts.form.goalHint': '= {amount} profit',
   'accounts.form.type': 'Drawdown type',
   'accounts.form.typeHint': 'Ask your prop firm which one applies. Trailing follows your highest balance, so it is the strictest.',
-  'accounts.form.lock': 'Stop trailing when the loss limit reaches the starting balance',
   'accounts.form.current': 'Current balance ($), optional',
   'accounts.form.currentHint': 'Fill this in if the account already has results, for example 49000. Leave empty for a fresh account.',
   'accounts.form.peak': 'Highest balance reached so far ($), optional',

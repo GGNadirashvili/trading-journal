@@ -4,7 +4,8 @@ import type { Trade } from './types'
 /** How the loss limit (the "floor") behaves.
  *  static:       fixed at start balance minus max drawdown.
  *  trailing:     follows the highest balance reached, updated after every trade.
- *  trailing_eod: follows the highest END-OF-DAY balance (only counts once the day is over). */
+ *  trailing_eod: follows the highest END-OF-DAY balance (only counts once the day is over).
+ *  Both trailing types stop rising once the limit reaches the starting balance. */
 export type DrawdownType = 'static' | 'trailing' | 'trailing_eod'
 export type AccountStatus = 'active' | 'passed' | 'failed'
 
@@ -17,8 +18,6 @@ export interface Account {
   /** The BALANCE to reach (for example 53,000 on a 50,000 account), not the profit amount. */
   profitGoal: number
   drawdownType: DrawdownType
-  /** For trailing types: stop raising the floor once it reaches the starting balance (how most firms work). */
-  lockAtStart: boolean
   /** Results made before the journal started, or a correction, so that balance = start + adjustment + trades. */
   adjustment: number
   /** Highest balance reached before the first journaled trade; null = the starting balance. */
@@ -69,8 +68,8 @@ const round2 = (x: number) => Math.round(x * 100) / 100
 
 export function floorFor(a: Account, peak: number): number {
   if (a.drawdownType === 'static') return a.startBalance - a.maxDrawdown
-  const trailing = peak - a.maxDrawdown
-  return a.lockAtStart ? Math.min(trailing, a.startBalance) : trailing
+  // A trailing limit follows the highest balance but stops rising once it reaches the starting balance (how most firms work).
+  return Math.min(peak - a.maxDrawdown, a.startBalance)
 }
 
 /**

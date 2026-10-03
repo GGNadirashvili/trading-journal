@@ -8,7 +8,6 @@ const base: Account = {
   maxDrawdown: 2000,
   profitGoal: 53000,
   drawdownType: 'trailing',
-  lockAtStart: true,
   adjustment: 0,
   peakBaseline: null,
   manualStatus: null,
@@ -70,14 +69,12 @@ describe('floors', () => {
   it('static stays put', () => {
     expect(floorFor({ ...base, drawdownType: 'static' }, 53000)).toBe(48000)
   })
-  it('trailing follows the peak and locks at the starting balance', () => {
+  it('trailing follows the peak and stops rising at the starting balance', () => {
     expect(floorFor(base, 50000)).toBe(48000)
     expect(floorFor(base, 51000)).toBe(49000)
-    expect(floorFor(base, 52000)).toBe(50000) // locked
-    expect(floorFor(base, 54000)).toBe(50000) // still locked
-  })
-  it('trailing without the lock keeps rising', () => {
-    expect(floorFor({ ...base, lockAtStart: false }, 54000)).toBe(52000)
+    expect(floorFor(base, 52000)).toBe(50000) // reached the starting balance
+    expect(floorFor(base, 54000)).toBe(50000) // stays there
+    expect(floorFor({ ...base, drawdownType: 'trailing_eod' }, 54000)).toBe(50000) // same for end-of-day trailing
   })
 })
 
