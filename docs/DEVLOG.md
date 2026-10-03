@@ -344,3 +344,26 @@ Newest entries go at the bottom.
 - **Goal:** the owner does not use this number; every card on the dashboard should be one that is read.
 - **Checked:** type-check, lint, 21 tests pass, and a browser screenshot in demo mode: the remaining cards
   (win gauge, profit factor, avg win/loss, net P&L, day and trade streak) fill the grid without a gap.
+
+## 26. feat(review): weekly review and next-week outlook
+
+- **What:** a "Weekly review" page (`/review`, book icon in the sidebar). Pick a week (Monday to Sunday, with
+  previous/next arrows and a "Last week" shortcut). It opens on the week of your newest trade. Each week has:
+  - this week's numbers (net P&L, trades, win rate, wins/losses), computed from your trades,
+  - **Looking back:** emotional analysis, technical analysis, mistakes I made, lessons,
+  - **Next week outlook:** market bias (bullish / bearish / neutral / unclear), market thoughts, key levels,
+    game plan and rules.
+  The following week then shows what you wrote as a read-only "What I expected for this week" card, so you can
+  compare your expectation with what really happened.
+  Week maths is in `src/lib/weeks.ts` with 4 tests; storage is `src/lib/reviewsApi.ts` (one upserted row per week).
+- **Goal:** text-only space for the owner's analysis of mistakes and their thoughts on the coming week.
+- **Design choices:** one explicit Save button (not autosave), and a warning before leaving a week with unsaved
+  text. The outlook is stored on the week it was written in; it is shown again on the next week.
+- **Checked in demo mode:** the page opened on Sep 7 - Sep 13 with the right numbers (-92.10, 7 trades, 4 wins,
+  3 losses); text typed into Mistakes and Market thoughts landed in the right boxes, Save showed "Saved", and the
+  next week displayed the saved thoughts under "What I expected".
+- **Mistake caught before committing:** I first picked the starting week inside the page component, which can
+  render before trades have loaded and would have opened on the wrong week. Moved it into a child that mounts
+  after loading. Also: my browser test needed a separate JavaScript read of the textareas to prove which boxes
+  received the text, because the click targets looked identical in the log.
+- **Not verified yet:** saving to the real database (needs migration 0002 to be run first).
