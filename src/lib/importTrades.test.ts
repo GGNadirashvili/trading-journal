@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { parseJson, parseRows } from './importTrades'
 
 describe('parseRows', () => {
-  it('parses a full row and computes P&L from prices minus fees', () => {
+  it('parses a full row and computes P&L from prices', () => {
     const { trades, errors } = parseRows([
-      { date: '2026-09-07', time: '09:45', symbol: 'mnq', direction: 'Buy', qty: '2', entry: '20000', exit: '20010', fees: '1.5', emotionTags: 'calm, focused' },
+      { date: '2026-09-07', time: '09:45', symbol: 'mnq', direction: 'Buy', qty: '2', entry: '20000', exit: '20010', emotionTags: 'calm, focused' },
     ])
     expect(errors).toEqual([])
-    expect(trades[0]).toMatchObject({ symbol: 'MNQ', direction: 'long', qty: 2, pnl: 38.5, fees: 1.5, emotionTags: ['calm', 'focused'] })
+    expect(trades[0]).toMatchObject({ symbol: 'MNQ', direction: 'long', qty: 2, pnl: 40, emotionTags: ['calm', 'focused'] })
     expect(new Date(trades[0].entryTime).getHours()).toBe(9) // local time, not UTC
   })
   it('lets an explicit pnl win and defaults time and qty', () => {

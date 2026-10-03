@@ -14,7 +14,6 @@ interface TradeRow {
   exit_time: string | null
   status: 'open' | 'closed'
   pnl: number
-  fees: number
   setup: string | null
   tags: string[]
   emotion_before: string | null
@@ -37,7 +36,6 @@ const fromRow = (r: TradeRow): Trade => ({
   exitTime: r.exit_time,
   status: r.status,
   pnl: Number(r.pnl),
-  fees: Number(r.fees),
   setup: r.setup,
   tags: r.tags ?? [],
   emotionBefore: r.emotion_before,
@@ -58,7 +56,6 @@ const toRow = (t: TradeInput) => ({
   exit_time: t.exitTime,
   status: t.status,
   pnl: t.pnl,
-  fees: t.fees,
   setup: t.setup,
   tags: t.tags,
   emotion_before: t.emotionBefore,

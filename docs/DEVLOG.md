@@ -240,3 +240,18 @@ Newest entries go at the bottom.
   Supabase project or on GitHub Pages yet. Untested until then: the SQL migration, real login, row-level
   security, screenshot upload, and the deploy workflow. These are the first things to verify next, and any
   fixes will get their own commits and devlog entries.
+
+## 19. refactor: remove the fees field
+
+- **What:** fees are gone from the trade form, the import grid and JSON, the parser, the `Trade` type, the
+  API mapping, the demo data and the tests. The P&L field is now just "P&L ($)": type it, or leave it blank to
+  compute it from entry and exit prices.
+- **Goal:** the owner asked to remove the fee area. P&L is entered as the final number, so a separate fees
+  input only added noise.
+- **Behavior change:** blank P&L is now the gross result from prices (before, it was gross minus fees).
+- **Database:** the `fees` column still exists but has a default of 0, so inserts keep working. It is dropped
+  in the next database migration (0002), which is a deliberate step because dropping is irreversible.
+- **Checked:** type-check, lint, 22 tests pass (the import test now expects 40, not 38.5).
+- **Mistake:** my scripted edit stopped on one README line because the sentence wrapped differently than I
+  assumed, after the code edits had already been written. I fixed the README by hand and re-checked with a
+  search that no "fee" text remains in `src/` or the README.

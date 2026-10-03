@@ -11,8 +11,7 @@ export interface Trade {
   entryTime: string // ISO timestamp
   exitTime: string | null
   status: TradeStatus
-  pnl: number // net USD after fees
-  fees: number
+  pnl: number // net USD
   setup: string | null
   tags: string[]
   emotionBefore: string | null

@@ -12,8 +12,7 @@ export interface RawRow {
   qty?: string | number
   entry?: string | number
   exit?: string | number
-  pnl?: string | number // net P&L; blank = computed from prices
-  fees?: string | number
+  pnl?: string | number // blank = computed from prices
   setup?: string
   tags?: string | string[]
   emotionBefore?: string
@@ -63,14 +62,13 @@ export function parseRows(rows: RawRow[]): ParseResult {
     const num = (v: unknown) => (blank(v) ? null : Number(v))
     const entry = num(r.entry)
     const exit = num(r.exit)
-    const fees = num(r.fees) ?? 0
     let net = num(r.pnl)
-    if ([entry, exit, fees, net].some((x) => x !== null && Number.isNaN(x))) return fail('prices, fees and pnl must be numbers')
+    if ([entry, exit, net].some((x) => x !== null && Number.isNaN(x))) return fail('prices and pnl must be numbers')
 
     if (net === null) {
       const gross = pnlFromPrices(symbol, dir, qty, entry, exit)
       if (gross === null) return fail('give pnl, or entry and exit prices for a known symbol (MNQ, ES, NQ, MES)')
-      net = gross - fees
+      net = gross
     }
 
     let exitTime: string | null = null
@@ -91,7 +89,6 @@ export function parseRows(rows: RawRow[]): ParseResult {
       exitTime,
       status: 'closed',
       pnl: Math.round(net * 100) / 100,
-      fees,
       setup: text(r.setup),
       tags: list(r.tags),
       emotionBefore: text(r.emotionBefore),

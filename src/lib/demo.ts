@@ -16,7 +16,6 @@ export function demoTrades(): Trade[] {
     exitTime: new Date(2026, 8, day, hour, 50).toISOString(),
     status: 'closed',
     pnl,
-    fees: 1.5,
     setup: null,
     tags: [],
     emotionBefore: 'calm',

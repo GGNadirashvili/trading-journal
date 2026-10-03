@@ -15,15 +15,14 @@ const COLS: { key: keyof RawRow; label: string; width: string; placeholder?: str
   { key: 'qty', label: 'Qty', width: 'w-16', placeholder: '1' },
   { key: 'entry', label: 'Entry', width: 'w-24' },
   { key: 'exit', label: 'Exit', width: 'w-24' },
-  { key: 'pnl', label: 'Net P&L', width: 'w-24' },
-  { key: 'fees', label: 'Fees', width: 'w-16' },
+  { key: 'pnl', label: 'P&L', width: 'w-24' },
   { key: 'emotionTags', label: 'Emotions', width: 'w-40', placeholder: 'calm, fomo' },
   { key: 'notes', label: 'Notes', width: 'w-64' },
 ]
 
 const JSON_EXAMPLE = `[
   { "date": "2026-09-07", "time": "09:30", "symbol": "MNQ", "direction": "long", "qty": 1,
-    "entry": 20000, "exit": 20010, "fees": 1.5,
+    "entry": 20000, "exit": 20010,
     "emotionBefore": "calm", "emotionAfter": "confident", "emotionTags": ["calm"], "notes": "..." },
   { "date": "2026-09-07", "time": "10:15", "symbol": "ES", "direction": "short", "pnl": -120.5 }
 ]`
@@ -77,7 +76,7 @@ export default function Import() {
         ))}
       </div>
       <p className="text-sm text-muted">
-        Leave Net P&L empty to compute it from entry/exit prices (known symbols only) minus fees. Times are your local time.
+        Leave P&L empty to compute it from entry/exit prices (known symbols only). Times are your local time.
         Screenshots can be added to each trade after importing.
       </p>
 

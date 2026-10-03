@@ -18,7 +18,6 @@ const trade = (pnl: number, time: string, over: Partial<Trade> = {}): Trade => (
   exitTime: null,
   status: 'closed',
   pnl,
-  fees: 0,
   setup: null,
   tags: [],
   emotionBefore: null,

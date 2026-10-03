@@ -49,8 +49,8 @@ Demo mode: put `VITE_DEMO=1` in `.env.local` to try the UI with fake in-memory d
 
 ### 3. Import the previous week
 
-Use **Import**: type rows into the bulk grid or paste JSON (example shown in the page). Leave Net P&L empty to
-compute it from prices (MNQ $2/pt, ES $50/pt, NQ $20/pt, MES $5/pt) minus fees. Open a trade afterwards to
+Use **Import**: type rows into the bulk grid or paste JSON (example shown in the page). Leave P&L empty to
+compute it from prices (MNQ $2/pt, ES $50/pt, NQ $20/pt, MES $5/pt). Open a trade afterwards to
 add screenshots (click, drop, or paste with Cmd+V).
 
 ### 4. Deploy to GitHub Pages

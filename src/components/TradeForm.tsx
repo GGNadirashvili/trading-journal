@@ -41,7 +41,6 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   const [exitTime, setExitTime] = useState(toLocalInput(initial?.exitTime ?? null))
   const [status, setStatus] = useState<TradeStatus>(initial?.status ?? 'closed')
   const [pnl, setPnl] = useState(initial ? String(initial.pnl) : '')
-  const [fees, setFees] = useState(String(initial?.fees ?? 0))
   const [setup, setSetup] = useState(initial?.setup ?? '')
   const [tags, setTags] = useState(initial?.tags.join(', ') ?? '')
   const [emotionBefore, setEmotionBefore] = useState(initial?.emotionBefore ?? '')
@@ -58,10 +57,9 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
     e.preventDefault()
     setError(null)
     const q = Number(qty)
-    const feeNum = Number(fees) || 0
     const ep = optNum(entryPrice)
     const xp = optNum(exitPrice)
-    // Net P&L: typed value wins; otherwise gross from prices minus fees.
+    // Typed P&L wins; otherwise it is computed from the prices.
     let net = optNum(pnl)
     if (net === null) {
       const gross = pnlFromPrices(symbol, direction, q, ep, xp)
@@ -69,7 +67,7 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         setError('Enter the P&L, or entry and exit prices for a known symbol (MNQ, ES, NQ, MES).')
         return
       }
-      net = (gross ?? 0) - feeNum
+      net = gross ?? 0
     }
     setBusy(true)
     try {
@@ -83,7 +81,6 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         exitTime: fromLocalInput(exitTime),
         status,
         pnl: Math.round(net * 100) / 100,
-        fees: feeNum,
         setup: optText(setup),
         tags: splitTags(tags),
         emotionBefore: optText(emotionBefore),
@@ -134,11 +131,8 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         <Field label="Exit time">
           <input className={input} type="datetime-local" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
         </Field>
-        <Field label="Net P&L ($), blank = from prices">
+        <Field label="P&L ($), blank = from prices">
           <input className={input} type="number" step="any" value={pnl} onChange={(e) => setPnl(e.target.value)} />
-        </Field>
-        <Field label="Fees ($)">
-          <input className={input} type="number" step="any" min="0" value={fees} onChange={(e) => setFees(e.target.value)} />
         </Field>
         <Field label="Setup">
           <input className={input} value={setup} onChange={(e) => setSetup(e.target.value)} placeholder="e.g. opening range break" />
