@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, LayoutDashboard, ListOrdered, LogOut } from 'lucide-react'
+import { BarChart3, BookOpen, LayoutDashboard, ListOrdered, LogOut, Settings } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { DEMO } from '../lib/demo'
 import { supabase } from '../lib/supabase'
@@ -8,6 +8,7 @@ const NAV = [
   { to: '/trades', label: 'Trades', icon: ListOrdered },
   { to: '/review', label: 'Weekly review', icon: BookOpen },
   { to: '/reports', label: 'Reports', icon: BarChart3 },
+  { to: '/admin', label: 'Admin', icon: Settings },
 ]
 
 export default function Layout() {

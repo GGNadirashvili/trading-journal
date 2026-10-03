@@ -367,3 +367,22 @@ Newest entries go at the bottom.
   after loading. Also: my browser test needed a separate JavaScript read of the textareas to prove which boxes
   received the text, because the click targets looked identical in the log.
 - **Not verified yet:** saving to the real database (needs migration 0002 to be run first).
+
+## 27. feat(admin): manage symbols, emotions, tags and setups
+
+- **What:** an Admin page (gear icon in the sidebar):
+  - **Symbols:** add or delete a symbol and edit its dollars-per-point (saved when you leave the field or
+    press Enter). Codes are stored upper-case; duplicates are rejected with a clear message.
+  - **Emotional conditions, Tags, Setups:** chips with an x to remove and a box to add. Deleting asks for
+    confirmation and says how many existing trades use that item.
+  - A yellow banner explains it if the settings tables cannot be read (migration 0002 not run yet).
+- **Goal:** everything the trade form offers is editable without touching code.
+- **Safety rule:** removing a symbol or label never changes old trades. They keep their text; the item just
+  stops being offered for new trades.
+- **Checked end to end in demo mode, without reloading the page:** added symbol NQ at $20/pt and the emotion
+  "impatient"; the new-trade form immediately offered both; saving an NQ trade with entry 20000 and exit 20010
+  and no P&L gave $200.00 (10 points x $20), and the trade log has no Status column.
+- **Not verified yet:** saving settings to the real database (needs migration 0002).
+- **Admin security:** the app has a single user, signups are off, and every table has row-level security, so
+  the person who can open Admin is the only one who can read or change anything. The next commit shows the
+  signup status on the Admin page and adds data export and password change.

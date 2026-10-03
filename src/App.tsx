@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import { AuthProvider } from './lib/auth'
 import { SettingsProvider } from './lib/SettingsProvider'
 import { TradesProvider } from './lib/TradesProvider'
+import Admin from './pages/Admin'
 import Dashboard from './pages/Dashboard'
 import Reports from './pages/Reports'
 import Review from './pages/Review'
@@ -26,6 +27,7 @@ export default function App() {
                   <Route path="trades/:id" element={<TradeEdit />} />
                   <Route path="review" element={<Review />} />
                   <Route path="reports" element={<Reports />} />
+                  <Route path="admin" element={<Admin />} />
                 </Route>
               </Routes>
             </HashRouter>
