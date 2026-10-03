@@ -657,3 +657,29 @@ Newest entries go at the bottom.
   GitHub is phasing out; to be updated later when newer versions exist.
 - **Still to do by the owner:** run migration 0003 in Supabase, and add the live address to Supabase
   (Authentication, URL Configuration) so email links such as password reset point to the live site.
+
+## 42. feat(db): starting lists for every new account, and how to add another user
+
+- **What:** `supabase/migrations/0004_seed_new_users.sql`: a database trigger that gives each newly created
+  account the same starting lists as yours (symbols MNQ $2/pt and ES $50/pt, and the 12 emotions with Georgian
+  names). A README section explains how to add another person.
+- **Goal:** the owner wants a second account for a friend, with no admin rights. The app has no admin tier:
+  every account only touches its own rows, and admin power is the owner's Supabase and GitHub logins.
+- **Why the trigger was needed:** migrations 0002 and 0003 only seeded accounts that existed at that moment, so
+  a new user would have seen an empty symbol dropdown and been unable to add a trade.
+- **Verified locally with two simulated users (throw-away Postgres, migrations 0001 to 0004 in order):**
+  - a user created after 0004 gets exactly 2 symbols and 12 emotions, all 12 with Georgian names;
+  - the second user sees 0 of the first user's trades, weekly reviews, screenshot records and storage files;
+  - their updates and deletes on the first user's rows change 0 rows;
+  - inserting a row that names the other user as owner, writing into the other user's screenshot folder, and
+    moving their own row to the other user are all refused;
+  - they can write their own rows and their own storage folder;
+  - the seed function cannot be called directly from the website (permission denied).
+- **Mistake in my test output:** the test printed the owner's symbol count with a wrong "0 expected" note; the
+  owner correctly has 2 from migration 0002. The behavior was right, my label was wrong.
+- **Limits stated plainly:** (1) the owner can read everyone's data in the Supabase dashboard; (2) invite and
+  password-reset emails are not supported because the app has no page for setting a password from an email link
+  and I have not tested that flow, so accounts are created with a password by the owner; (3) this was tested
+  locally, not yet with a real second login on the live site.
+- **Owner action:** run this migration once in the Supabase SQL editor before creating the friend's account, and
+  after 0003.

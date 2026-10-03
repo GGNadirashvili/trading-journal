@@ -32,12 +32,14 @@ See [docs/DEVLOG.md](docs/DEVLOG.md) for every commit, its goal, and the mistake
 ### 1. Supabase
 
 1. Create a free project at <https://supabase.com>.
-2. SQL Editor: run these three files, in order, one after the other:
+2. SQL Editor: run these four files, in order, one after the other:
    [0001_init.sql](supabase/migrations/0001_init.sql) (trades, screenshots, row-level security) and
    [0002_settings_and_reviews.sql](supabase/migrations/0002_settings_and_reviews.sql) (symbols, lists,
    weekly reviews) and
    [0003_option_names_ka.sql](supabase/migrations/0003_option_names_ka.sql) (Georgian names for emotions,
-   tags and setups). Run each only once.
+   tags and setups) and
+   [0004_seed_new_users.sql](supabase/migrations/0004_seed_new_users.sql) (starting lists for every new
+   account). Run each only once.
 3. Authentication -> Users -> Add user: create your own email + password (tick "Auto confirm").
 4. Authentication -> Sign In / Providers: turn **off** "Allow new users to sign up". Now only your account exists.
 5. Project Settings -> API: copy the Project URL and the `anon` public key.
@@ -60,6 +62,22 @@ Demo mode: put `VITE_DEMO=1` in `.env.local` to try the UI with fake in-memory d
 Use **Trades -> New trade**. Leave P&L empty to compute it from the entry and exit prices using the point value
 of the symbol (set on the Admin page), or type the final P&L yourself. Open a trade afterwards to add
 screenshots (click, drop, or paste with Cmd+V).
+
+### Adding another person (for example a friend)
+
+Every account has its own private journal: row-level security means a user can only read and change their own
+rows, and nobody can see anyone else's trades, reviews or screenshots. There is no admin level inside the app;
+the Admin page only edits the signed-in person's own symbols, lists and password.
+
+1. Supabase -> Authentication -> Users -> Add user -> **Create new user**: their email and a password, with
+   **Auto Confirm User** ticked. Keep "Allow new users to sign up" **off**, so only accounts you create can exist.
+2. Give them the site address and the password privately. They can change it on the Admin page.
+3. Their starting symbols (MNQ, ES) and emotions are added automatically (migration 0004).
+
+Good to know: you own the Supabase project, so you can see their data in the Supabase dashboard (Table Editor).
+Tell them. Do not use "Invite user" or password-reset emails yet: the app has no screen for setting a password
+from an email link (not built or tested). If they forget the password, reset it in Supabase.
+The free Supabase plan (500 MB database, 1 GB file storage) is shared by all accounts.
 
 ### 4. Deploy to GitHub Pages
 
