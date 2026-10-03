@@ -100,3 +100,15 @@ Newest entries go at the bottom.
 - **Gotcha handled:** Postgres `numeric` can arrive as a string, so values are coerced with `Number()`.
 - **Mistake avoided from last time:** rewrote `App.tsx` whole instead of patching, to avoid broken indentation.
 - **Not verified yet:** the Supabase calls themselves (no project yet); demo mode and types are verified.
+
+## 9. feat(trades): trade log table
+
+- **What:** Trades page: table with date, symbol, status, direction, qty, entry, exit, hold time, return and
+  emotion tags. Sort by date/symbol/qty/return, filter by symbol, free-text search across notes, setup and
+  emotions. Money/date helpers in `src/lib/format.ts`.
+- **Goal:** the table from the Tradeify reference, in black and green, with search that also covers the
+  emotion notes.
+- **Mistake:** I defined the sortable header component inside the page component. Lint warned that this
+  recreates the component on every render. Moved it to module level before committing.
+- **Checked:** type-check, lint, and a screenshot in demo mode. Rows are not clickable yet; the add/edit
+  form is the next commit.
