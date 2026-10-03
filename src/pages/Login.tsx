@@ -15,7 +15,7 @@ export default function Login() {
     setBusy(true)
     setError(null)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
+    if (error) setError(error.message === 'Invalid login credentials' ? t('login.invalid') : error.message)
     setBusy(false)
   }
 

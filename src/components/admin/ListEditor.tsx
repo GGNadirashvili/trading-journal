@@ -1,6 +1,8 @@
 import { X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
+import { useI18n } from '../../i18n/context'
 import { useConfirm } from '../../lib/confirmContext'
+import { DuplicateError } from '../../lib/settingsApi'
 import { useSettings } from '../../lib/settingsContext'
 import type { OptionKind } from '../../lib/settingsTypes'
 
@@ -17,6 +19,7 @@ interface Props {
 export default function ListEditor({ kind, title, hint, usage }: Props) {
   const { options, addOption, removeOption } = useSettings()
   const confirm = useConfirm()
+  const { t, te } = useI18n()
   const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const items = options.filter((o) => o.kind === kind)
@@ -28,14 +31,15 @@ export default function ListEditor({ kind, title, hint, usage }: Props) {
       await addOption(kind, name)
       setName('')
     } catch (err) {
-      setError((err as Error).message)
+      setError(err instanceof DuplicateError ? t('admin.exists', { name: err.itemName }) : (err as Error).message)
     }
   }
 
   async function remove(id: string, itemName: string) {
     const used = usage(itemName)
-    const note = used ? `\n\n${used} existing trade(s) use it. They keep it; it just disappears from the pick-list.` : ''
-    if (!(await confirm(`Remove "${itemName}"?${note}`, { title: `Remove ${kind}`, danger: true }))) return
+    const note = used ? `\n\n${t('admin.list.usedNote', { n: used })}` : ''
+    const shown = kind === 'emotion' ? te(itemName) : itemName
+    if (!(await confirm(`${t('admin.list.removeBody', { name: shown })}${note}`, { title: t(`admin.${kind}.removeTitle`), danger: true }))) return
     setError(null)
     try {
       await removeOption(id)
@@ -53,17 +57,17 @@ export default function ListEditor({ kind, title, hint, usage }: Props) {
       <div className="flex flex-wrap gap-2">
         {items.map((o) => (
           <span key={o.id} className="flex items-center gap-1 rounded-full border border-line py-1 pl-3 pr-1 text-sm">
-            {o.name}
-            <button onClick={() => remove(o.id, o.name)} title={`Remove ${o.name}`} className="rounded-full p-1 text-muted hover:text-loss">
+            {kind === 'emotion' ? te(o.name) : o.name}
+            <button onClick={() => remove(o.id, o.name)} title={t('admin.list.removeBtn', { name: kind === 'emotion' ? te(o.name) : o.name })} className="rounded-full p-1 text-muted hover:text-loss">
               <X size={14} />
             </button>
           </span>
         ))}
-        {items.length === 0 && <span className="text-sm text-muted">Nothing here yet.</span>}
+        {items.length === 0 && <span className="text-sm text-muted">{t('admin.nothingHere')}</span>}
       </div>
       <form onSubmit={add} className="flex gap-2">
-        <input className={`${input} w-56`} placeholder={`New ${kind}`} value={name} onChange={(e) => setName(e.target.value)} required />
-        <button className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">Add</button>
+        <input className={`${input} w-56`} placeholder={t(`admin.${kind}.new`)} value={name} onChange={(e) => setName(e.target.value)} required />
+        <button className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">{t('admin.add')}</button>
       </form>
       {error && <p className="text-sm text-loss">{error}</p>}
     </section>

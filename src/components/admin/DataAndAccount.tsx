@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { buildBackup, download, tradesToCsv } from '../../lib/backup'
+import { useI18n } from '../../i18n/context'
 import { useAuth } from '../../lib/authContext'
 import { DEMO } from '../../lib/demo'
 import { listReviews } from '../../lib/reviewsApi'
@@ -31,6 +32,7 @@ function useSignupStatus(): SignupStatus {
 
 export default function DataAndAccount() {
   const { session } = useAuth()
+  const { t } = useI18n()
   const { trades } = useTrades()
   const { symbols, options } = useSettings()
   const signup = useSignupStatus()
@@ -52,42 +54,41 @@ export default function DataAndAccount() {
   async function changePassword(e: FormEvent) {
     e.preventDefault()
     setMsg(null)
-    if (pw.length < 8) return setMsg({ ok: false, text: 'Use at least 8 characters.' })
-    if (pw !== pw2) return setMsg({ ok: false, text: 'The two passwords do not match.' })
+    if (pw.length < 8) return setMsg({ ok: false, text: t('admin.password.short') })
+    if (pw !== pw2) return setMsg({ ok: false, text: t('admin.password.mismatch') })
     const { error } = await supabase.auth.updateUser({ password: pw })
     if (error) return setMsg({ ok: false, text: error.message })
     setPw('')
     setPw2('')
-    setMsg({ ok: true, text: 'Password changed.' })
+    setMsg({ ok: true, text: t('admin.password.done') })
   }
 
   return (
     <>
       <section className={card}>
-        <h2 className="text-lg font-semibold">Security</h2>
+        <h2 className="text-lg font-semibold">{t('admin.security.title')}</h2>
         <p className="text-sm">
-          Signed in as <span className="font-semibold">{DEMO ? 'demo (no login)' : (session?.user.email ?? 'unknown')}</span>
+          {t('admin.security.signedIn', { who: DEMO ? t('admin.security.demoUser') : (session?.user.email ?? t('admin.security.unknownUser')) })}
         </p>
-        {signup === 'disabled' && <p className="text-sm text-green">New signups are disabled. You are the only user who can log in.</p>}
+        {signup === 'disabled' && <p className="text-sm text-green">{t('admin.security.disabled')}</p>}
         {signup === 'enabled' && (
           <p className="rounded-lg border border-loss p-3 text-sm text-loss">
-            New signups are ENABLED, so anyone could create an account. Your data is still protected by row-level security, but turn this off in
-            Supabase: Authentication, Sign In / Providers, "Allow new users to sign up".
+            {t('admin.security.enabled')}
           </p>
         )}
-        {signup === 'unknown' && <p className="text-sm text-muted">Could not check the signup setting{DEMO ? ' in demo mode' : ''}.</p>}
-        {signup === 'checking' && <p className="text-sm text-muted">Checking signup setting…</p>}
+        {signup === 'unknown' && <p className="text-sm text-muted">{DEMO ? t('admin.security.unknownDemo') : t('admin.security.unknown')}</p>}
+        {signup === 'checking' && <p className="text-sm text-muted">{t('admin.security.checking')}</p>}
       </section>
 
       <section className={card}>
-        <h2 className="text-lg font-semibold">Backup</h2>
-        <p className="text-sm text-muted">Download your data. Screenshots are not included; they stay in Supabase Storage.</p>
+        <h2 className="text-lg font-semibold">{t('admin.backup.title')}</h2>
+        <p className="text-sm text-muted">{t('admin.backup.desc')}</p>
         <div className="flex flex-wrap gap-2">
           <button onClick={exportJson} className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">
-            Download backup (JSON)
+            {t('admin.backup.json')}
           </button>
           <button onClick={() => download(`trades-${today()}.csv`, tradesToCsv(trades), 'text/csv')} className="rounded-lg border border-line px-4 py-2 text-sm hover:text-green">
-            Download trades (CSV)
+            {t('admin.backup.csv')}
           </button>
         </div>
         {exportError && <p className="text-sm text-loss">{exportError}</p>}
@@ -95,11 +96,11 @@ export default function DataAndAccount() {
 
       {!DEMO && (
         <section className={card}>
-          <h2 className="text-lg font-semibold">Change password</h2>
+          <h2 className="text-lg font-semibold">{t('admin.password.title')}</h2>
           <form onSubmit={changePassword} className="flex flex-wrap items-center gap-2">
-            <input className={`${input} w-56`} type="password" autoComplete="new-password" placeholder="New password" value={pw} onChange={(e) => setPw(e.target.value)} required />
-            <input className={`${input} w-56`} type="password" autoComplete="new-password" placeholder="Repeat new password" value={pw2} onChange={(e) => setPw2(e.target.value)} required />
-            <button className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">Change</button>
+            <input className={`${input} w-56`} type="password" autoComplete="new-password" placeholder={t('admin.password.new')} value={pw} onChange={(e) => setPw(e.target.value)} required />
+            <input className={`${input} w-56`} type="password" autoComplete="new-password" placeholder={t('admin.password.repeat')} value={pw2} onChange={(e) => setPw2(e.target.value)} required />
+            <button className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">{t('admin.password.change')}</button>
           </form>
           {msg && <p className={`text-sm ${msg.ok ? 'text-green' : 'text-loss'}`}>{msg.text}</p>}
         </section>

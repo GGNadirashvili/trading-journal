@@ -5,6 +5,7 @@ A private, personal trading journal for MNQ and ES futures. It is for notes and 
 - Log trades with the emotional state before and after, tags, notes and screenshots.
 - Weekly review: emotional and technical analysis, mistakes, and your outlook for next week.
 - Admin page: manage symbols (with $ per point), emotions, tags and setups; backup export; password change.
+- English and Georgian (ქართული) with a language button in the sidebar; the choice is remembered. Texts live in `src/i18n/en.ts` and `src/i18n/ka.ts`; add or fix a Georgian word there.
 - Overview dashboard: win rate, profit factor, avg win/loss, streaks, P&L calendar with weekly totals.
 - Reports: equity curve, P&L by symbol / weekday / hour, and emotions vs results.
 - Black background, white text, green for profit and red for loss.

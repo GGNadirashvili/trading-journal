@@ -528,3 +528,28 @@ Newest entries go at the bottom.
   lint and 39 tests pass; a scan found no remaining English text in the two files' markup.
 - **Reminder:** your own text (analysis, notes) is stored exactly as typed in whichever language you write.
   Only the labels around it change with the language switch.
+
+## 36. feat(i18n): translate reports and the admin page
+
+- **What:** the Reports page (chart titles, tooltips, the emotions table, weekday names on the chart, "(none)")
+  and the whole Admin page (symbols, emotion/tag/setup lists with their delete questions, security status,
+  backup buttons, change password), plus the wrong-password message on the login page. With this, every piece
+  of text in the app is available in both languages.
+- **Goal:** finish the Georgian version so no screen mixes the two languages.
+- **Design details:** the "already exists" error is now a typed `DuplicateError`, so it can be worded in the
+  current language instead of a fixed English sentence. Weekday buckets in Reports stay English inside the
+  code (so the maths and tests are unchanged) and are only renamed when drawn.
+- **Checked in the browser (demo mode):** Admin and Reports fully Georgian, the delete dialog says
+  "წაიშალოს სიმბოლო ES? ... არა / დიახ", and one click on the language button returns everything to English
+  with the choice remembered. A scan of all `.tsx` files finds no hard-coded English UI text left. Type-check,
+  lint and 39 tests pass.
+- **Mistake:** my first version of the `DuplicateError` class used a constructor shortcut that this project's
+  TypeScript settings do not allow; the compiler said so immediately and I wrote the field out explicitly.
+- **Known limits:**
+  1. Error messages that come straight from Supabase (for example a network failure) stay in English; only the
+     wrong-password message is translated.
+  2. Your own notes, tags, setups and custom emotions are never translated; they appear as you typed them.
+  3. **I wrote all Georgian text myself and it has not been reviewed by a native speaker.** Please read it and
+     send corrections; every sentence is a single line in `src/i18n/ka.ts`. Trading words are transliterated
+     the way I assumed traders say them (ლონგი, შორტი, ბექაფი, სქრინშოტი, სეტაპი); change them if you use
+     different ones.

@@ -1,6 +1,8 @@
 import { Trash2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
+import { useI18n } from '../../i18n/context'
 import { useConfirm } from '../../lib/confirmContext'
+import { DuplicateError } from '../../lib/settingsApi'
 import { useSettings } from '../../lib/settingsContext'
 import { useTrades } from '../../lib/tradesContext'
 
@@ -10,6 +12,7 @@ export default function SymbolsEditor() {
   const { symbols, addSymbol, updateSymbol, removeSymbol } = useSettings()
   const { trades } = useTrades()
   const confirm = useConfirm()
+  const { t } = useI18n()
   const [code, setCode] = useState('')
   const [value, setValue] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -19,14 +22,14 @@ export default function SymbolsEditor() {
     try {
       await fn()
     } catch (e) {
-      setError((e as Error).message)
+      setError(e instanceof DuplicateError ? t('admin.exists', { name: e.itemName }) : (e as Error).message)
     }
   }
 
   function add(e: FormEvent) {
     e.preventDefault()
     const pv = Number(value)
-    if (!(pv > 0)) return setError('Point value must be a number above 0.')
+    if (!(pv > 0)) return setError(t('admin.symbols.invalidValue'))
     void run(async () => {
       await addSymbol(code, pv)
       setCode('')
@@ -36,31 +39,28 @@ export default function SymbolsEditor() {
 
   async function remove(id: string, symbol: string) {
     const used = trades.filter((t) => t.symbol === symbol).length
-    const note = used ? `\n\n${used} existing trade(s) use ${symbol}. They are kept, but you will not be able to pick ${symbol} for new trades.` : ''
-    if (await confirm(`Delete symbol ${symbol}?${note}`, { title: 'Delete symbol', danger: true })) void run(() => removeSymbol(id))
+    const note = used ? `\n\n${t('admin.symbols.usedNote', { n: used, symbol })}` : ''
+    if (await confirm(`${t('admin.symbols.deleteBody', { symbol })}${note}`, { title: t('admin.symbols.deleteTitle'), danger: true })) void run(() => removeSymbol(id))
   }
 
   function changeValue(id: string, current: number, raw: string) {
     const pv = Number(raw)
     if (pv === current) return
-    if (!(pv > 0)) return setError('Point value must be a number above 0.')
+    if (!(pv > 0)) return setError(t('admin.symbols.invalidValue'))
     void run(() => updateSymbol(id, pv))
   }
 
   return (
     <section className="space-y-3 rounded-xl border border-line bg-surface p-4">
       <div>
-        <h2 className="text-lg font-semibold">Symbols</h2>
-        <p className="text-sm text-muted">
-          The point value is the dollars one full price point is worth per contract (MNQ = 2, ES = 50). It is used to compute P&L when you enter
-          entry and exit prices.
-        </p>
+        <h2 className="text-lg font-semibold">{t('admin.symbols.title')}</h2>
+        <p className="text-sm text-muted">{t('admin.symbols.desc')}</p>
       </div>
       <table className="w-full text-sm">
         <thead className="text-left text-xs uppercase tracking-wider text-muted">
           <tr>
-            <th className="pb-2">Symbol</th>
-            <th className="pb-2">$ per point</th>
+            <th className="pb-2">{t('admin.symbols.col.symbol')}</th>
+            <th className="pb-2">{t('admin.symbols.col.value')}</th>
             <th className="pb-2 text-right" />
           </tr>
         </thead>
@@ -80,7 +80,7 @@ export default function SymbolsEditor() {
                 />
               </td>
               <td className="text-right">
-                <button onClick={() => remove(s.id, s.code)} title={`Delete ${s.code}`} className="p-1 text-muted hover:text-loss">
+                <button onClick={() => remove(s.id, s.code)} title={t('admin.symbols.deleteBtn', { code: s.code })} className="p-1 text-muted hover:text-loss">
                   <Trash2 size={16} />
                 </button>
               </td>
@@ -89,16 +89,16 @@ export default function SymbolsEditor() {
           {symbols.length === 0 && (
             <tr>
               <td colSpan={3} className="py-4 text-center text-muted">
-                No symbols yet. Add one below.
+                {t('admin.symbols.empty')}
               </td>
             </tr>
           )}
         </tbody>
       </table>
       <form onSubmit={add} className="flex flex-wrap items-center gap-2">
-        <input className={`${input} w-28 uppercase`} placeholder="Symbol" value={code} onChange={(e) => setCode(e.target.value)} required />
-        <input className={`${input} w-32`} type="number" step="any" min="0" placeholder="$ per point" value={value} onChange={(e) => setValue(e.target.value)} required />
-        <button className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">Add symbol</button>
+        <input className={`${input} w-28 uppercase`} placeholder={t('admin.symbols.codePlaceholder')} value={code} onChange={(e) => setCode(e.target.value)} required />
+        <input className={`${input} w-32`} type="number" step="any" min="0" placeholder={t('admin.symbols.valuePlaceholder')} value={value} onChange={(e) => setValue(e.target.value)} required />
+        <button className="rounded-lg bg-green px-4 py-2 text-sm font-semibold text-black">{t('admin.symbols.add')}</button>
       </form>
       {error && <p className="text-sm text-loss">{error}</p>}
     </section>
