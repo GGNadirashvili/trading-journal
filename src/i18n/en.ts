@@ -268,6 +268,20 @@ export const en = {
   'admin.password.short': 'Use at least 8 characters.',
   'admin.password.mismatch': 'The two passwords do not match.',
   'admin.password.done': 'Password changed.',
+
+  // Sessions
+  'session.asia': 'Asia',
+  'session.london': 'London',
+  'session.ny_premarket': 'NY Premarket',
+  'session.ny_am': 'NY AM',
+  'session.ny_lunch': 'NY Lunch',
+  'session.ny_pm': 'NY PM',
+  'session.outside': 'Outside of session',
+  'session.none': 'Not set',
+  'form.session': 'Session',
+  'form.sessionPick': 'Select a session…',
+  'form.sessionRequired': 'Choose the session this trade was taken in.',
+  'trades.col.session': 'Session',
 } as const
 
 export type MessageKey = keyof typeof en

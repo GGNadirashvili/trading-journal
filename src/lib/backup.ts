@@ -9,9 +9,9 @@ export function csvCell(v: string | number | null | undefined): string {
 }
 
 export function tradesToCsv(trades: Trade[]): string {
-  const head = ['entry_time', 'exit_time', 'symbol', 'direction', 'qty', 'entry_price', 'exit_price', 'pnl', 'setup', 'tags', 'emotion_tags', 'emotion_before', 'emotion_after', 'notes']
+  const head = ['entry_time', 'exit_time', 'symbol', 'direction', 'qty', 'entry_price', 'exit_price', 'pnl', 'session', 'setup', 'tags', 'emotion_tags', 'emotion_before', 'emotion_after', 'notes']
   const rows = trades.map((t) =>
-    [t.entryTime, t.exitTime, t.symbol, t.direction, t.qty, t.entryPrice, t.exitPrice, t.pnl, t.setup, t.tags.join('; '), t.emotionTags.join('; '), t.emotionBefore, t.emotionAfter, t.notes]
+    [t.entryTime, t.exitTime, t.symbol, t.direction, t.qty, t.entryPrice, t.exitPrice, t.pnl, t.session, t.setup, t.tags.join('; '), t.emotionTags.join('; '), t.emotionBefore, t.emotionAfter, t.notes]
       .map(csvCell)
       .join(','),
   )

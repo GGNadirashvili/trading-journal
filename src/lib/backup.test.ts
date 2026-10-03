@@ -15,11 +15,12 @@ describe('csv', () => {
     const t: Trade = {
       id: '1', symbol: 'ES', direction: 'short', qty: 1, entryPrice: 5000, exitPrice: 4995,
       entryTime: '2026-09-07T10:00:00.000Z', exitTime: null, pnl: 250, setup: null,
-      tags: ['trend', 'news'], emotionBefore: 'calm, focused', emotionAfter: null, emotionTags: ['calm'], notes: null,
+      tags: ['trend', 'news'], emotionBefore: 'calm, focused', emotionAfter: null, emotionTags: ['calm'], notes: null, session: 'ny_am',
     }
     const lines = tradesToCsv([t]).split('\n')
     expect(lines).toHaveLength(2)
     expect(lines[0].startsWith('entry_time,exit_time,symbol')).toBe(true)
-    expect(lines[1]).toBe('2026-09-07T10:00:00.000Z,,ES,short,1,5000,4995,250,,trend; news,calm,"calm, focused",,')
+    expect(lines[0]).toContain(',session,')
+    expect(lines[1]).toBe('2026-09-07T10:00:00.000Z,,ES,short,1,5000,4995,250,ny_am,,trend; news,calm,"calm, focused",,')
   })
 })

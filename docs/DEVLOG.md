@@ -719,3 +719,21 @@ Newest entries go at the bottom.
   session, all seven values are accepted, three invalid values ("NY AM", "tokyo", "") are rejected, and running
   the file twice is harmless.
 - **Owner action:** run this file once in the Supabase SQL editor (after 0003 and 0004).
+
+## 45. feat(trades): mandatory session on every trade
+
+- **What:** the trade form has a **Session** dropdown: Asia, London, NY Premarket, NY AM, NY Lunch, NY PM,
+  Outside of session (in Georgian: აზია, ლონდონი, NY პრემარკეტი, NY AM, NY ლანჩი, NY PM, სესიის გარეთ). It starts
+  on "Select a session…" with no default and is required: the browser blocks saving, and the form shows a message
+  if that check is ever bypassed. The trade log has a Session column ("Not set" for old trades). The session is
+  saved with the trade, included in the CSV and JSON backups, and the demo data has sessions.
+- **Goal:** every trade must be classified so statistics can be built per session (next commit).
+- **Old trades:** they have no session. To save any changes to one, a session must be chosen, so they get
+  classified as you touch them.
+- **Not automatic:** the session is chosen by you, not guessed from the entry time. Session hours depend on the
+  time zone and on the definition you use, so I did not hard-code a guess.
+- **Checked in the browser (demo mode):** the dropdown lists the seven options in order, starts empty, is
+  marked required, and the form is invalid until a session is chosen. Type-check, lint and 64 tests pass (the
+  CSV test now also checks the session column).
+- **Owner action:** run `0005_trade_session.sql` in the Supabase SQL editor before using this version with
+  your real database: saving a trade writes the new column, and without it the save would be refused.

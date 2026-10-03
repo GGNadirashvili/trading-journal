@@ -4,6 +4,7 @@ import { useI18n } from '../i18n/context'
 import { fromLocalInput, toLocalInput } from '../lib/format'
 import { useSettings } from '../lib/settingsContext'
 import type { TradeInput } from '../lib/tradesApi'
+import { SESSIONS, type Session } from '../lib/sessions'
 import type { Direction } from '../lib/types'
 import ChipPicker from './ChipPicker'
 
@@ -32,6 +33,8 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   const { t } = useI18n()
   const [symbol, setSymbol] = useState(initial?.symbol ?? symbols[0]?.code ?? '')
   const [direction, setDirection] = useState<Direction>(initial?.direction ?? 'long')
+  // Starts empty on purpose: the session must be chosen for every trade, there is no default.
+  const [session, setSession] = useState<Session | ''>(initial?.session ?? '')
   const [qty, setQty] = useState(String(initial?.qty ?? 1))
   const [entryPrice, setEntryPrice] = useState(initial?.entryPrice?.toString() ?? '')
   const [exitPrice, setExitPrice] = useState(initial?.exitPrice?.toString() ?? '')
@@ -54,6 +57,7 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   async function submit(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    if (!session) return setError(t('form.sessionRequired'))
     const q = Number(qty)
     const ep = optNum(entryPrice)
     const xp = optNum(exitPrice)
@@ -84,6 +88,7 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         emotionAfter: optText(emotionAfter),
         emotionTags,
         notes: optText(notes),
+        session,
       })
     } catch (err) {
       setError((err as Error).message)
@@ -105,6 +110,18 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
           <select className={input} value={direction} onChange={(e) => setDirection(e.target.value as Direction)}>
             <option value="long">{t('dir.long')}</option>
             <option value="short">{t('dir.short')}</option>
+          </select>
+        </Field>
+        <Field label={t('form.session')}>
+          <select className={input} value={session} onChange={(e) => setSession(e.target.value as Session | '')} required>
+            <option value="" disabled>
+              {t('form.sessionPick')}
+            </option>
+            {SESSIONS.map((s) => (
+              <option key={s} value={s}>
+                {t(`session.${s}`)}
+              </option>
+            ))}
           </select>
         </Field>
         <Field label={t('form.qty')}>

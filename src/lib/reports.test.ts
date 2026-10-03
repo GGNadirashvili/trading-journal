@@ -20,6 +20,7 @@ const trade = (pnl: number, day: number, hour: number, over: Partial<Trade> = {}
   emotionAfter: null,
   emotionTags: [],
   notes: null,
+  session: null,
   ...over,
 })
 

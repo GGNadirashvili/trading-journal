@@ -1,3 +1,5 @@
+import type { Session } from './sessions'
+
 export type Direction = 'long' | 'short'
 
 export interface Trade {
@@ -16,4 +18,6 @@ export interface Trade {
   emotionAfter: string | null
   emotionTags: string[]
   notes: string | null
+  /** Null only for trades saved before sessions existed. */
+  session: Session | null
 }

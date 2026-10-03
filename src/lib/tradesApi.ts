@@ -1,4 +1,5 @@
 import { DEMO, demoTrades } from './demo'
+import { isSession, type Session } from './sessions'
 import { supabase } from './supabase'
 import type { Trade } from './types'
 
@@ -19,6 +20,7 @@ interface TradeRow {
   emotion_after: string | null
   emotion_tags: string[]
   notes: string | null
+  session: string | null
 }
 
 // numeric columns can come back as strings from PostgREST, so coerce them.
@@ -40,6 +42,7 @@ const fromRow = (r: TradeRow): Trade => ({
   emotionAfter: r.emotion_after,
   emotionTags: r.emotion_tags ?? [],
   notes: r.notes,
+  session: isSession(r.session) ? r.session : null,
 })
 
 export type TradeInput = Omit<Trade, 'id'>
@@ -59,6 +62,7 @@ const toRow = (t: TradeInput) => ({
   emotion_after: t.emotionAfter,
   emotion_tags: t.emotionTags,
   notes: t.notes,
+  session: t.session satisfies Session | null,
 })
 
 // In-memory store used only by demo mode.

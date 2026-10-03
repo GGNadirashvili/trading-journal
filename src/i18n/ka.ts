@@ -253,4 +253,17 @@ export const ka: Record<MessageKey, string> = {
   'admin.password.short': 'გამოიყენეთ მინიმუმ 8 სიმბოლო.',
   'admin.password.mismatch': 'ორი პაროლი ერთმანეთს არ ემთხვევა.',
   'admin.password.done': 'პაროლი შეიცვალა.',
+
+  'session.asia': 'აზია',
+  'session.london': 'ლონდონი',
+  'session.ny_premarket': 'NY პრემარკეტი',
+  'session.ny_am': 'NY AM',
+  'session.ny_lunch': 'NY ლანჩი',
+  'session.ny_pm': 'NY PM',
+  'session.outside': 'სესიის გარეთ',
+  'session.none': 'მითითებული არ არის',
+  'form.session': 'სესია',
+  'form.sessionPick': 'აირჩიეთ სესია…',
+  'form.sessionRequired': 'აირჩიეთ სესია, რომელშიც ტრეიდი გაკეთდა.',
+  'trades.col.session': 'სესია',
 }

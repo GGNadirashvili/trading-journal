@@ -1,3 +1,4 @@
+import type { Session } from './sessions'
 import type { Trade } from './types'
 
 // Dev-only sample data so the UI can be checked before Supabase exists.
@@ -5,7 +6,7 @@ import type { Trade } from './types'
 export const DEMO = import.meta.env.DEV && import.meta.env.VITE_DEMO === '1'
 
 export function demoTrades(): Trade[] {
-  const base = (id: string, day: number, hour: number, symbol: string, direction: 'long' | 'short', pnl: number): Trade => ({
+  const base = (id: string, day: number, hour: number, symbol: string, direction: 'long' | 'short', pnl: number, session: Session): Trade => ({
     id,
     symbol,
     direction,
@@ -21,14 +22,15 @@ export function demoTrades(): Trade[] {
     emotionAfter: pnl < 0 ? 'frustrated' : 'confident',
     emotionTags: [pnl < 0 ? 'frustrated' : 'confident'],
     notes: null,
+    session,
   })
   return [
-    base('d1', 7, 9, 'MNQ', 'long', 119.2),
-    base('d2', 7, 10, 'MNQ', 'short', -111.8),
-    base('d3', 8, 9, 'ES', 'long', 212.5),
-    base('d4', 9, 10, 'MNQ', 'long', -286.2),
-    base('d5', 9, 11, 'MNQ', 'long', -175.8),
-    base('d6', 10, 9, 'ES', 'short', 85.9),
-    base('d7', 11, 9, 'MNQ', 'short', 64.1),
+    base('d1', 7, 9, 'MNQ', 'long', 119.2, 'ny_am'),
+    base('d2', 7, 10, 'MNQ', 'short', -111.8, 'ny_am'),
+    base('d3', 8, 9, 'ES', 'long', 212.5, 'london'),
+    base('d4', 9, 10, 'MNQ', 'long', -286.2, 'ny_am'),
+    base('d5', 9, 11, 'MNQ', 'long', -175.8, 'ny_lunch'),
+    base('d6', 10, 9, 'ES', 'short', 85.9, 'ny_pm'),
+    base('d7', 11, 9, 'MNQ', 'short', 64.1, 'asia'),
   ]
 }
