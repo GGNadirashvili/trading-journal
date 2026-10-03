@@ -255,3 +255,24 @@ Newest entries go at the bottom.
 - **Mistake:** my scripted edit stopped on one README line because the sentence wrapped differently than I
   assumed, after the code edits had already been written. I fixed the README by hand and re-checked with a
   search that no "fee" text remains in `src/` or the README.
+
+## 20. feat(db): symbols, options and weekly reviews
+
+- **What:** `supabase/migrations/0002_settings_and_reviews.sql`:
+  - `symbols` (code + dollar value per point, replaces the hard-coded MNQ/ES values),
+  - `options` (pick-lists for emotions, tags and setups),
+  - `weekly_reviews` (one row per week, keyed by that week's Monday: emotional, technical, mistakes, lessons,
+    plus the outlook for the next week: bias, outlook, key levels, plan),
+  - row-level security on all three, seeds MNQ ($2/pt), ES ($50/pt) and 12 emotions for the existing user,
+  - drops the `fees` column.
+- **Goal:** make the lists editable from an admin page instead of living in code, and give the weekly notes
+  a place to be stored.
+- **Verified before touching the real database:** both migrations ran in a throwaway local Postgres (PGlite,
+  with stand-ins for Supabase's auth/storage schemas). An existing trade survived, `fees` was dropped,
+  seeds loaded (2 symbols, 12 emotions), RLS was on for the 3 tables, and 5 bad inserts were rejected
+  (lowercase code, duplicate symbol, zero point value, unknown option kind, unknown bias).
+- **Limits of that check:** it does not test Supabase's real auth. The policies are the same pattern as 0001,
+  which was verified on the real project.
+- **Decision:** symbols are stored by code in `trades.symbol` (text), so deleting a symbol from the admin page
+  never deletes or breaks old trades.
+- **Owner action:** this migration must be run once in the Supabase SQL editor before the new pages work.
