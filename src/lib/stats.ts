@@ -7,6 +7,8 @@ export interface Stats {
   wash: number
   open: number
   netPnl: number
+  grossWin: number
+  grossLoss: number // negative or 0
   winRate: number // 0..1 over closed trades
   avgWin: number
   avgLoss: number // negative or 0
@@ -31,6 +33,8 @@ export function computeStats(trades: Trade[]): Stats {
     wash: closed.length - wins.length - losses.length,
     open: trades.length - closed.length,
     netPnl,
+    grossWin,
+    grossLoss,
     winRate: closed.length ? wins.length / closed.length : 0,
     avgWin: wins.length ? grossWin / wins.length : 0,
     avgLoss: losses.length ? grossLoss / losses.length : 0,
@@ -96,3 +100,14 @@ export const tradeStreak = (trades: Trade[]): Streak =>
   )
 
 export const dayStreak = (trades: Trade[]): Streak => currentStreak(dailyTotals(trades).map((d) => d.pnl))
+
+export type Range = '30D' | '90D' | '180D' | 'ALL'
+
+const RANGE_DAYS: Record<Exclude<Range, 'ALL'>, number> = { '30D': 30, '90D': 90, '180D': 180 }
+
+/** Trades entered within the last N days up to `now`. ALL returns everything. */
+export function inRange(trades: Trade[], range: Range, now: Date = new Date()): Trade[] {
+  if (range === 'ALL') return trades
+  const from = now.getTime() - RANGE_DAYS[range] * 86_400_000
+  return trades.filter((t) => new Date(t.entryTime).getTime() >= from)
+}

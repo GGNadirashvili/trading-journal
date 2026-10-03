@@ -140,3 +140,18 @@ Newest entries go at the bottom.
 - **Checked in demo mode:** a simulated clipboard paste produced a thumbnail on the page.
 - **Not verified yet:** the real Supabase upload, signed URL and storage policy (no project yet). This is the
   riskiest untested piece, so it is first on the list once Supabase exists.
+
+## 12. feat(dashboard): stat cards and date range
+
+- **What:** Overview page with Trade Win gauge (wins/wash/losses counts), Profit Factor with donut, Trade
+  Expectancy, Avg Win/Loss with bar, Net P&L, Day Streak and Trade Streak, plus 30D / 90D / 180D / ALL chips.
+  Stats gained `grossWin` / `grossLoss`, and `inRange()` does the date filtering.
+- **Goal:** the Tradeify-style overview from the reference screenshot, in black and green.
+- **Checked by hand:** demo data (7 trades) gives net -92.10, win rate 4/7 = 57.1%, avg win 120.43, avg loss
+  -191.27, profit factor 481.7 / 573.8 = 0.84, day streak 2 wins, trade streak 2 wins. The page shows
+  exactly these numbers.
+- **Mistake:** my `inRange` test used March 1 as a "within 180 days" date, but that is about 216 days before
+  Oct 3, so the test failed. The code was right and the fixture was wrong; changed the fixture to April 20.
+- **Tooling hiccup (not a code bug):** creating `.env.local` restarted the dev server mid-session and left the
+  browser tab with stale hot-reload errors. A reload fixed it.
+- **Default range is ALL**, because with only one week of data a 30D default would go empty after a month.

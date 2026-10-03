@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { pnlFromPrices } from './contracts'
-import { computeStats, currentStreak, dailyTotals, dayStreak, tradeStreak } from './stats'
+import { computeStats, currentStreak, dailyTotals, dayStreak, inRange, tradeStreak } from './stats'
 import type { Trade } from './types'
 
 // Midday local time, so the local calendar day is the same in any timezone.
@@ -45,6 +45,8 @@ describe('computeStats', () => {
   })
   it('computes P&L figures', () => {
     expect(s.netPnl).toBe(50)
+    expect(s.grossWin).toBe(150)
+    expect(s.grossLoss).toBe(-100)
     expect(s.avgWin).toBe(75)
     expect(s.avgLoss).toBe(-50)
     expect(s.expectancy).toBe(10) // 50 / 5 closed
@@ -94,5 +96,16 @@ describe('pnlFromPrices', () => {
   it('returns null for unknown symbol or missing price', () => {
     expect(pnlFromPrices('XYZ', 'long', 1, 1, 2)).toBeNull()
     expect(pnlFromPrices('ES', 'long', 1, null, 2)).toBeNull()
+  })
+})
+
+describe('inRange', () => {
+  const now = new Date(2026, 9, 3, 12)
+  const ts = [trade(1, new Date(2026, 8, 30).toISOString()), trade(2, new Date(2026, 7, 1).toISOString()), trade(3, new Date(2026, 3, 20).toISOString())]
+  it('filters by trailing days', () => {
+    expect(inRange(ts, '30D', now)).toHaveLength(1)
+    expect(inRange(ts, '90D', now)).toHaveLength(2)
+    expect(inRange(ts, '180D', now)).toHaveLength(3)
+    expect(inRange(ts, 'ALL', now)).toHaveLength(3)
   })
 })
