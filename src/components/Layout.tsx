@@ -1,5 +1,6 @@
 import { BarChart3, CalendarDays, LayoutDashboard, ListOrdered, LogOut, Upload } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { DEMO } from '../lib/demo'
 import { supabase } from '../lib/supabase'
 
 const NAV = [
@@ -43,6 +44,7 @@ export default function Layout() {
         </button>
       </aside>
       <main className="min-w-0 flex-1 p-4 md:p-6">
+        {DEMO && <div className="mb-4 rounded-lg border border-warn px-3 py-2 text-sm text-warn">DEMO MODE: sample data, nothing is saved</div>}
         <Outlet />
       </main>
     </div>

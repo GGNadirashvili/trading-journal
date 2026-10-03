@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react'
 import { useAuth } from '../lib/authContext'
+import { DEMO } from '../lib/demo'
 import { isConfigured } from '../lib/supabase'
 import Login from '../pages/Login'
 
 export default function AuthGate({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
 
+  if (DEMO) return <>{children}</>
   if (!isConfigured) {
     return (
       <div className="p-6">

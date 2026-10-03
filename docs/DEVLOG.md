@@ -86,3 +86,17 @@ Newest entries go at the bottom.
   Also my first edit of `App.tsx` left bad indentation; rewrote the file.
 - **Not verified yet:** the "not configured" screen was checked in the browser. Real sign-in is untested
   until a Supabase project and user exist.
+
+## 8. feat(trades): trade data layer and provider
+
+- **What:** `tradesApi.ts` (list/create/createMany/update/delete against Supabase, mapping between
+  `snake_case` rows and the `Trade` type), `TradesProvider` + `useTrades()` so every page shares one
+  loaded list, and a dev-only **demo mode**.
+- **Goal:** one place that talks to the database; pages only call `useTrades()`.
+- **Demo mode:** `VITE_DEMO=1` in `.env.local` makes `npm run dev` use 7 made-up trades in memory and skip
+  login, with a yellow banner. It is gated on `import.meta.env.DEV`, so production builds drop it
+  (checked: the built JS contains no "DEMO MODE" string). Reason: I cannot see real screens until a
+  Supabase project exists, and I do not want to build blind. The sample trades are fake, never real data.
+- **Gotcha handled:** Postgres `numeric` can arrive as a string, so values are coerced with `Number()`.
+- **Mistake avoided from last time:** rewrote `App.tsx` whole instead of patching, to avoid broken indentation.
+- **Not verified yet:** the Supabase calls themselves (no project yet); demo mode and types are verified.
