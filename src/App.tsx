@@ -7,6 +7,7 @@ import Calendar from './pages/Calendar'
 import Dashboard from './pages/Dashboard'
 import Import from './pages/Import'
 import Reports from './pages/Reports'
+import TradeEdit from './pages/TradeEdit'
 import Trades from './pages/Trades'
 
 // HashRouter: GitHub Pages is a static host and cannot rewrite deep links to index.html.
@@ -20,6 +21,8 @@ export default function App() {
               <Route element={<Layout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="trades" element={<Trades />} />
+                <Route path="trades/new" element={<TradeEdit />} />
+                <Route path="trades/:id" element={<TradeEdit />} />
                 <Route path="calendar" element={<Calendar />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="import" element={<Import />} />

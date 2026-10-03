@@ -1,5 +1,6 @@
-import { ChevronDown, ChevronUp, Search } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { fmtDate, fmtTime, holdTime, money, pnlColor } from '../lib/format'
 import { useTrades } from '../lib/tradesContext'
 import type { Trade } from '../lib/types'
@@ -15,6 +16,7 @@ const CELL = 'px-3 py-3 text-sm'
 
 export default function Trades() {
   const { trades, loading, error } = useTrades()
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [symbol, setSymbol] = useState('all')
   const [sort, setSort] = useState<Sort>({ key: 'entryTime', dir: 'desc' })
@@ -68,6 +70,9 @@ export default function Trades() {
             className="w-56 bg-transparent text-green outline-none placeholder:text-muted"
           />
         </label>
+        <Link to="/trades/new" className="flex items-center gap-2 rounded-lg bg-green px-3 py-2 text-sm font-semibold text-black">
+          <Plus size={16} /> New trade
+        </Link>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-line bg-surface">
@@ -88,7 +93,7 @@ export default function Trades() {
           </thead>
           <tbody>
             {rows.map((t) => (
-              <Row key={t.id} t={t} />
+              <Row key={t.id} t={t} onOpen={() => navigate(`/trades/${t.id}`)} />
             ))}
             {rows.length === 0 && (
               <tr>
@@ -104,9 +109,9 @@ export default function Trades() {
   )
 }
 
-function Row({ t }: { t: Trade }) {
+function Row({ t, onOpen }: { t: Trade; onOpen: () => void }) {
   return (
-    <tr className="border-b border-line last:border-0 hover:bg-surface-2">
+    <tr onClick={onOpen} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-2">
       <td className={CELL}>
         {fmtDate(t.entryTime)} <span className="text-muted">{fmtTime(t.entryTime)}</span>
       </td>

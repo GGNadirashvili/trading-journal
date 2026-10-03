@@ -17,3 +17,14 @@ export function holdTime(a: string, b: string | null): string {
   const mins = Math.round((new Date(b).getTime() - new Date(a).getTime()) / 60000)
   return mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h ${mins % 60}m`
 }
+
+const pad = (n: number) => String(n).padStart(2, '0')
+
+/** ISO timestamp -> value for <input type="datetime-local"> (local time). */
+export function toLocalInput(iso: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+export const fromLocalInput = (v: string): string | null => (v ? new Date(v).toISOString() : null)

@@ -112,3 +112,18 @@ Newest entries go at the bottom.
   recreates the component on every render. Moved it to module level before committing.
 - **Checked:** type-check, lint, and a screenshot in demo mode. Rows are not clickable yet; the add/edit
   form is the next commit.
+
+## 10. feat(trades): add/edit trade form with emotion fields
+
+- **What:** `/trades/new` and `/trades/:id` (one `TradeEdit` page, one `TradeForm`). Fields: symbol, direction,
+  qty, status, prices, entry/exit time, net P&L, fees, setup, tags. An "Emotional state" box has quick-pick
+  emotion chips (calm, fomo, revenge, ...) plus free text for before and after the trade, and a notes field.
+  Delete with confirmation. Table rows open the edit page; "New trade" button on the log.
+- **Goal:** the core of the journal: capture how you felt next to what happened.
+- **P&L rule:** a typed net P&L wins. If it is blank, P&L = (exit - entry) x point value x qty (sign flipped
+  for shorts) minus fees. Unknown symbol with no P&L is rejected with a message rather than saving 0.
+- **Checked end to end in demo mode:** ES short, 5000 -> 4995, fees $4, no P&L typed saved as $246.00
+  (5 pts x $50 - $4), with the "fomo" tag shown in the log.
+- **Mistake:** the "now" default for entry time called `new Date()` during render; lint flagged it as impure.
+  Changed to a lazy `useState(() => ...)` initializer.
+- **Not done yet:** screenshots (next commit; they need a saved trade to attach to).
