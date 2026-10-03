@@ -7,11 +7,14 @@ export default function ChipPicker({
   selected,
   onToggle,
   emptyHint,
+  label = (v) => v,
 }: {
   options: string[]
   selected: string[]
   onToggle: (value: string) => void
   emptyHint?: string
+  /** How a value is shown (the stored value does not change). */
+  label?: (value: string) => string
 }) {
   const all = [...options, ...selected.filter((s) => !options.includes(s))]
   if (!all.length) return <p className="text-sm text-muted">{emptyHint}</p>
@@ -26,7 +29,7 @@ export default function ChipPicker({
             selected.includes(v) ? 'border-green bg-green text-black' : 'border-line text-muted hover:text-green'
           }`}
         >
-          {v}
+          {label(v)}
         </button>
       ))}
     </div>

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { dayKey } from '../lib/stats'
 import { useI18n } from '../i18n/context'
-import { fmtDate, fmtTime, holdTime, money, pnlColor } from '../lib/format'
+import { fmtDate, fmtTime, holdMinutes, money, pnlColor } from '../lib/format'
 import { useTrades } from '../lib/tradesContext'
 import type { Trade } from '../lib/types'
 
@@ -19,6 +19,7 @@ const CELL = 'px-3 py-3 text-sm'
 export default function Trades() {
   const { trades, loading, error } = useTrades()
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [params, setParams] = useSearchParams()
   const date = params.get('date')
   const [query, setQuery] = useState('')
@@ -49,13 +50,13 @@ export default function Trades() {
   const toggle = (key: SortKey) =>
     setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' }))
 
-  if (loading) return <p className="text-muted">Loading…</p>
+  if (loading) return <p className="text-muted">{t('common.loading')}</p>
   if (error) return <p className="text-loss">{error}</p>
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-semibold">Trades</h1>
+        <h1 className="text-xl font-semibold">{t('trades.title')}</h1>
         {date && (
           <button onClick={() => setParams({})} className="mr-auto flex items-center gap-1 rounded-full border border-green px-3 py-1 text-sm">
             {date} <X size={14} />
@@ -67,7 +68,7 @@ export default function Trades() {
           onChange={(e) => setSymbol(e.target.value)}
           className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg"
         >
-          <option value="all">All symbols</option>
+          <option value="all">{t('trades.allSymbols')}</option>
           {symbols.map((s) => (
             <option key={s}>{s}</option>
           ))}
@@ -77,12 +78,12 @@ export default function Trades() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search notes, emotions, tags"
+            placeholder={t('trades.search')}
             className="w-56 bg-transparent text-fg outline-none placeholder:text-muted"
           />
         </label>
         <Link to="/trades/new" className="flex items-center gap-2 rounded-lg bg-green px-3 py-2 text-sm font-semibold text-black">
-          <Plus size={16} /> New trade
+          <Plus size={16} /> {t('trades.new')}
         </Link>
       </div>
 
@@ -90,25 +91,25 @@ export default function Trades() {
         <table className="w-full min-w-[760px]">
           <thead className="border-b border-line">
             <tr>
-              <Th k="entryTime" sort={sort} onSort={toggle}>Date</Th>
-              <Th k="symbol" sort={sort} onSort={toggle}>Symbol</Th>
-              <th className={HEAD}>Dir</th>
-              <Th k="qty" sort={sort} onSort={toggle}>Qty</Th>
-              <th className={HEAD}>Entry</th>
-              <th className={HEAD}>Exit</th>
-              <th className={HEAD}>Hold</th>
-              <Th k="pnl" sort={sort} onSort={toggle}>Return</Th>
-              <th className={HEAD}>Emotion</th>
+              <Th k="entryTime" sort={sort} onSort={toggle}>{t('trades.col.date')}</Th>
+              <Th k="symbol" sort={sort} onSort={toggle}>{t('trades.col.symbol')}</Th>
+              <th className={HEAD}>{t('trades.col.dir')}</th>
+              <Th k="qty" sort={sort} onSort={toggle}>{t('trades.col.qty')}</Th>
+              <th className={HEAD}>{t('trades.col.entry')}</th>
+              <th className={HEAD}>{t('trades.col.exit')}</th>
+              <th className={HEAD}>{t('trades.col.hold')}</th>
+              <Th k="pnl" sort={sort} onSort={toggle}>{t('trades.col.return')}</Th>
+              <th className={HEAD}>{t('trades.col.emotion')}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((t) => (
-              <Row key={t.id} t={t} onOpen={() => navigate(`/trades/${t.id}`)} />
+              <Row key={t.id} trade={t} onOpen={() => navigate(`/trades/${t.id}`)} />
             ))}
             {rows.length === 0 && (
               <tr>
                 <td colSpan={9} className="px-3 py-12 text-center text-muted">
-                  No trades yet
+                  {t('trades.empty')}
                 </td>
               </tr>
             )}
@@ -119,21 +120,23 @@ export default function Trades() {
   )
 }
 
-function Row({ t, onOpen }: { t: Trade; onOpen: () => void }) {
-  const { locale } = useI18n()
+function Row({ trade, onOpen }: { trade: Trade; onOpen: () => void }) {
+  const { t, te, locale } = useI18n()
+  const minutes = holdMinutes(trade.entryTime, trade.exitTime)
+  const hold = minutes === null ? '-' : minutes < 60 ? t('unit.minutes', { n: minutes }) : t('unit.hoursMinutes', { h: Math.floor(minutes / 60), m: minutes % 60 })
   return (
     <tr onClick={onOpen} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-2">
       <td className={CELL}>
-        {fmtDate(t.entryTime, locale)} <span className="text-muted">{fmtTime(t.entryTime)}</span>
+        {fmtDate(trade.entryTime, locale)} <span className="text-muted">{fmtTime(trade.entryTime)}</span>
       </td>
-      <td className={`${CELL} font-semibold`}>{t.symbol}</td>
-      <td className={CELL}>{t.direction === 'long' ? 'Long' : 'Short'}</td>
-      <td className={CELL}>{t.qty}</td>
-      <td className={CELL}>{t.entryPrice ?? '-'}</td>
-      <td className={CELL}>{t.exitPrice ?? '-'}</td>
-      <td className={`${CELL} text-muted`}>{holdTime(t.entryTime, t.exitTime)}</td>
-      <td className={`${CELL} font-semibold ${pnlColor(t.pnl)}`}>{money(t.pnl)}</td>
-      <td className={`${CELL} text-muted`}>{t.emotionTags.join(', ') || '-'}</td>
+      <td className={`${CELL} font-semibold`}>{trade.symbol}</td>
+      <td className={CELL}>{trade.direction === 'long' ? t('dir.long') : t('dir.short')}</td>
+      <td className={CELL}>{trade.qty}</td>
+      <td className={CELL}>{trade.entryPrice ?? '-'}</td>
+      <td className={CELL}>{trade.exitPrice ?? '-'}</td>
+      <td className={`${CELL} text-muted`}>{hold}</td>
+      <td className={`${CELL} font-semibold ${pnlColor(trade.pnl)}`}>{money(trade.pnl)}</td>
+      <td className={`${CELL} text-muted`}>{trade.emotionTags.map(te).join(', ') || '-'}</td>
     </tr>
   )
 }

@@ -20,6 +20,12 @@ export function translatePlural(lang: Lang, key: string, n: number, params?: Par
   return translate(lang, `${key}_${n === 1 ? 'one' : 'other'}`, { n, ...params })
 }
 
+/** Built-in emotion names are translated; custom ones (no `emotion.<name>` entry) are returned unchanged. */
+export function translateEmotion(lang: Lang, name: string): string {
+  const key = `emotion.${name}`
+  return dictionaries[lang][key] ?? name
+}
+
 export function detectLang(saved: string | null, browser: string | undefined): Lang {
   if (saved === 'en' || saved === 'ka') return saved
   return browser?.toLowerCase().startsWith('ka') ? 'ka' : 'en'

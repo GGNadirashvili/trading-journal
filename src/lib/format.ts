@@ -8,10 +8,10 @@ export const pnlColor = (n: number) => (n > 0 ? 'text-green' : n < 0 ? 'text-los
 
 export { formatDate as fmtDate, formatTime as fmtTime } from '../i18n/dates'
 
-export function holdTime(a: string, b: string | null): string {
-  if (!b) return '-'
-  const mins = Math.round((new Date(b).getTime() - new Date(a).getTime()) / 60000)
-  return mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h ${mins % 60}m`
+/** Whole minutes between entry and exit, or null when there is no exit time. */
+export function holdMinutes(entry: string, exit: string | null): number | null {
+  if (!exit) return null
+  return Math.round((new Date(exit).getTime() - new Date(entry).getTime()) / 60000)
 }
 
 const pad = (n: number) => String(n).padStart(2, '0')

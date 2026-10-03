@@ -20,7 +20,7 @@ export default function Layout() {
     <div className="flex min-h-screen">
       <aside className="flex w-16 shrink-0 flex-col items-center gap-2 border-r border-line bg-surface py-4 md:w-52 md:items-stretch md:px-3">
         <div className="mb-4 text-center text-lg font-bold md:px-2 md:text-left">
-          TJ<span className="hidden text-muted md:inline"> Journal</span>
+          TJ<span className="hidden text-muted md:inline"> {t('nav.brand')}</span>
         </div>
         {NAV.map(({ to, label, icon: Icon }) => (
           <NavLink

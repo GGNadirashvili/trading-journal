@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { pnlFromPrices } from '../lib/contracts'
+import { useI18n } from '../i18n/context'
 import { fromLocalInput, toLocalInput } from '../lib/format'
 import { useSettings } from '../lib/settingsContext'
 import type { TradeInput } from '../lib/tradesApi'
@@ -28,6 +29,7 @@ interface Props {
 
 export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   const { symbols, pointValues, optionNames } = useSettings()
+  const { t, te } = useI18n()
   const [symbol, setSymbol] = useState(initial?.symbol ?? symbols[0]?.code ?? '')
   const [direction, setDirection] = useState<Direction>(initial?.direction ?? 'long')
   const [qty, setQty] = useState(String(initial?.qty ?? 1))
@@ -60,7 +62,7 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
     if (net === null) {
       const gross = pnlFromPrices(pointValues, symbol, direction, q, ep, xp)
       if (gross === null) {
-        setError('Enter the P&L, or entry and exit prices for a symbol that has a point value (set on the Admin page).')
+        setError(t('form.pnlRequired'))
         return
       }
       net = gross
@@ -92,39 +94,39 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   return (
     <form onSubmit={submit} className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Field label="Symbol">
+        <Field label={t('form.symbol')}>
           <select className={input} value={symbol} onChange={(e) => setSymbol(e.target.value)} required>
             {symbolCodes.map((c) => (
               <option key={c}>{c}</option>
             ))}
           </select>
         </Field>
-        <Field label="Direction">
+        <Field label={t('form.direction')}>
           <select className={input} value={direction} onChange={(e) => setDirection(e.target.value as Direction)}>
-            <option value="long">Long</option>
-            <option value="short">Short</option>
+            <option value="long">{t('dir.long')}</option>
+            <option value="short">{t('dir.short')}</option>
           </select>
         </Field>
-        <Field label="Quantity">
+        <Field label={t('form.qty')}>
           <input className={input} type="number" min="1" step="1" value={qty} onChange={(e) => setQty(e.target.value)} required />
         </Field>
-        <Field label="Entry price">
+        <Field label={t('form.entryPrice')}>
           <input className={input} type="number" step="any" value={entryPrice} onChange={(e) => setEntryPrice(e.target.value)} />
         </Field>
-        <Field label="Exit price">
+        <Field label={t('form.exitPrice')}>
           <input className={input} type="number" step="any" value={exitPrice} onChange={(e) => setExitPrice(e.target.value)} />
         </Field>
-        <Field label="Entry time">
+        <Field label={t('form.entryTime')}>
           <input className={input} type="datetime-local" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} required />
         </Field>
-        <Field label="Exit time">
+        <Field label={t('form.exitTime')}>
           <input className={input} type="datetime-local" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
         </Field>
-        <Field label="P&L ($), blank = from prices">
+        <Field label={t('form.pnl')}>
           <input className={input} type="number" step="any" value={pnl} onChange={(e) => setPnl(e.target.value)} />
         </Field>
-        <Field label="Setup">
-          <input className={input} list="setups" value={setup} onChange={(e) => setSetup(e.target.value)} placeholder="e.g. opening range break" />
+        <Field label={t('form.setup')}>
+          <input className={input} list="setups" value={setup} onChange={(e) => setSetup(e.target.value)} placeholder={t('form.setupHint')} />
           <datalist id="setups">
             {optionNames('setup').map((n) => (
               <option key={n} value={n} />
@@ -134,35 +136,36 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
       </div>
 
       <div>
-        <span className="mb-2 block text-xs uppercase tracking-wider text-muted">Tags</span>
-        <ChipPicker options={optionNames('tag')} selected={tags} onToggle={toggle(setTags)} emptyHint="No tags yet. Add some on the Admin page." />
+        <span className="mb-2 block text-xs uppercase tracking-wider text-muted">{t('form.tags')}</span>
+        <ChipPicker options={optionNames('tag')} selected={tags} onToggle={toggle(setTags)} emptyHint={t('form.noTags')} />
       </div>
 
       <section className="space-y-4 rounded-xl border border-line bg-surface p-4">
-        <h2 className="font-semibold">Emotional state</h2>
+        <h2 className="font-semibold">{t('form.emotionalState')}</h2>
         <ChipPicker
           options={optionNames('emotion')}
           selected={emotionTags}
           onToggle={toggle(setEmotionTags)}
-          emptyHint="No emotions yet. Add some on the Admin page."
+          emptyHint={t('form.noEmotions')}
+          label={te}
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Before the trade">
+          <Field label={t('form.before')}>
             <textarea className={input} rows={3} value={emotionBefore} onChange={(e) => setEmotionBefore(e.target.value)} />
           </Field>
-          <Field label="After the trade">
+          <Field label={t('form.after')}>
             <textarea className={input} rows={3} value={emotionAfter} onChange={(e) => setEmotionAfter(e.target.value)} />
           </Field>
         </div>
       </section>
 
-      <Field label="Notes" wide>
+      <Field label={t('form.notes')} wide>
         <textarea className={input} rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </Field>
 
       {error && <p className="text-sm text-loss">{error}</p>}
       <button disabled={busy} className="rounded-lg bg-green px-5 py-2 font-semibold text-black disabled:opacity-50">
-        {busy ? 'Saving…' : submitLabel}
+        {busy ? t('trade.saving') : submitLabel}
       </button>
     </form>
   )

@@ -1,10 +1,12 @@
 import { ImagePlus, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useI18n } from '../i18n/context'
 import { useConfirm } from '../lib/confirmContext'
 import { deleteImage, listImages, uploadImage, type TradeImage } from '../lib/imagesApi'
 
 export default function ImageGallery({ tradeId }: { tradeId: string }) {
   const confirm = useConfirm()
+  const { t } = useI18n()
   const [images, setImages] = useState<TradeImage[]>([])
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -49,7 +51,7 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
   }, [addFiles])
 
   async function remove(img: TradeImage) {
-    if (!(await confirm('Delete this screenshot? This cannot be undone.', { title: 'Delete screenshot', danger: true }))) return
+    if (!(await confirm(t('shots.deleteBody'), { title: t('shots.deleteTitle'), danger: true }))) return
     try {
       await deleteImage(img)
       setImages((cur) => cur.filter((i) => i.id !== img.id))
@@ -60,7 +62,7 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
 
   return (
     <section className="space-y-3 rounded-xl border border-line bg-surface p-4">
-      <h2 className="font-semibold">Screenshots</h2>
+      <h2 className="font-semibold">{t('shots.title')}</h2>
       <div
         onDragOver={(e) => {
           e.preventDefault()
@@ -78,7 +80,7 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
         }`}
       >
         <ImagePlus size={18} />
-        {busy ? 'Uploading…' : 'Click, drop, or paste (Cmd+V) screenshots'}
+        {busy ? t('shots.uploading') : t('shots.drop')}
         <input
           ref={fileInput}
           type="file"
@@ -98,13 +100,13 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
             <div key={img.id} className="group relative">
               <img
                 src={img.url}
-                alt="Trade screenshot"
+                alt={t('shots.alt')}
                 onClick={() => setOpen(img)}
                 className="aspect-video w-full cursor-zoom-in rounded-lg border border-line object-cover"
               />
               <button
                 onClick={() => remove(img)}
-                title="Delete screenshot"
+                title={t('shots.deleteTitle')}
                 className="absolute right-1 top-1 hidden rounded-full bg-black/80 p-1 text-loss group-hover:block"
               >
                 <X size={14} />
@@ -115,7 +117,7 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
       )}
       {open && (
         <div onClick={() => setOpen(null)} className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/90 p-4">
-          <img src={open.url} alt="Trade screenshot" className="max-h-full max-w-full" />
+          <img src={open.url} alt={t('shots.alt')} className="max-h-full max-w-full" />
         </div>
       )}
     </section>

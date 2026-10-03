@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { en } from './en'
 import { ka } from './ka'
-import { detectLang, fill, translate, translatePlural } from './translate'
+import { detectLang, fill, translate, translateEmotion, translatePlural } from './translate'
 
 const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort()
 
@@ -37,6 +37,17 @@ describe('translate', () => {
     // uses real keys once plural strings exist; here the fallback path is checked with a missing key
     expect(translatePlural('en', 'x.y', 1)).toBe('x.y_one')
     expect(translatePlural('en', 'x.y', 2)).toBe('x.y_other')
+  })
+  it('uses real plural keys', () => {
+    expect(translatePlural('en', 'unit.trade', 1)).toBe('1 trade')
+    expect(translatePlural('en', 'unit.trade', 3)).toBe('3 trades')
+    expect(translatePlural('ka', 'unit.trade', 1)).toBe('1 ტრეიდი')
+    expect(translatePlural('ka', 'unit.day', 2)).toBe('2 დღე')
+  })
+  it('translates built-in emotions and leaves your own words alone', () => {
+    expect(translateEmotion('ka', 'calm')).toBe('მშვიდი')
+    expect(translateEmotion('ka', 'my own feeling')).toBe('my own feeling')
+    expect(translateEmotion('en', 'fomo')).toBe('fomo')
   })
   it('detects the language: saved choice first, then the browser', () => {
     expect(detectLang('ka', 'en-US')).toBe('ka')

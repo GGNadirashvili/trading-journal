@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useI18n } from '../i18n/context'
 import { ConfirmContext, type Confirm, type ConfirmOptions } from '../lib/confirmContext'
 
 interface Pending extends ConfirmOptions {
@@ -7,6 +8,7 @@ interface Pending extends ConfirmOptions {
 }
 
 export default function ConfirmProvider({ children }: { children: ReactNode }) {
+  const { t } = useI18n()
   const [pending, setPending] = useState<Pending | null>(null)
   const noButton = useRef<HTMLButtonElement>(null)
 
@@ -50,18 +52,18 @@ export default function ConfirmProvider({ children }: { children: ReactNode }) {
             className="w-full max-w-md space-y-4 rounded-xl border border-line bg-surface p-5"
           >
             <h2 id="confirm-title" className="text-lg font-semibold">
-              {pending.title ?? 'Are you sure?'}
+              {pending.title ?? t('confirm.title')}
             </h2>
             <p className="whitespace-pre-line text-sm text-muted">{pending.message}</p>
             <div className="flex justify-end gap-2">
               <button ref={noButton} onClick={() => answer(false)} className="rounded-lg border border-line px-5 py-2 text-sm font-semibold hover:text-green">
-                No
+                {t('confirm.no')}
               </button>
               <button
                 onClick={() => answer(true)}
                 className={`rounded-lg px-5 py-2 text-sm font-semibold ${pending.danger ? 'bg-loss text-black' : 'bg-green text-black'}`}
               >
-                Yes
+                {t('confirm.yes')}
               </button>
             </div>
           </div>

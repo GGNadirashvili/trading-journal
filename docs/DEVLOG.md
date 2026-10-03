@@ -495,3 +495,23 @@ Newest entries go at the bottom.
   pass it so the build stays green (its text is translated in the next commit). 37 tests pass in total.
 - **Checked in the browser (demo mode):** Georgian dashboard text, calendar weekdays (კვი ორშ სამ ...), month
   სექტემბერი, "კვირა", and "N ტრეიდი" counts. Narrow day cells wrap "2 ტრეიდი" onto two lines in a small window.
+
+## 34. feat(i18n): translate trades, the trade form and screenshots
+
+- **What:** the trade log (headers, search box, symbol filter, "New trade", Long/Short as ლონგი/შორტი, hold
+  time as "20 წთ" / "1 სთ 5 წთ", the empty state), the new/edit trade page and form (all labels, hints,
+  the P&L error message, the emotion section), the screenshot box, and the Yes/No confirm dialog (დიახ / არა).
+  The sidebar brand text too.
+- **Built-in emotions:** the 12 default emotions show in Georgian (მშვიდი, თავდაჯერებული, შურისძიება, ...)
+  through a `te()` helper, but what is stored in the database stays the English word, so old trades, filters
+  and the Reports page keep matching. Emotions you add yourself are shown exactly as you typed them.
+- **Checked in the browser (demo mode):** the trade log, dates (11.09.2026), directions, hold times, emotions
+  and the whole new-trade form read in Georgian. A scan of the changed files found no remaining English
+  text in the page markup.
+- **Mistakes:** (1) I replaced `holdTime` with `holdMinutes` using an edit that cut off everything after it in
+  `format.ts`, which deleted the two date-input helpers (`toLocalInput`, `fromLocalInput`). The type-checker
+  reported it immediately and I restored them from git before anything was committed. (2) My first string
+  search missed the "New trade" button text, and I only noticed it when I read the page in Georgian; I then
+  ran a scan for leftover literal text rather than trusting the search. (3) In the trade row I had to
+  rename the `t` (trade) prop to `trade` so that `t()` could be the translate function.
+- **Tests:** 2 new tests for plural strings and emotion names (39 pass in total).
