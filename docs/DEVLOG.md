@@ -229,3 +229,14 @@ Newest entries go at the bottom.
 - **Checked locally:** a build with `GITHUB_ACTIONS=true` emits asset URLs under `/trading-journal/`, a normal
   build under `/`, and the workflow file parses. The workflow itself has NOT run on GitHub yet.
 - **Open decision:** GitHub Pages on a private repo needs a paid plan. Options are listed in the README.
+
+## 18. docs: setup and deploy instructions
+
+- **What:** README rewritten with the Supabase setup, local run, demo mode, importing last week, the GitHub
+  Pages deploy steps, and the private-repo caveat.
+- **Goal:** the owner can finish the parts only they can do (create the Supabase project, add secrets, enable
+  Pages) without reading code.
+- **Status at this point:** everything is built and checked in demo mode, but nothing has run against a real
+  Supabase project or on GitHub Pages yet. Untested until then: the SQL migration, real login, row-level
+  security, screenshot upload, and the deploy workflow. These are the first things to verify next, and any
+  fixes will get their own commits and devlog entries.
