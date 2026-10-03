@@ -217,3 +217,15 @@ Newest entries go at the bottom.
   screenshot showed a half-drawn line; that was only chart animation, not a bug.
 - **Known cost:** Recharts makes the bundle larger (the build prints a chunk-size warning). Fine for a personal
   tool; could be split with a lazy-loaded Reports route later.
+
+## 17. ci: GitHub Pages deploy workflow
+
+- **What:** `.github/workflows/deploy.yml` (checkout, Node 22, `npm ci`, `npm test`, build with the Supabase
+  URL and anon key from repo secrets, upload and deploy to Pages) and `base: '/trading-journal/'` in
+  `vite.config.ts`, applied only when `GITHUB_ACTIONS` is set so local dev still runs at `/`.
+- **Goal:** every push to `main` that passes the tests gets deployed, once deployment is switched on.
+- **Safety switch:** the job only runs when the repo variable `DEPLOY_ENABLED` is `true`. Without this,
+  every push would produce a failing run (no secrets, Pages not enabled, repo visibility undecided).
+- **Checked locally:** a build with `GITHUB_ACTIONS=true` emits asset URLs under `/trading-journal/`, a normal
+  build under `/`, and the workflow file parses. The workflow itself has NOT run on GitHub yet.
+- **Open decision:** GitHub Pages on a private repo needs a paid plan. Options are listed in the README.
