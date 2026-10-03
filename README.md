@@ -3,7 +3,7 @@
 A private, personal trading journal for MNQ and ES futures. It is for notes and statistics only.
 
 - Log trades with the emotional state before and after, tags, notes and screenshots.
-- Overview dashboard: win rate, profit factor, expectancy, avg win/loss, streaks, P&L calendar with weekly totals.
+- Overview dashboard: win rate, profit factor, avg win/loss, streaks, P&L calendar with weekly totals.
 - Reports: equity curve, P&L by symbol / weekday / hour, and emotions vs results.
 - Black background, white text, green for profit and red for loss.
 

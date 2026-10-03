@@ -47,7 +47,6 @@ describe('computeStats', () => {
     expect(s.grossLoss).toBe(-100)
     expect(s.avgWin).toBe(75)
     expect(s.avgLoss).toBe(-50)
-    expect(s.expectancy).toBe(10) // 50 / 5 trades
     expect(s.profitFactor).toBe(1.5) // 150 / 100
     expect(s.winRate).toBeCloseTo(0.4) // 2 of 5
   })

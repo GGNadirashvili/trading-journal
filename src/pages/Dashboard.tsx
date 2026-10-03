@@ -61,9 +61,6 @@ export default function Dashboard() {
             <ProfitDonut grossWin={s.grossWin} grossLoss={s.grossLoss} />
           </div>
         </StatCard>
-        <StatCard title="Trade Expectancy">
-          <div className={`text-2xl font-semibold ${pnlColor(s.expectancy)}`}>{money(s.expectancy)}</div>
-        </StatCard>
         <StatCard title="Avg Win / Loss Trade">
           <div className="mb-2 text-2xl font-semibold">
             {s.avgLoss === 0 ? '-' : (s.avgWin / Math.abs(s.avgLoss)).toFixed(2)}

@@ -12,7 +12,6 @@ export interface Stats {
   avgWin: number
   avgLoss: number // negative or 0
   profitFactor: number | null // null when there are no losses
-  expectancy: number
 }
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
@@ -36,7 +35,6 @@ export function computeStats(trades: Trade[]): Stats {
     avgWin: wins.length ? grossWin / wins.length : 0,
     avgLoss: losses.length ? grossLoss / losses.length : 0,
     profitFactor: grossLoss < 0 ? grossWin / -grossLoss : null,
-    expectancy: trades.length ? netPnl / trades.length : 0,
   }
 }
 

@@ -336,3 +336,11 @@ Newest entries go at the bottom.
   database yet, so extending it was safe; had it already run, this would have needed a 0003.
 - **Mistake avoided:** I almost left the old "open trade" fixtures in the tests, which would have silently
   changed what the tests proved; I removed those rows and recomputed the expected counts by hand (5 trades).
+
+## 25. refactor(dashboard): remove the trade expectancy card
+
+- **What:** removed the Trade Expectancy card, the `expectancy` value from the stats and its test line, and
+  the README mention.
+- **Goal:** the owner does not use this number; every card on the dashboard should be one that is read.
+- **Checked:** type-check, lint, 21 tests pass, and a browser screenshot in demo mode: the remaining cards
+  (win gauge, profit factor, avg win/loss, net P&L, day and trade streak) fill the grid without a gap.
