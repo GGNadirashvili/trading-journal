@@ -1,9 +1,24 @@
+import { HashRouter, Route, Routes } from 'react-router-dom'
+import Layout from './components/Layout'
+import Calendar from './pages/Calendar'
+import Dashboard from './pages/Dashboard'
+import Import from './pages/Import'
+import Reports from './pages/Reports'
+import Trades from './pages/Trades'
+
+// HashRouter: GitHub Pages is a static host and cannot rewrite deep links to index.html.
 export default function App() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Trading Journal</h1>
-      <p className="text-muted">Theme check</p>
-      <span className="text-loss">-$100</span>
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="trades" element={<Trades />} />
+          <Route path="calendar" element={<Calendar />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="import" element={<Import />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   )
 }

@@ -64,3 +64,12 @@ Newest entries go at the bottom.
   A trade with P&L of exactly 0 is "wash". Profit factor is `null` (shown as "-") when there are no
   losses. A trade belongs to the day it was entered, in local time.
 - **Order change:** done before auth, because auth needs a real Supabase project and this does not.
+
+## 6. feat(layout): app shell, sidebar, routing
+
+- **What:** `react-router-dom` with `HashRouter`, a sidebar (icons only on narrow screens, labels on wide),
+  and placeholder pages: Dashboard, Trades, Calendar, Reports, Import. Icons from `lucide-react`.
+- **Goal:** fix the page structure early so each later commit fills in one page.
+- **Decision:** `HashRouter` (URLs like `/#/trades`) because GitHub Pages cannot rewrite deep links.
+- **Checked:** type-check, lint, build, and a screenshot of the dev server.
+- **Housekeeping:** `.claude/` (local dev-server config) is gitignored.
