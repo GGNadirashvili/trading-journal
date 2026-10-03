@@ -737,3 +737,22 @@ Newest entries go at the bottom.
   CSV test now also checks the session column).
 - **Owner action:** run `0005_trade_session.sql` in the Supabase SQL editor before using this version with
   your real database: saving a trade writes the new column, and without it the save would be refused.
+
+## 46. feat(reports): win rate by session
+
+- **What:** a "Win rate by session" card on the Reports page (it follows the 30D/90D/180D/ALL range): a bar
+  chart of the win rate per session (green at 50% or above, red below, with a dashed 50% line and the
+  percentage on each bar) and a table with trades, win rate with the win count (for example 1/3), average P&L
+  and total P&L. Sessions are always listed in your order (Asia, London, NY Premarket, NY AM, NY Lunch, NY PM,
+  Outside of session); sessions with no trades are left out; trades saved before sessions existed appear last as
+  "Not set". The calculation (`bySession`) has 4 new tests (68 pass in total).
+- **Definitions:** win rate = winning trades divided by all trades in that session. A break-even trade (exactly
+  0) counts as a trade but not as a win.
+- **Checked by hand in demo mode:** NY AM has 3 trades with 1 win (33%), total -278.80, average -92.93; Asia,
+  London and NY PM are 1 of 1 (100%); NY Lunch is 0 of 1. The chart and table show exactly these numbers.
+- **Small known flaw:** a 0% bar has no height, and its "0%" label is not drawn on the chart; the table shows it.
+- **Georgian:** the card, its columns, the note and the tooltip are translated; the session names use the
+  common trader spellings (NY AM, NY PM stay in Latin letters). Please check the wording.
+- **Deployment note:** these session commits are committed locally but **not pushed yet**, on purpose. Pushing
+  deploys the live site automatically, and the live site would then try to save the new `session` column before
+  migration 0005 exists in the real database, so saving trades there would fail.

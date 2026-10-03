@@ -282,6 +282,12 @@ export const en = {
   'form.sessionPick': 'Select a session…',
   'form.sessionRequired': 'Choose the session this trade was taken in.',
   'trades.col.session': 'Session',
+
+  // Session statistics
+  'reports.sessions': 'Win rate by session',
+  'reports.col.session': 'Session',
+  'reports.sessionNote': 'Win rate = winning trades divided by all trades in that session. A break-even trade is not a win. Trades saved before sessions existed are listed as "Not set".',
+  'reports.winRateTip': '{rate}% ({wins} of {trades} trades)',
 } as const
 
 export type MessageKey = keyof typeof en

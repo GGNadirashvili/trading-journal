@@ -266,4 +266,9 @@ export const ka: Record<MessageKey, string> = {
   'form.sessionPick': 'აირჩიეთ სესია…',
   'form.sessionRequired': 'აირჩიეთ სესია, რომელშიც ტრეიდი გაკეთდა.',
   'trades.col.session': 'სესია',
+
+  'reports.sessions': 'მოგების წილი სესიის მიხედვით',
+  'reports.col.session': 'სესია',
+  'reports.sessionNote': 'მოგების წილი = მოგებული ტრეიდები გაყოფილი ამ სესიის ყველა ტრეიდზე. ნულოვანი შედეგი მოგებად არ ითვლება. სესიების დამატებამდე შენახული ტრეიდები ჩანს როგორც „მითითებული არ არის“.',
+  'reports.winRateTip': '{rate}% ({trades} ტრეიდიდან {wins})',
 }

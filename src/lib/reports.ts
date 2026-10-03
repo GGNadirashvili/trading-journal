@@ -1,3 +1,4 @@
+import { SESSIONS } from './sessions'
 import { dayKey } from './stats'
 import type { Trade } from './types'
 
@@ -35,6 +36,12 @@ export const byWeekday = (trades: Trade[]) =>
 const hourLabel = (h: number) => `${String(h).padStart(2, '0')}:00`
 export const byHour = (trades: Trade[]) =>
   groupBy(trades, (t) => [hourLabel(new Date(t.entryTime).getHours())])
+
+/**
+ * Results per trading session, in the fixed session order. Sessions with no trades are left out.
+ * Trades saved before sessions existed are grouped under the label 'none' at the end.
+ */
+export const bySession = (trades: Trade[]) => groupBy(trades, (t) => [t.session ?? 'none'], [...SESSIONS, 'none'])
 
 /** A trade with several emotion tags counts once in each of them; trades with none go under "(none)". */
 export const byEmotion = (trades: Trade[]) =>
