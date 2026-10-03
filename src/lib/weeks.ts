@@ -1,3 +1,5 @@
+import { monthDay } from '../i18n/dates'
+
 // Weeks run Monday to Sunday. A week is identified by its Monday as a local "YYYY-MM-DD" key.
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -23,9 +25,8 @@ export const addWeeks = (key: string, n: number) => addDays(key, n * 7)
 /** True when the day key (YYYY-MM-DD) falls inside the week that starts on `weekKey`. */
 export const inWeek = (day: string, weekKey: string) => day >= weekKey && day <= addDays(weekKey, 6)
 
-export function formatWeek(weekKey: string): string {
+export function formatWeek(weekKey: string, locale = 'en-US'): string {
   const start = parseKey(weekKey)
   const end = parseKey(addDays(weekKey, 6))
-  const short = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  return `${short(start)} – ${short(end)}, ${end.getFullYear()}`
+  return `${monthDay(start, locale)} – ${monthDay(end, locale)}, ${end.getFullYear()}`
 }

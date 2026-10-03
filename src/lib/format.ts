@@ -6,11 +6,7 @@ export function money(n: number, opts: { sign?: boolean } = {}): string {
 
 export const pnlColor = (n: number) => (n > 0 ? 'text-green' : n < 0 ? 'text-loss' : 'text-muted')
 
-export const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
-
-export const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+export { formatDate as fmtDate, formatTime as fmtTime } from '../i18n/dates'
 
 export function holdTime(a: string, b: string | null): string {
   if (!b) return '-'

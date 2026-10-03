@@ -2,6 +2,7 @@ import { ChevronDown, ChevronUp, Plus, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { dayKey } from '../lib/stats'
+import { useI18n } from '../i18n/context'
 import { fmtDate, fmtTime, holdTime, money, pnlColor } from '../lib/format'
 import { useTrades } from '../lib/tradesContext'
 import type { Trade } from '../lib/types'
@@ -119,10 +120,11 @@ export default function Trades() {
 }
 
 function Row({ t, onOpen }: { t: Trade; onOpen: () => void }) {
+  const { locale } = useI18n()
   return (
     <tr onClick={onOpen} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-2">
       <td className={CELL}>
-        {fmtDate(t.entryTime)} <span className="text-muted">{fmtTime(t.entryTime)}</span>
+        {fmtDate(t.entryTime, locale)} <span className="text-muted">{fmtTime(t.entryTime)}</span>
       </td>
       <td className={`${CELL} font-semibold`}>{t.symbol}</td>
       <td className={CELL}>{t.direction === 'long' ? 'Long' : 'Short'}</td>

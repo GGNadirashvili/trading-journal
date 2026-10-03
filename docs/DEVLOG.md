@@ -477,3 +477,21 @@ Newest entries go at the bottom.
   Georgian, saved the choice, set `lang="ka"`, and the Georgian letters render correctly.
 - **Caveat:** I wrote the Georgian text myself. It should be read by a Georgian speaker (you); wording that
   sounds unnatural is easy to change in `ka.ts` and I would like your corrections.
+
+## 33. feat(i18n): translate the dashboard and calendar
+
+- **What:** Overview cards (win gauge, profit factor, avg win/loss, net P&L, day and trade streaks, the
+  30D/90D/180D/ALL chips) and the P&L calendar (title, month and year pickers, weekday names, "Weekly"
+  column, "N trades") in English and Georgian. Counts use plural-aware strings (`unit.trade_one/_other`).
+- **Goal:** the first real pages in Georgian, and the base for date handling in all later pages.
+- **Mistake found by looking at the screen:** the Georgian dashboard showed English month and weekday names.
+  The browser pane I test in has no Georgian locale data (`Intl` silently fell back to English), and some of
+  your own devices might not have it either. My new date tests passed anyway, because Node has full locale
+  data, so they gave a false sense of safety.
+- **Fix:** Georgian month names, short weekdays, the short "7 სექ" form and the numeric date (11.09.2026) are
+  now written out in `src/i18n/dates.ts` instead of coming from the browser. English still uses the browser.
+  The tests now check the exact Georgian strings, so they no longer depend on the machine's locale data.
+- **Also:** `fmtDate` / `fmtTime` / `formatWeek` now take the language; `Trades` got a one-line change to
+  pass it so the build stays green (its text is translated in the next commit). 37 tests pass in total.
+- **Checked in the browser (demo mode):** Georgian dashboard text, calendar weekdays (კვი ორშ სამ ...), month
+  სექტემბერი, "კვირა", and "N ტრეიდი" counts. Narrow day cells wrap "2 ტრეიდი" onto two lines in a small window.

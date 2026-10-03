@@ -25,6 +25,35 @@ export const en = {
   'setup.before': 'Copy',
   'setup.middle': 'to',
   'setup.after': 'and fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server.',
+
+  // Units (plural pairs)
+  'unit.trade_one': '{n} trade',
+  'unit.trade_other': '{n} trades',
+  'unit.day_one': '{n} day',
+  'unit.day_other': '{n} days',
+
+  // Date ranges
+  'range.30D': '30D',
+  'range.90D': '90D',
+  'range.180D': '180D',
+  'range.ALL': 'ALL',
+
+  // Dashboard
+  'dash.overview': 'Overview',
+  'dash.tradeWin': 'Trade Win',
+  'dash.profitFactor': 'Profit Factor',
+  'dash.avgWinLoss': 'Avg Win / Loss Trade',
+  'dash.netPnl': 'Net P&L',
+  'dash.dayStreak': 'Day Streak',
+  'dash.tradeStreak': 'Trade Streak',
+  'dash.streakWin': 'W',
+  'dash.streakLoss': 'L',
+
+  // P&L calendar
+  'cal.title': 'P&L Calendar',
+  'cal.prevMonth': 'Previous month',
+  'cal.nextMonth': 'Next month',
+  'cal.weekly': 'Weekly',
 } as const
 
 export type MessageKey = keyof typeof en
