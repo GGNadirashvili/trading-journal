@@ -13,7 +13,6 @@ const trade = (pnl: number, day: number, hour: number, over: Partial<Trade> = {}
   exitPrice: null,
   entryTime: new Date(2026, 8, day, hour, 15).toISOString(),
   exitTime: null,
-  status: 'closed',
   pnl,
   setup: null,
   tags: [],
@@ -28,11 +27,10 @@ const trades = [
   trade(100, 7, 9, { emotionTags: ['calm'] }),
   trade(-50, 7, 10, { symbol: 'ES', emotionTags: ['fomo', 'anxious'] }),
   trade(-150, 8, 9, { emotionTags: ['fomo'] }),
-  trade(999, 8, 9, { status: 'open' }),
 ]
 
 describe('reports', () => {
-  it('bySymbol sums and counts closed trades only', () => {
+  it('bySymbol sums and counts trades', () => {
     expect(bySymbol(trades)).toEqual([
       expect.objectContaining({ label: 'ES', pnl: -50, trades: 1, wins: 0 }),
       expect.objectContaining({ label: 'MNQ', pnl: -50, trades: 2, wins: 1, winRate: 0.5, avgPnl: -25 }),

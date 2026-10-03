@@ -3,7 +3,7 @@ import { pnlFromPrices } from '../lib/contracts'
 import { fromLocalInput, toLocalInput } from '../lib/format'
 import { useSettings } from '../lib/settingsContext'
 import type { TradeInput } from '../lib/tradesApi'
-import type { Direction, TradeStatus } from '../lib/types'
+import type { Direction } from '../lib/types'
 import ChipPicker from './ChipPicker'
 
 const input = 'w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-green'
@@ -35,7 +35,6 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   const [exitPrice, setExitPrice] = useState(initial?.exitPrice?.toString() ?? '')
   const [entryTime, setEntryTime] = useState(() => toLocalInput(initial?.entryTime ?? new Date().toISOString()))
   const [exitTime, setExitTime] = useState(toLocalInput(initial?.exitTime ?? null))
-  const [status, setStatus] = useState<TradeStatus>(initial?.status ?? 'closed')
   const [pnl, setPnl] = useState(initial ? String(initial.pnl) : '')
   const [setup, setSetup] = useState(initial?.setup ?? '')
   const [tags, setTags] = useState<string[]>(initial?.tags ?? [])
@@ -60,11 +59,11 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
     let net = optNum(pnl)
     if (net === null) {
       const gross = pnlFromPrices(pointValues, symbol, direction, q, ep, xp)
-      if (gross === null && status === 'closed') {
+      if (gross === null) {
         setError('Enter the P&L, or entry and exit prices for a symbol that has a point value (set on the Admin page).')
         return
       }
-      net = gross ?? 0
+      net = gross
     }
     setBusy(true)
     try {
@@ -76,7 +75,6 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         exitPrice: xp,
         entryTime: fromLocalInput(entryTime) ?? new Date().toISOString(),
         exitTime: fromLocalInput(exitTime),
-        status,
         pnl: Math.round(net * 100) / 100,
         setup: optText(setup),
         tags,
@@ -109,12 +107,6 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         </Field>
         <Field label="Quantity">
           <input className={input} type="number" min="1" step="1" value={qty} onChange={(e) => setQty(e.target.value)} required />
-        </Field>
-        <Field label="Status">
-          <select className={input} value={status} onChange={(e) => setStatus(e.target.value as TradeStatus)}>
-            <option value="closed">Closed</option>
-            <option value="open">Open</option>
-          </select>
         </Field>
         <Field label="Entry price">
           <input className={input} type="number" step="any" value={entryPrice} onChange={(e) => setEntryPrice(e.target.value)} />

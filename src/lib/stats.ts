@@ -5,7 +5,6 @@ export interface Stats {
   wins: number
   losses: number
   wash: number
-  open: number
   netPnl: number
   grossWin: number
   grossLoss: number // negative or 0
@@ -18,28 +17,26 @@ export interface Stats {
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
 
-/** Statistics over closed trades. Breakeven (pnl === 0) trades count as wash. Open trades are only counted. */
+/** Trade statistics. Breakeven (pnl === 0) trades count as wash. */
 export function computeStats(trades: Trade[]): Stats {
-  const closed = trades.filter((t) => t.status === 'closed')
-  const wins = closed.filter((t) => t.pnl > 0)
-  const losses = closed.filter((t) => t.pnl < 0)
+  const wins = trades.filter((t) => t.pnl > 0)
+  const losses = trades.filter((t) => t.pnl < 0)
   const grossWin = sum(wins.map((t) => t.pnl))
   const grossLoss = sum(losses.map((t) => t.pnl))
-  const netPnl = sum(closed.map((t) => t.pnl))
+  const netPnl = sum(trades.map((t) => t.pnl))
   return {
     trades: trades.length,
     wins: wins.length,
     losses: losses.length,
-    wash: closed.length - wins.length - losses.length,
-    open: trades.length - closed.length,
+    wash: trades.length - wins.length - losses.length,
     netPnl,
     grossWin,
     grossLoss,
-    winRate: closed.length ? wins.length / closed.length : 0,
+    winRate: trades.length ? wins.length / trades.length : 0,
     avgWin: wins.length ? grossWin / wins.length : 0,
     avgLoss: losses.length ? grossLoss / losses.length : 0,
     profitFactor: grossLoss < 0 ? grossWin / -grossLoss : null,
-    expectancy: closed.length ? netPnl / closed.length : 0,
+    expectancy: trades.length ? netPnl / trades.length : 0,
   }
 }
 
@@ -57,11 +54,10 @@ export interface DayTotal {
   trades: number
 }
 
-/** Closed-trade P&L grouped by the day the trade was entered, sorted by day. */
+/** P&L grouped by the day the trade was entered, sorted by day. */
 export function dailyTotals(trades: Trade[]): DayTotal[] {
   const byDay = new Map<string, DayTotal>()
   for (const t of trades) {
-    if (t.status !== 'closed') continue
     const day = dayKey(t.entryTime)
     const cur = byDay.get(day) ?? { day, pnl: 0, trades: 0 }
     cur.pnl += t.pnl
@@ -94,7 +90,6 @@ export function currentStreak(results: number[]): Streak {
 export const tradeStreak = (trades: Trade[]): Streak =>
   currentStreak(
     trades
-      .filter((t) => t.status === 'closed')
       .sort((a, b) => a.entryTime.localeCompare(b.entryTime))
       .map((t) => t.pnl),
   )

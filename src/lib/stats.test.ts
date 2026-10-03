@@ -17,7 +17,6 @@ const trade = (pnl: number, time: string, over: Partial<Trade> = {}): Trade => (
   exitPrice: null,
   entryTime: time,
   exitTime: null,
-  status: 'closed',
   pnl,
   setup: null,
   tags: [],
@@ -29,19 +28,18 @@ const trade = (pnl: number, time: string, over: Partial<Trade> = {}): Trade => (
 })
 
 describe('computeStats', () => {
-  // wins 100 + 50, losses -60 + -40, one wash, one open
+  // wins 100 + 50, losses -60 + -40, one wash
   const trades = [
     trade(100, at(9, 7)),
     trade(50, at(9, 7)),
     trade(-60, at(9, 8)),
     trade(-40, at(9, 8)),
     trade(0, at(9, 9)),
-    trade(999, at(9, 9), { status: 'open' }),
   ]
   const s = computeStats(trades)
 
-  it('counts outcomes; open trades are excluded from results', () => {
-    expect(s).toMatchObject({ trades: 6, wins: 2, losses: 2, wash: 1, open: 1 })
+  it('counts outcomes', () => {
+    expect(s).toMatchObject({ trades: 5, wins: 2, losses: 2, wash: 1 })
   })
   it('computes P&L figures', () => {
     expect(s.netPnl).toBe(50)
@@ -49,9 +47,9 @@ describe('computeStats', () => {
     expect(s.grossLoss).toBe(-100)
     expect(s.avgWin).toBe(75)
     expect(s.avgLoss).toBe(-50)
-    expect(s.expectancy).toBe(10) // 50 / 5 closed
+    expect(s.expectancy).toBe(10) // 50 / 5 trades
     expect(s.profitFactor).toBe(1.5) // 150 / 100
-    expect(s.winRate).toBeCloseTo(0.4) // 2 of 5 closed
+    expect(s.winRate).toBeCloseTo(0.4) // 2 of 5
   })
   it('handles an empty list and no losses', () => {
     expect(computeStats([])).toMatchObject({ trades: 0, netPnl: 0, winRate: 0, profitFactor: null })
@@ -60,12 +58,11 @@ describe('computeStats', () => {
 })
 
 describe('dailyTotals', () => {
-  it('groups closed trades by day, sorted, ignoring open', () => {
+  it('groups trades by day, sorted', () => {
     const days = dailyTotals([
       trade(-20, at(9, 8)),
       trade(30, at(9, 7)),
       trade(10, at(9, 7)),
-      trade(500, at(9, 7), { status: 'open' }),
     ])
     expect(days).toEqual([
       { day: '2026-09-07', pnl: 40, trades: 2 },

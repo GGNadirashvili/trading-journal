@@ -1,8 +1,10 @@
--- 0002: managed symbols and labels (admin page), weekly reviews, and removal of the fees column.
+-- 0002: managed symbols and labels (admin page), weekly reviews, and removal of the fees and status columns.
 -- Run once in the Supabase SQL editor, after 0001.
 
--- Fees are no longer tracked; P&L is entered as the final number.
+-- Fees are no longer tracked (P&L is entered as the final number), and every trade is a finished trade,
+-- so the open/closed status goes too.
 alter table public.trades drop column if exists fees;
+alter table public.trades drop column if exists status;
 
 -- Symbols you trade, with the dollar value of one price point (used to compute P&L from prices).
 create table public.symbols (

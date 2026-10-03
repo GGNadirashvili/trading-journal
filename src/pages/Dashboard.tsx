@@ -76,7 +76,7 @@ export default function Dashboard() {
         </StatCard>
         <StatCard title="Net P&L">
           <div className={`text-2xl font-semibold ${pnlColor(s.netPnl)}`}>{money(s.netPnl)}</div>
-          <div className="mt-1 text-xs text-muted">{s.trades} trades{s.open ? `, ${s.open} open` : ''}</div>
+          <div className="mt-1 text-xs text-muted">{s.trades} trades</div>
         </StatCard>
         <StatCard title="Day Streak">
           <StreakBadge s={dStreak} unit={dStreak.length === 1 ? 'day' : 'days'} />

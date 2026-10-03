@@ -319,3 +319,20 @@ Newest entries go at the bottom.
 - **Checked:** type-check, lint, 21 tests pass (the 5 parser tests went with the parser). A search finds no
   remaining references to the import code.
 - **Note:** `pnlFromPrices` stays, because the trade form still computes P&L from prices.
+
+## 24. refactor: remove open/closed trade status
+
+- **What:** every trade is a finished trade, so the status field is gone from the form, the trade log (the
+  Status column), the type, the API mapping, the stats and report functions (no more "closed only"
+  filters), the demo data, the "N open" note on Net P&L, and the tests. The calendar opens on the newest trade.
+  Migration 0002 now also drops `trades.status`.
+- **Goal:** the owner records only completed trades; the extra field and filters were noise.
+- **Behavior change:** P&L is now always required. Type it, or give entry and exit prices for a symbol with a
+  point value; otherwise saving shows an error (before, an "open" trade could be saved without P&L).
+- **Tags:** the comma-separated tags box no longer exists (entry 22): tags are chips picked from the list you
+  manage on the Admin page.
+- **Checked:** type-check, lint, 21 tests pass (fixtures that included an open trade were updated), and 0002
+  re-run in the local test Postgres: both columns gone, existing trade kept. 0002 had not been run on the real
+  database yet, so extending it was safe; had it already run, this would have needed a 0003.
+- **Mistake avoided:** I almost left the old "open trade" fixtures in the tests, which would have silently
+  changed what the tests proved; I removed those rows and recomputed the expected counts by hand (5 trades).

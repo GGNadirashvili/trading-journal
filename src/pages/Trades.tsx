@@ -91,7 +91,6 @@ export default function Trades() {
             <tr>
               <Th k="entryTime" sort={sort} onSort={toggle}>Date</Th>
               <Th k="symbol" sort={sort} onSort={toggle}>Symbol</Th>
-              <th className={HEAD}>Status</th>
               <th className={HEAD}>Dir</th>
               <Th k="qty" sort={sort} onSort={toggle}>Qty</Th>
               <th className={HEAD}>Entry</th>
@@ -107,7 +106,7 @@ export default function Trades() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-3 py-12 text-center text-muted">
+                <td colSpan={9} className="px-3 py-12 text-center text-muted">
                   No trades yet
                 </td>
               </tr>
@@ -126,7 +125,6 @@ function Row({ t, onOpen }: { t: Trade; onOpen: () => void }) {
         {fmtDate(t.entryTime)} <span className="text-muted">{fmtTime(t.entryTime)}</span>
       </td>
       <td className={`${CELL} font-semibold`}>{t.symbol}</td>
-      <td className={`${CELL} ${t.status === 'open' ? 'text-warn' : 'text-muted'}`}>{t.status}</td>
       <td className={CELL}>{t.direction === 'long' ? 'Long' : 'Short'}</td>
       <td className={CELL}>{t.qty}</td>
       <td className={CELL}>{t.entryPrice ?? '-'}</td>

@@ -12,9 +12,9 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const tint = (pnl: number, trades: number) =>
   trades === 0 ? 'bg-surface' : pnl > 0 ? 'bg-green/15 border-green/40' : pnl < 0 ? 'bg-loss/15 border-loss/40' : 'bg-surface-2'
 
-// Open on the month of the most recent trade, so imported history is visible right away.
+// Open on the month of the most recent trade, so the latest week is visible right away.
 function initialCursor(trades: Trade[]) {
-  const latest = trades.find((t) => t.status === 'closed')
+  const latest = trades[0] // trades are sorted newest first
   const d = latest ? new Date(latest.entryTime) : new Date()
   return { year: d.getFullYear(), month: d.getMonth() }
 }

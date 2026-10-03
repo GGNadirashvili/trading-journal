@@ -10,18 +10,16 @@ export interface Bucket {
   avgPnl: number
 }
 
-const closed = (trades: Trade[]) => trades.filter((t) => t.status === 'closed')
-
 function toBucket(label: string, ts: Trade[]): Bucket {
   const pnl = ts.reduce((a, t) => a + t.pnl, 0)
   const wins = ts.filter((t) => t.pnl > 0).length
   return { label, pnl, trades: ts.length, wins, winRate: ts.length ? wins / ts.length : 0, avgPnl: ts.length ? pnl / ts.length : 0 }
 }
 
-/** Group closed trades by a key. Buckets come back in the order given by `order`, or sorted by label. */
+/** Group trades by a key. Buckets come back in the order given by `order`, or sorted by label. */
 function groupBy(trades: Trade[], keys: (t: Trade) => string[], order?: string[]): Bucket[] {
   const map = new Map<string, Trade[]>()
-  for (const t of closed(trades)) {
+  for (const t of trades) {
     for (const k of keys(t)) map.set(k, [...(map.get(k) ?? []), t])
   }
   const labels = order ? order.filter((l) => map.has(l)) : [...map.keys()].sort()
@@ -51,7 +49,7 @@ export interface EquityPoint {
 /** Cumulative P&L at the end of each trading day. */
 export function equityCurve(trades: Trade[]): EquityPoint[] {
   const byDay = new Map<string, number>()
-  for (const t of closed(trades)) {
+  for (const t of trades) {
     const k = dayKey(t.entryTime)
     byDay.set(k, (byDay.get(k) ?? 0) + t.pnl)
   }

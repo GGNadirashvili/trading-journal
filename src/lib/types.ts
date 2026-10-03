@@ -1,5 +1,4 @@
 export type Direction = 'long' | 'short'
-export type TradeStatus = 'open' | 'closed'
 
 export interface Trade {
   id: string
@@ -10,7 +9,6 @@ export interface Trade {
   exitPrice: number | null
   entryTime: string // ISO timestamp
   exitTime: string | null
-  status: TradeStatus
   pnl: number // net USD
   setup: string | null
   tags: string[]
