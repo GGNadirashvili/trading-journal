@@ -2,6 +2,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import AuthGate from './components/AuthGate'
 import Layout from './components/Layout'
 import { AuthProvider } from './lib/auth'
+import { SettingsProvider } from './lib/SettingsProvider'
 import { TradesProvider } from './lib/TradesProvider'
 import Dashboard from './pages/Dashboard'
 import Import from './pages/Import'
@@ -14,20 +15,22 @@ export default function App() {
   return (
     <AuthProvider>
       <AuthGate>
-        <TradesProvider>
-          <HashRouter>
-            <Routes>
-              <Route element={<Layout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="trades" element={<Trades />} />
-                <Route path="trades/new" element={<TradeEdit />} />
-                <Route path="trades/:id" element={<TradeEdit />} />
-                <Route path="reports" element={<Reports />} />
-                <Route path="import" element={<Import />} />
-              </Route>
-            </Routes>
-          </HashRouter>
-        </TradesProvider>
+        <SettingsProvider>
+          <TradesProvider>
+            <HashRouter>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="trades" element={<Trades />} />
+                  <Route path="trades/new" element={<TradeEdit />} />
+                  <Route path="trades/:id" element={<TradeEdit />} />
+                  <Route path="reports" element={<Reports />} />
+                  <Route path="import" element={<Import />} />
+                </Route>
+              </Routes>
+            </HashRouter>
+          </TradesProvider>
+        </SettingsProvider>
       </AuthGate>
     </AuthProvider>
   )

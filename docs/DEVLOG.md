@@ -276,3 +276,15 @@ Newest entries go at the bottom.
 - **Decision:** symbols are stored by code in `trades.symbol` (text), so deleting a symbol from the admin page
   never deletes or breaks old trades.
 - **Owner action:** this migration must be run once in the Supabase SQL editor before the new pages work.
+
+## 21. feat(settings): settings data layer and provider
+
+- **What:** `settingsApi.ts` (symbols and options: list / add / update / delete against Supabase), a
+  `SettingsProvider` + `useSettings()` giving `symbols`, `pointValues`, and `optionNames('emotion' | 'tag' |
+  'setup')`, and the provider wired into `App.tsx` above the trades provider.
+- **Goal:** one source of truth for the lists the admin page edits and the trade form and import read.
+- **Safety net:** if the new tables cannot be read (for example migration 0002 has not been run yet), the
+  provider keeps built-in defaults (MNQ $2/pt, ES $50/pt, the 12 emotions) and stores the error, so the app
+  never breaks because of a missing migration. The admin page will show that error.
+- **No visible change yet:** nothing reads the settings until the next commits.
+- **Checked:** type-check and lint. Not exercised against the real database yet (migration pending).
