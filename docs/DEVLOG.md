@@ -183,3 +183,23 @@ Newest entries go at the bottom.
 - **Mistake:** I used green as the default text color in the first theme commit without checking contrast on
   long text and small labels. The muted gray-green was also too dark. A screenshot review would have caught
   this earlier; I now check each new page visually before committing.
+
+## 15. feat(import): bulk entry and JSON import
+
+- **What:** Import page with two ways in, both through one tested parser (`src/lib/importTrades.ts`):
+  a bulk-entry grid (type or paste rows) and a "Paste JSON" box. The parser accepts loose input (`Buy`/`L`
+  for long, defaults for time 09:30 and qty 1), computes P&L from prices minus fees when P&L is blank, and
+  reports errors per row ("Row 2: date must look like ..."). A preview shows what will be saved, and the
+  import button stays disabled until every row is valid, so a bad import never half-saves.
+- **Goal:** get last week's trades (known only from screenshots and notes) into the journal. Plan: the owner
+  drops screenshots and notes in the gitignored `data/` folder, I transcribe them to JSON, the owner reviews
+  the preview and imports. Private data never goes through git. Screenshots are attached per trade afterwards.
+- **Tests:** 5 new parser tests (17 pass in total): price-based P&L with fees, local-time handling, defaults,
+  multiple bad rows reported with numbers, JSON shapes.
+- **Checked in demo mode:** one valid and one invalid row: error shown for row 2, preview $18.50
+  (10 pts x $2 - $1.50), button disabled.
+- **Mistakes:** (1) my first browser test pasted garbage because my test tool stringified the JSON, and the
+  app correctly said "Not valid JSON"; that was a test-tooling error, not an app bug. (2) My next click used
+  stale screen coordinates and opened a different page; I switched to clicking by element reference.
+  Nothing was saved (demo is in-memory). (3) Fixed "1 trades" plural before committing.
+- **Known limit:** import is not de-duplicated; importing the same file twice creates duplicates.
