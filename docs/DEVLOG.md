@@ -155,3 +155,20 @@ Newest entries go at the bottom.
 - **Tooling hiccup (not a code bug):** creating `.env.local` restarted the dev server mid-session and left the
   browser tab with stale hot-reload errors. A reload fixed it.
 - **Default range is ALL**, because with only one week of data a 30D default would go empty after a month.
+
+## 13. feat(dashboard): P&L calendar with weekly totals
+
+- **What:** `PnlCalendar` on the Overview page: month and year selectors, previous/next arrows, month total,
+  Sunday-first grid with per-day P&L and trade count (green/red tint), a "Weekly" column, and a ring on today.
+  Clicking a day opens the trade log filtered to that date (`/trades?date=YYYY-MM-DD`, removable chip).
+  Grid maths is a pure function (`src/lib/calendar.ts`) with tests (12 tests pass in total).
+- **Goal:** the P&L calendar from the reference screenshot; opens on the month of the latest trade so the
+  imported week is visible immediately.
+- **Decisions:** days from neighbouring months are dimmed filler and are not counted in weekly totals, so a
+  week that spans two months shows each month's part separately. A day belongs to the day the trade was
+  entered. The separate Calendar page was dropped: the calendar lives on the Overview like in the reference.
+- **Checked by hand:** demo Sep 9 shows -$462.00 (-286.20 - 175.80) and the week of Sep 6 shows -$92.10, 7 trades.
+- **Mistakes found while looking at the screenshot:** (1) a large loss like "-$462.00" overflowed its cell;
+  now smaller text with no wrapping. (2) the "today" ring was drawn on a dimmed filler day from the next
+  month; now only in-month days get it. (3) lint flagged `new Date()` calls during render; moved to helpers
+  and lazy state.

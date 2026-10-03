@@ -1,6 +1,7 @@
-import { ChevronDown, ChevronUp, Plus, Search } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { dayKey } from '../lib/stats'
 import { fmtDate, fmtTime, holdTime, money, pnlColor } from '../lib/format'
 import { useTrades } from '../lib/tradesContext'
 import type { Trade } from '../lib/types'
@@ -17,6 +18,8 @@ const CELL = 'px-3 py-3 text-sm'
 export default function Trades() {
   const { trades, loading, error } = useTrades()
   const navigate = useNavigate()
+  const [params, setParams] = useSearchParams()
+  const date = params.get('date')
   const [query, setQuery] = useState('')
   const [symbol, setSymbol] = useState('all')
   const [sort, setSort] = useState<Sort>({ key: 'entryTime', dir: 'desc' })
@@ -28,6 +31,7 @@ export default function Trades() {
     const filtered = trades.filter(
       (t) =>
         (symbol === 'all' || t.symbol === symbol) &&
+        (!date || dayKey(t.entryTime) === date) &&
         (!q ||
           [t.symbol, t.notes, t.setup, t.emotionBefore, t.emotionAfter, ...t.tags, ...t.emotionTags]
             .filter(Boolean)
@@ -39,7 +43,7 @@ export default function Trades() {
       const y = b[sort.key]
       return (x < y ? -1 : x > y ? 1 : 0) * sign
     })
-  }, [trades, query, symbol, sort])
+  }, [trades, query, symbol, date, sort])
 
   const toggle = (key: SortKey) =>
     setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' }))
@@ -50,7 +54,13 @@ export default function Trades() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="mr-auto text-xl font-semibold">Trades</h1>
+        <h1 className="text-xl font-semibold">Trades</h1>
+        {date && (
+          <button onClick={() => setParams({})} className="mr-auto flex items-center gap-1 rounded-full border border-green px-3 py-1 text-sm">
+            {date} <X size={14} />
+          </button>
+        )}
+        <span className="mr-auto" />
         <select
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}

@@ -1,6 +1,7 @@
 import { Flame } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { ProfitDonut, WinGauge, WinLossBar } from '../components/Gauges'
+import PnlCalendar from '../components/PnlCalendar'
 import StatCard from '../components/StatCard'
 import { money, pnlColor } from '../lib/format'
 import { computeStats, dayStreak, inRange, tradeStreak, type Range, type Streak } from '../lib/stats'
@@ -84,6 +85,8 @@ export default function Dashboard() {
           <StreakBadge s={tStreak} unit={tStreak.length === 1 ? 'trade' : 'trades'} />
         </StatCard>
       </div>
+
+      <PnlCalendar trades={trades} />
     </div>
   )
 }

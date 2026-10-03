@@ -3,7 +3,6 @@ import AuthGate from './components/AuthGate'
 import Layout from './components/Layout'
 import { AuthProvider } from './lib/auth'
 import { TradesProvider } from './lib/TradesProvider'
-import Calendar from './pages/Calendar'
 import Dashboard from './pages/Dashboard'
 import Import from './pages/Import'
 import Reports from './pages/Reports'
@@ -23,7 +22,6 @@ export default function App() {
                 <Route path="trades" element={<Trades />} />
                 <Route path="trades/new" element={<TradeEdit />} />
                 <Route path="trades/:id" element={<TradeEdit />} />
-                <Route path="calendar" element={<Calendar />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="import" element={<Import />} />
               </Route>
