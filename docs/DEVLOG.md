@@ -43,3 +43,12 @@ Newest entries go at the bottom.
   `bg-surface`, `text-loss` instead of raw colors.
 - **Plan change:** the planned "lint/format config" commit is dropped. The scaffold already ships
   oxlint, and a formatter adds noise for a one-person project.
+
+## 4. feat(db): add Supabase schema and RLS policies
+
+- **What:** `supabase/migrations/0001_init.sql` with `trades`, `trade_images`, `journal_days`, row-level
+  security on all three, and a private `screenshots` storage bucket restricted to `<user id>/` folders.
+- **Goal:** make privacy a property of the database, not of the frontend. The anon key in the bundle is
+  useless without the owner's login.
+- **Not verified yet:** the SQL has not run against a real Supabase project (none exists yet). It will be
+  tested once the project is created, and any fix will be a separate commit.
