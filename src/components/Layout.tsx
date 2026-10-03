@@ -1,4 +1,4 @@
-import { BarChart3, LayoutDashboard, ListOrdered, LogOut, Upload } from 'lucide-react'
+import { BarChart3, LayoutDashboard, ListOrdered, LogOut } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { DEMO } from '../lib/demo'
 import { supabase } from '../lib/supabase'
@@ -7,7 +7,6 @@ const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/trades', label: 'Trades', icon: ListOrdered },
   { to: '/reports', label: 'Reports', icon: BarChart3 },
-  { to: '/import', label: 'Import', icon: Upload },
 ]
 
 export default function Layout() {

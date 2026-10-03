@@ -5,7 +5,6 @@ A private, personal trading journal for MNQ and ES futures. It is for notes and 
 - Log trades with the emotional state before and after, tags, notes and screenshots.
 - Overview dashboard: win rate, profit factor, expectancy, avg win/loss, streaks, P&L calendar with weekly totals.
 - Reports: equity curve, P&L by symbol / weekday / hour, and emotions vs results.
-- Import past trades (bulk grid or pasted JSON).
 - Black background, white text, green for profit and red for loss.
 
 ## Architecture
@@ -47,11 +46,11 @@ npm run dev
 Demo mode: put `VITE_DEMO=1` in `.env.local` to try the UI with fake in-memory data and no login
 (development only; production builds never include it). Remove it to use your real data.
 
-### 3. Import the previous week
+### 3. Add trades
 
-Use **Import**: type rows into the bulk grid or paste JSON (example shown in the page). Leave P&L empty to
-compute it from prices (MNQ $2/pt, ES $50/pt, NQ $20/pt, MES $5/pt). Open a trade afterwards to
-add screenshots (click, drop, or paste with Cmd+V).
+Use **Trades -> New trade**. Leave P&L empty to compute it from the entry and exit prices using the point value
+of the symbol (set on the Admin page), or type the final P&L yourself. Open a trade afterwards to add
+screenshots (click, drop, or paste with Cmd+V).
 
 ### 4. Deploy to GitHub Pages
 
@@ -70,8 +69,8 @@ Even when the site URL is public, nobody can read your trades without your Supab
 
 ## Project layout
 
-- `src/lib/stats.ts`, `reports.ts`, `calendar.ts`, `importTrades.ts`: pure, tested logic (`*.test.ts`)
+- `src/lib/stats.ts`, `reports.ts`, `calendar.ts`, `weeks.ts`: pure, tested logic (`*.test.ts`)
 - `src/lib/tradesApi.ts`, `imagesApi.ts`: the only code that talks to Supabase
-- `src/pages/`: Dashboard, Trades, TradeEdit, Reports, Import, Login
+- `src/pages/`: Dashboard, Trades, TradeEdit, Reports, Login
 - `src/components/`: layout, P&L calendar, gauges, trade form, image gallery
 - `supabase/migrations/`: database schema and security policies

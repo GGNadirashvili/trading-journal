@@ -24,11 +24,6 @@ export function TradesProvider({ children }: { children: ReactNode }) {
     return t
   }, [])
 
-  const addMany = useCallback(async (inputs: api.TradeInput[]) => {
-    const created = await api.createTrades(inputs)
-    setTrades((cur) => [...cur, ...created].sort(byEntryDesc))
-  }, [])
-
   const update = useCallback(async (id: string, input: api.TradeInput) => {
     const t = await api.updateTrade(id, input)
     setTrades((cur) => cur.map((x) => (x.id === id ? t : x)).sort(byEntryDesc))
@@ -40,8 +35,8 @@ export function TradesProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<TradesState>(
-    () => ({ trades, loading, error, add, addMany, update, remove }),
-    [trades, loading, error, add, addMany, update, remove],
+    () => ({ trades, loading, error, add, update, remove }),
+    [trades, loading, error, add, update, remove],
   )
   return <TradesContext.Provider value={value}>{children}</TradesContext.Provider>
 }

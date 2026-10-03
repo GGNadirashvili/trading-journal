@@ -308,3 +308,14 @@ Newest entries go at the bottom.
   query and re-read the page text.
 - **Tooling:** added a second dev-server config ("demo", port 5174, `VITE_DEMO=1`) so I can look at the UI with
   fake data while `.env.local` points at the real Supabase project.
+
+## 23. refactor: remove the import page
+
+- **What:** deleted the Import page, the CSV/JSON parser and its tests, the bulk-insert API call, the nav
+  item and the README section. Trades are added one at a time with **New trade**.
+- **Goal:** the owner enters data by hand and asked to remove the section. Less code to maintain and no
+  duplicate-import risk.
+- **Supersedes** devlog entry 15 and the plan to transcribe screenshots into JSON; the owner adds trades manually.
+- **Checked:** type-check, lint, 21 tests pass (the 5 parser tests went with the parser). A search finds no
+  remaining references to the import code.
+- **Note:** `pnlFromPrices` stays, because the trade form still computes P&L from prices.

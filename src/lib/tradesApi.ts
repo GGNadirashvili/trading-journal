@@ -88,12 +88,6 @@ export async function createTrade(input: TradeInput): Promise<Trade> {
   return fromRow(check(await supabase.from('trades').insert(toRow(input)).select().single()) as TradeRow)
 }
 
-export async function createTrades(inputs: TradeInput[]): Promise<Trade[]> {
-  if (DEMO) return Promise.all(inputs.map(createTrade))
-  const rows = check(await supabase.from('trades').insert(inputs.map(toRow)).select())
-  return (rows as TradeRow[]).map(fromRow)
-}
-
 export async function updateTrade(id: string, input: TradeInput): Promise<Trade> {
   if (DEMO) {
     const t = { ...input, id }

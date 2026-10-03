@@ -7,7 +7,6 @@ export interface TradesState {
   loading: boolean
   error: string | null
   add: (t: TradeInput) => Promise<Trade>
-  addMany: (t: TradeInput[]) => Promise<void>
   update: (id: string, t: TradeInput) => Promise<void>
   remove: (id: string) => Promise<void>
 }

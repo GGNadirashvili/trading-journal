@@ -5,7 +5,6 @@ import { AuthProvider } from './lib/auth'
 import { SettingsProvider } from './lib/SettingsProvider'
 import { TradesProvider } from './lib/TradesProvider'
 import Dashboard from './pages/Dashboard'
-import Import from './pages/Import'
 import Reports from './pages/Reports'
 import TradeEdit from './pages/TradeEdit'
 import Trades from './pages/Trades'
@@ -25,7 +24,6 @@ export default function App() {
                   <Route path="trades/new" element={<TradeEdit />} />
                   <Route path="trades/:id" element={<TradeEdit />} />
                   <Route path="reports" element={<Reports />} />
-                  <Route path="import" element={<Import />} />
                 </Route>
               </Routes>
             </HashRouter>
