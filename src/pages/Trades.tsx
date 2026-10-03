@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { dayKey } from '../lib/stats'
 import { useI18n } from '../i18n/context'
+import { useAccounts } from '../lib/accountsContext'
 import { useSettings } from '../lib/settingsContext'
 import { fmtDate, fmtTime, holdMinutes, money, pnlColor } from '../lib/format'
 import { useTrades } from '../lib/tradesContext'
@@ -18,7 +19,8 @@ const HEAD = 'px-3 py-3 text-left text-xs font-medium uppercase tracking-wider t
 const CELL = 'px-3 py-3 text-sm'
 
 export default function Trades() {
-  const { trades, loading, error } = useTrades()
+  const { loading, error } = useTrades()
+  const { scopedTrades: trades, accounts } = useAccounts()
   const navigate = useNavigate()
   const { t } = useI18n()
   const { label } = useSettings()
@@ -107,6 +109,7 @@ export default function Trades() {
             <tr>
               <Th k="entryTime" sort={sort} onSort={toggle}>{t('trades.col.date')}</Th>
               <Th k="symbol" sort={sort} onSort={toggle}>{t('trades.col.symbol')}</Th>
+              <th className={HEAD}>{t('trades.col.account')}</th>
               <th className={HEAD}>{t('trades.col.dir')}</th>
               <th className={HEAD}>{t('trades.col.session')}</th>
               <Th k="qty" sort={sort} onSort={toggle}>{t('trades.col.qty')}</Th>
@@ -119,11 +122,11 @@ export default function Trades() {
           </thead>
           <tbody>
             {rows.map((t) => (
-              <Row key={t.id} trade={t} onOpen={() => navigate(`/trades/${t.id}`)} />
+              <Row key={t.id} trade={t} accountName={accounts.find((a) => a.id === t.accountId)?.name ?? null} onOpen={() => navigate(`/trades/${t.id}`)} />
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-3 py-12 text-center text-muted">
+                <td colSpan={11} className="px-3 py-12 text-center text-muted">
                   {t('trades.empty')}
                 </td>
               </tr>
@@ -135,7 +138,7 @@ export default function Trades() {
   )
 }
 
-function Row({ trade, onOpen }: { trade: Trade; onOpen: () => void }) {
+function Row({ trade, accountName, onOpen }: { trade: Trade; accountName: string | null; onOpen: () => void }) {
   const { t, locale } = useI18n()
   const { label } = useSettings()
   const minutes = holdMinutes(trade.entryTime, trade.exitTime)
@@ -146,6 +149,7 @@ function Row({ trade, onOpen }: { trade: Trade; onOpen: () => void }) {
         {fmtDate(trade.entryTime, locale)} <span className="text-muted">{fmtTime(trade.entryTime)}</span>
       </td>
       <td className={`${CELL} font-semibold`}>{trade.symbol}</td>
+      <td className={`${CELL} text-muted`}>{accountName ?? t('trades.noAccount')}</td>
       <td className={CELL}>{trade.direction === 'long' ? t('dir.long') : t('dir.short')}</td>
       <td className={`${CELL} text-muted`}>{trade.session ? t(`session.${trade.session}`) : t('session.none')}</td>
       <td className={CELL}>{trade.qty}</td>

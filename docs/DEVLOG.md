@@ -830,3 +830,23 @@ Newest entries go at the bottom.
   "Accounts". Reports is now "სტატისტიკა" (statistics) so the two menu items are different.
 - **Not done yet:** the account filter on the dashboard, trade log and reports, account condition cards on the
   dashboard, and a detail page with a balance chart.
+
+## 50. feat(accounts): account filter, account column and dashboard condition cards
+
+- **What:**
+  - an **Account** filter (All accounts, or one account, with finished ones marked) at the top of the
+    Dashboard, Trades, Weekly review and Reports pages; your choice is remembered; the dashboard statistics,
+    streaks and P&L calendar, the trade log, the reports and the weekly review numbers all follow it;
+  - an **Account** column in the trade log ("No account" for older trades);
+  - an **Account condition** section at the top of the dashboard: the card of every active account (or of the
+    selected one), or a short prompt with an "Add account" button when you have none.
+- **Goal:** statistics should not mix a failed account's losses with the account you are trading now, and the
+  condition of the current account should be the first thing you see.
+- **Checked in the browser (demo mode):** with "All accounts" the net P&L was -$2,192.10 (the active account's
+  -92.10 plus the failed account's -2,100). Selecting the failed account showed only its card (marked Failed),
+  net -$2,100.00, and the trade log listed exactly its 3 trades with the account name; the choice was saved.
+  Type-check, lint and 68 tests pass.
+- **Design decision:** the Accounts and Admin pages ignore the filter and always show everything.
+- **Known gap:** the filter is shared by all four pages, so choosing an account on one page applies on the
+  others; that is intended, but easy to forget when the numbers look different.
+- **Still to do:** a detail page with a balance chart per account.

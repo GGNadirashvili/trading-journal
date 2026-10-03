@@ -1,9 +1,10 @@
 import { BarChart3, BookOpen, LayoutDashboard, ListOrdered, LogOut, Settings, Wallet } from 'lucide-react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
 import { DEMO } from '../lib/demo'
 import { supabase } from '../lib/supabase'
 import type { MessageKey } from '../i18n/en'
+import AccountFilter from './AccountFilter'
 import LanguageSwitch from './LanguageSwitch'
 
 const NAV: { to: string; label: MessageKey; icon: typeof LayoutDashboard }[] = [
@@ -17,6 +18,9 @@ const NAV: { to: string; label: MessageKey; icon: typeof LayoutDashboard }[] = [
 
 export default function Layout() {
   const { t } = useI18n()
+  const { pathname } = useLocation()
+  // The account filter applies to these pages; the Accounts and Admin pages always show everything.
+  const filtered = ['/', '/trades', '/review', '/reports'].includes(pathname)
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-16 shrink-0 flex-col items-center gap-2 border-r border-line bg-surface py-4 md:w-52 md:items-stretch md:px-3">
@@ -51,6 +55,11 @@ export default function Layout() {
       </aside>
       <main className="min-w-0 flex-1 p-4 md:p-6">
         {DEMO && <div className="mb-4 rounded-lg border border-warn px-3 py-2 text-sm text-warn">{t('app.demoBanner')}</div>}
+        {filtered && (
+          <div className="mb-4 flex justify-end">
+            <AccountFilter />
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

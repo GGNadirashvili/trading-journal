@@ -5,6 +5,7 @@ import { weekdayNames } from '../i18n/dates'
 import { money, pnlColor } from '../lib/format'
 import { byEmotion, byHour, bySession, bySymbol, byWeekday, equityCurve, type Bucket } from '../lib/reports'
 import { inRange, type Range } from '../lib/stats'
+import { useAccounts } from '../lib/accountsContext'
 import { useSettings } from '../lib/settingsContext'
 import { useTrades } from '../lib/tradesContext'
 
@@ -58,7 +59,8 @@ function PnlBars({ data }: { data: Bucket[] }) {
 }
 
 export default function Reports() {
-  const { trades, loading, error } = useTrades()
+  const { loading, error } = useTrades()
+  const { scopedTrades: trades } = useAccounts()
   const { t, locale } = useI18n()
   const { label } = useSettings()
   const [range, setRange] = useState<Range>('ALL')

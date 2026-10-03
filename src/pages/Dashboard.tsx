@@ -1,9 +1,12 @@
 import { Flame } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import AccountCard from '../components/AccountCard'
 import { ProfitDonut, WinGauge, WinLossBar } from '../components/Gauges'
 import PnlCalendar from '../components/PnlCalendar'
 import StatCard from '../components/StatCard'
 import { useI18n } from '../i18n/context'
+import { useAccounts } from '../lib/accountsContext'
 import { money, pnlColor } from '../lib/format'
 import { computeStats, dayStreak, inRange, tradeStreak, type Range, type Streak } from '../lib/stats'
 import { useTrades } from '../lib/tradesContext'
@@ -25,7 +28,8 @@ function StreakBadge({ s, unit }: { s: Streak; unit: string }) {
 }
 
 export default function Dashboard() {
-  const { trades, loading, error } = useTrades()
+  const { loading, error } = useTrades()
+  const { scopedTrades: trades, accounts, states, active, selected } = useAccounts()
   const { t, tn } = useI18n()
   const [range, setRange] = useState<Range>('ALL')
 
@@ -53,6 +57,31 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t('dash.accountCondition')}</h2>
+          {accounts.length > 0 && (
+            <Link to="/accounts" className="text-sm text-muted hover:text-green">
+              {t('dash.manageAccounts')}
+            </Link>
+          )}
+        </div>
+        {accounts.length === 0 ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface p-4 text-sm text-muted">
+            <span className="max-w-xl">{t('dash.addFirstAccount')}</span>
+            <Link to="/accounts" className="rounded-lg bg-green px-3 py-2 font-semibold text-black">
+              {t('accounts.add')}
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {(selected === 'all' ? active : accounts.filter((a) => a.id === selected)).map((a) => (
+              <AccountCard key={a.id} account={a} state={states[a.id]} />
+            ))}
+          </div>
+        )}
+      </section>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard title={t('dash.tradeWin')} className="sm:row-span-2">

@@ -345,4 +345,12 @@ export const ka: Record<MessageKey, string> = {
   'accounts.err.goal': 'მიზანი უნდა იყოს ანგარიშის ზომაზე მეტი ბალანსი.',
   'accounts.err.optional': 'მიმდინარე და უმაღლესი ბალანსი უნდა იყოს რიცხვი ან ცარიელი.',
   'accounts.loadError': 'ანგარიშების ჩატვირთვა ვერ მოხერხდა. გაუშვით supabase/migrations/0006_accounts.sql Supabase-ის SQL რედაქტორში. დეტალები: {error}',
+
+  'filter.account': 'ანგარიში',
+  'filter.allAccounts': 'ყველა ანგარიში',
+  'trades.col.account': 'ანგარიში',
+  'trades.noAccount': 'ანგარიშის გარეშე',
+  'dash.accountCondition': 'ანგარიშის მდგომარეობა',
+  'dash.addFirstAccount': 'დაამატეთ თქვენი პროპ ანგარიში, რომ აქ ნახოთ მისი მდგომარეობა: ბალანსი, რამდენის დაკარგვა შეგიძლიათ კიდევ და რა დარჩა მოგების მიზნამდე.',
+  'dash.manageAccounts': 'ყველა ანგარიში',
 }

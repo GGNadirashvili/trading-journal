@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import ReviewList, { type ReviewListItem } from '../components/ReviewList'
 import { useI18n } from '../i18n/context'
+import { useAccounts } from '../lib/accountsContext'
 import { useConfirm } from '../lib/confirmContext'
 import { money, pnlColor } from '../lib/format'
 import { BIASES, deleteReview, emptyReview, getReview, isReviewEmpty, listReviews, saveReview, type Bias, type WeeklyReview } from '../lib/reviewsApi'
@@ -160,7 +161,7 @@ function ReviewEditor({
   onDirty: (d: boolean) => void
   onSaved: (r: WeeklyReview) => void
 }) {
-  const { trades } = useTrades()
+  const { scopedTrades: trades } = useAccounts()
   const confirm = useConfirm()
   const { t, locale } = useI18n()
   const [review, setReview] = useState<WeeklyReview>(() => emptyReview(week))

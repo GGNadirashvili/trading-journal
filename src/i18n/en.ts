@@ -364,6 +364,15 @@ export const en = {
   'accounts.err.goal': 'The goal must be a balance above the account size.',
   'accounts.err.optional': 'Current and highest balance must be numbers or empty.',
   'accounts.loadError': 'The accounts could not be loaded. Run supabase/migrations/0006_accounts.sql in the Supabase SQL editor. Details: {error}',
+
+  // Account filter and dashboard
+  'filter.account': 'Account',
+  'filter.allAccounts': 'All accounts',
+  'trades.col.account': 'Account',
+  'trades.noAccount': 'No account',
+  'dash.accountCondition': 'Account condition',
+  'dash.addFirstAccount': 'Add your prop-firm account to see its condition here: balance, how much you can still lose, and the distance to the profit goal.',
+  'dash.manageAccounts': 'All accounts',
 } as const
 
 export type MessageKey = keyof typeof en
