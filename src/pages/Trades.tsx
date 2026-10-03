@@ -64,7 +64,7 @@ export default function Trades() {
         <select
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
-          className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-green"
+          className="rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg"
         >
           <option value="all">All symbols</option>
           {symbols.map((s) => (
@@ -77,7 +77,7 @@ export default function Trades() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search notes, emotions, tags"
-            className="w-56 bg-transparent text-green outline-none placeholder:text-muted"
+            className="w-56 bg-transparent text-fg outline-none placeholder:text-muted"
           />
         </label>
         <Link to="/trades/new" className="flex items-center gap-2 rounded-lg bg-green px-3 py-2 text-sm font-semibold text-black">

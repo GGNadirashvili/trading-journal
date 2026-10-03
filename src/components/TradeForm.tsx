@@ -5,7 +5,7 @@ import { fromLocalInput, toLocalInput } from '../lib/format'
 import type { TradeInput } from '../lib/tradesApi'
 import type { Direction, TradeStatus } from '../lib/types'
 
-const input = 'w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm text-green outline-none focus:border-green'
+const input = 'w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-green'
 
 const splitTags = (s: string) =>
   s

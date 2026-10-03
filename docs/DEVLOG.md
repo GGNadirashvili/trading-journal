@@ -172,3 +172,14 @@ Newest entries go at the bottom.
   now smaller text with no wrapping. (2) the "today" ring was drawn on a dimmed filler day from the next
   month; now only in-month days get it. (3) lint flagged `new Date()` calls during render; moved to helpers
   and lazy state.
+
+## 14. style: white text for readability
+
+- **What:** default text is now near-white (`--color-fg`), inputs and selects use it, the muted label color is
+  much lighter, and borders are slightly brighter. Green remains for accents (buttons, active nav, wins,
+  focus) and red for losses.
+- **Goal:** the owner found the all-green text hard to read. The "black background, green text" idea from the
+  brief is kept as black + green accents; readability wins for body text.
+- **Mistake:** I used green as the default text color in the first theme commit without checking contrast on
+  long text and small labels. The muted gray-green was also too dark. A screenshot review would have caught
+  this earlier; I now check each new page visually before committing.

@@ -13,7 +13,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
       <div className="p-6">
         <h1 className="mb-2 text-xl font-semibold">Supabase is not configured</h1>
         <p className="text-muted">
-          Copy <code className="text-green">.env.example</code> to <code className="text-green">.env.local</code> and fill in
+          Copy <code className="text-fg">.env.example</code> to <code className="text-fg">.env.local</code> and fill in
           VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server.
         </p>
       </div>

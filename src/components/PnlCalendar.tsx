@@ -42,7 +42,7 @@ export default function PnlCalendar({ trades }: { trades: Trade[] }) {
     return [...ys].sort()
   }, [cursor.year, trades])
 
-  const select = 'rounded-lg border border-line bg-bg px-2 py-1 text-sm text-green'
+  const select = 'rounded-lg border border-line bg-bg px-2 py-1 text-sm text-fg'
 
   return (
     <div className="rounded-xl border border-line bg-surface p-4">
