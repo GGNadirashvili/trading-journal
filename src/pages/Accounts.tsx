@@ -62,6 +62,7 @@ export default function Accounts() {
 
   const actions = (a: Account) => (
     <>
+      <ActionButton onClick={() => navigate(`/accounts/${a.id}`)}>{t('accounts.details')}</ActionButton>
       <ActionButton onClick={() => setMode({ kind: 'edit', id: a.id })}>{t('accounts.edit')}</ActionButton>
       <ActionButton onClick={() => viewTrades(a)}>{t('accounts.viewTrades')}</ActionButton>
       {states[a.id].status === 'active' && (

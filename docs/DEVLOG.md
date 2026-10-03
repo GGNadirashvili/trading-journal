@@ -850,3 +850,17 @@ Newest entries go at the bottom.
 - **Known gap:** the filter is shared by all four pages, so choosing an account on one page applies on the
   others; that is intended, but easy to forget when the numbers look different.
 - **Still to do:** a detail page with a balance chart per account.
+
+## 51. feat(accounts): account detail page with a balance chart
+
+- **What:** each account has a **Details** page (`/accounts/<id>`): its condition card, a chart of the balance
+  against the loss limit (red step line) and the goal (dashed green line), and a table of its trades with the
+  **balance after each trade** (trades that came after the account ended are marked as such, because they no
+  longer move its balance).
+- **Goal:** the owner wants to see an account's history, not only its final result: how the balance moved
+  and where it crossed the limit.
+- **Checked in the browser (demo mode):** the failed demo account shows its balance falling from 50,000 through
+  49,100 and 48,400 to 47,900, crossing the red 48,000 line on the last trade, with the matching table rows.
+- **Mistake caught before testing:** my first version computed each trade's date from the UTC date instead of the
+  local day, which could show the wrong day near midnight. I replaced it with the same local-day helper the rest
+  of the app uses.

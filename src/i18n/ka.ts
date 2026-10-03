@@ -353,4 +353,17 @@ export const ka: Record<MessageKey, string> = {
   'dash.accountCondition': 'ანგარიშის მდგომარეობა',
   'dash.addFirstAccount': 'დაამატეთ თქვენი პროპ ანგარიში, რომ აქ ნახოთ მისი მდგომარეობა: ბალანსი, რამდენის დაკარგვა შეგიძლიათ კიდევ და რა დარჩა მოგების მიზნამდე.',
   'dash.manageAccounts': 'ყველა ანგარიში',
+
+  'accounts.details': 'დეტალები',
+  'accounts.detail.back': 'ანგარიშებზე დაბრუნება',
+  'accounts.detail.notFound': 'ანგარიში ვერ მოიძებნა.',
+  'accounts.detail.chart': 'ბალანსი, ზარალის ლიმიტი და მიზანი',
+  'accounts.detail.trades': 'ამ ანგარიშის ტრეიდები',
+  'accounts.detail.noTrades': 'ამ ანგარიშზე ტრეიდები ჯერ არ არის.',
+  'accounts.detail.balanceAfter': 'ბალანსი შემდეგ',
+  'accounts.detail.afterEnd': 'ანგარიშის დასრულების შემდეგ',
+  'accounts.chart.balance': 'ბალანსი',
+  'accounts.chart.limit': 'ზარალის ლიმიტი',
+  'accounts.chart.goal': 'მიზანი',
+  'accounts.chart.start': 'გახსნა',
 }

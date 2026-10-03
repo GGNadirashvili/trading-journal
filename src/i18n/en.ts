@@ -373,6 +373,20 @@ export const en = {
   'dash.accountCondition': 'Account condition',
   'dash.addFirstAccount': 'Add your prop-firm account to see its condition here: balance, how much you can still lose, and the distance to the profit goal.',
   'dash.manageAccounts': 'All accounts',
+
+  // Account detail
+  'accounts.details': 'Details',
+  'accounts.detail.back': 'Back to accounts',
+  'accounts.detail.notFound': 'Account not found.',
+  'accounts.detail.chart': 'Balance, loss limit and goal',
+  'accounts.detail.trades': 'Trades on this account',
+  'accounts.detail.noTrades': 'No trades on this account yet.',
+  'accounts.detail.balanceAfter': 'Balance after',
+  'accounts.detail.afterEnd': 'after the account ended',
+  'accounts.chart.balance': 'Balance',
+  'accounts.chart.limit': 'Loss limit',
+  'accounts.chart.goal': 'Goal',
+  'accounts.chart.start': 'Opening',
 } as const
 
 export type MessageKey = keyof typeof en
