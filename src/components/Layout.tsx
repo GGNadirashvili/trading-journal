@@ -1,5 +1,6 @@
-import { BarChart3, CalendarDays, LayoutDashboard, ListOrdered, Upload } from 'lucide-react'
+import { BarChart3, CalendarDays, LayoutDashboard, ListOrdered, LogOut, Upload } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,6 +33,14 @@ export default function Layout() {
             <span className="hidden md:inline">{label}</span>
           </NavLink>
         ))}
+        <button
+          onClick={() => supabase.auth.signOut()}
+          title="Sign out"
+          className="mt-auto flex items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted hover:text-green md:justify-start"
+        >
+          <LogOut size={20} />
+          <span className="hidden md:inline">Sign out</span>
+        </button>
       </aside>
       <main className="min-w-0 flex-1 p-4 md:p-6">
         <Outlet />

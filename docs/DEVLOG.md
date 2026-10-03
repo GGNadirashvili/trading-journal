@@ -73,3 +73,16 @@ Newest entries go at the bottom.
 - **Decision:** `HashRouter` (URLs like `/#/trades`) because GitHub Pages cannot rewrite deep links.
 - **Checked:** type-check, lint, build, and a screenshot of the dev server.
 - **Housekeeping:** `.claude/` (local dev-server config) is gitignored.
+
+## 7. feat(auth): Supabase client and login gate
+
+- **What:** Supabase client (`src/lib/supabase.ts`), auth context/provider, email + password `Login` page,
+  `AuthGate` wrapping the whole app, sign-out button, `.env.example`. With no env vars the app shows a
+  "Supabase is not configured" message instead of crashing.
+- **Goal:** nothing in the app is reachable without a session. The real protection is RLS (commit 4);
+  this gate is the user-facing half.
+- **Mistake caught by lint:** I first exported the hook from the same file as the provider component, which
+  breaks React fast refresh. Split into `authContext.ts` (context + `useAuth`) and `auth.tsx` (provider).
+  Also my first edit of `App.tsx` left bad indentation; rewrote the file.
+- **Not verified yet:** the "not configured" screen was checked in the browser. Real sign-in is untested
+  until a Supabase project and user exist.
