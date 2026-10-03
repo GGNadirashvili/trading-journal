@@ -34,3 +34,12 @@ Newest entries go at the bottom.
 - **Goal:** a building, empty app to grow from. `npm run build` and `npm run lint` pass.
 - **Note:** the generator refuses non-empty folders, so it was run in a scratch directory and the files
   were copied in. The package name was changed to `trading-journal`.
+
+## 3. chore: add Tailwind and black/green theme
+
+- **What:** Tailwind CSS v4 via `@tailwindcss/vite`; theme tokens in `src/index.css` (black background,
+  green text, dark green surfaces/lines, red for losses, yellow for wash/warnings).
+- **Goal:** one place for the black + green look, so components use names like `text-green`,
+  `bg-surface`, `text-loss` instead of raw colors.
+- **Plan change:** the planned "lint/format config" commit is dropped. The scaffold already ships
+  oxlint, and a formatter adds noise for a one-person project.
