@@ -632,3 +632,28 @@ Newest entries go at the bottom.
   made a backup, verified the result and only then pushed.
 - **Note:** this devlog still describes the removed line in words (entries 0 and 40), because you asked for
   mistakes to be documented. It does not appear in any commit message.
+
+## 41. Published to GitHub Pages
+
+- **What:** the repository was made public (owner's choice), the two Supabase values were stored as GitHub
+  secrets (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, read from the local `.env.local` and not printed),
+  the repo variable `DEPLOY_ENABLED=true` was set, Pages was switched to "GitHub Actions", and the deploy
+  workflow was run. Live at https://ggnadirashvili.github.io/trading-journal/.
+- **CI result:** install, 47 tests, build and deploy all passed (22 seconds). Pushes to `main` now deploy
+  automatically.
+- **Checked on the live site:** the page and its JavaScript and CSS load from `/trading-journal/...` (HTTP 200);
+  the browser shows the login screen with no console errors.
+- **Checked what the public files contain:** the Supabase address and the publishable key are in the bundle (that
+  is how a website talks to Supabase, and it is intended); no secret key, no token, no demo mode or demo data.
+  A search match for "sb_secret_" turned out to be Supabase's own library recognising key prefixes, not a key.
+- **Checked that data stays private even though everything above is public:** with only the public key and no
+  login, reading trades, reviews, symbols, lists and screenshot records returns nothing, and inserting a trade
+  is refused by the row-level security rule.
+- **Mistake / hiccup:** my first attempt to make the repo public used `gh repo edit`, which hung with no output
+  and hit the tool timeout; I stopped it, confirmed nothing had changed (the repo was still private) and did the
+  same change through the GitHub API, which worked.
+- **Not verified (needs the owner's login):** signing in on the live site, and every feature against the real
+  database after 0003. Warnings from GitHub (not errors): the official deploy actions still run on Node 20, which
+  GitHub is phasing out; to be updated later when newer versions exist.
+- **Still to do by the owner:** run migration 0003 in Supabase, and add the live address to Supabase
+  (Authentication, URL Configuration) so email links such as password reset point to the live site.

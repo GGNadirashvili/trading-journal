@@ -1,5 +1,7 @@
 # Trading Journal
 
+Live site: <https://ggnadirashvili.github.io/trading-journal/> (needs your login; the code is public, your data is not).
+
 A private, personal trading journal for MNQ and ES futures. It is for notes and statistics only.
 
 - Log trades with the emotional state before and after, tags, notes and screenshots.
