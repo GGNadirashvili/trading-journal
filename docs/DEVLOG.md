@@ -26,3 +26,11 @@ Newest entries go at the bottom.
 - **Decisions:** Supabase over a custom backend (no server to run, free, gives auth + storage + RLS).
   GitHub Pages for hosting. Note: Pages from a private repo needs a paid plan, so repo visibility or
   host is to be decided at deploy time.
+
+## 2. chore: scaffold Vite + React + TypeScript
+
+- **What:** Vite 8 + React 19 + TypeScript project (generated with `npm create vite`, demo files removed),
+  oxlint for linting, `data/` added to `.gitignore`.
+- **Goal:** a building, empty app to grow from. `npm run build` and `npm run lint` pass.
+- **Note:** the generator refuses non-empty folders, so it was run in a scratch directory and the files
+  were copied in. The package name was changed to `trading-journal`.

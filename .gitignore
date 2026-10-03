@@ -7,3 +7,11 @@ dist/
 build/
 .venv/
 __pycache__/
+dist-ssr/
+*.local
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Private trade data (screenshots, notes) never goes to git
+data/
