@@ -907,3 +907,19 @@ Newest entries go at the bottom.
 - **Trade-off I told the owner about:** if a firm's rules ever say the limit trails forever, the app is wrong for
   that account and there is no setting to change it.
 - **Checked:** type-check, lint and 70 tests pass (one fewer test, plus an end-of-day case added to the floor test).
+
+## 55. Migrations 0003 to 0006 applied, and the accounts/sessions version deployed
+
+- **What:** the owner ran the combined migration paste (0003 to 0006) in the Supabase SQL editor and got
+  "Success. No rows returned". The 12 waiting commits were then pushed and the live site was redeployed.
+- **Verified on the real database afterwards (no login needed for these checks):** the Georgian-name column, the
+  session column, the accounts table and the trade-to-account column all exist; an account and a trade cannot be
+  inserted without a login (row-level security refuses both); the new-user seeding function is not reachable from
+  the website.
+- **Verified on the live site:** the deploy succeeded; the live JavaScript contains the Accounts page, the session
+  dropdown, the win-rate-by-session card and the English/Georgian name forms, no longer contains the removed
+  checkbox, and contains no demo data or tokens; the page shows the login screen with no console errors.
+- **Not verified (needs the owner's login):** adding the real Select 50k account, saving a trade with an account
+  and a session on the live site, and the seeding trigger for a real new account.
+- **Order that worked:** migrations first, then push. Pushing first would have deployed code that writes columns
+  the database did not have yet.
