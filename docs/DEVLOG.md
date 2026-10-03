@@ -203,3 +203,17 @@ Newest entries go at the bottom.
   stale screen coordinates and opened a different page; I switched to clicking by element reference.
   Nothing was saved (demo is in-memory). (3) Fixed "1 trades" plural before committing.
 - **Known limit:** import is not de-duplicated; importing the same file twice creates duplicates.
+
+## 16. feat(reports): equity curve and breakdown charts
+
+- **What:** Reports page (Recharts): equity curve, and P&L by symbol, weekday and entry hour as green/red bar
+  charts, plus an "Emotions vs results" table (trades, win rate, avg P&L, total; worst average first), with
+  the same 30D/90D/180D/ALL chips. The numbers come from pure functions in `src/lib/reports.ts`, with 5 tests
+  (22 pass in total). Only closed trades are counted; a trade with several emotion tags counts in each.
+- **Goal:** the analysis part of the brief, especially the link between emotional state and results.
+- **Checked by hand in demo mode:** ES +298.40 and MNQ -390.50; equity ends at -92.10 (equals net P&L);
+  "frustrated" = 3 trades, 0% wins, avg -191.27; "confident" = 4 trades, 100%, avg +120.43.
+- **Mistakes:** axis labels showed "$-150" instead of "-$150"; fixed with a small formatter. A first
+  screenshot showed a half-drawn line; that was only chart animation, not a bug.
+- **Known cost:** Recharts makes the bundle larger (the build prints a chunk-size warning). Fine for a personal
+  tool; could be split with a lazy-loaded Reports route later.
