@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
+import ImageGallery from '../components/ImageGallery'
 import TradeForm from '../components/TradeForm'
 import { useTrades } from '../lib/tradesContext'
 import type { TradeInput } from '../lib/tradesApi'
@@ -37,6 +38,11 @@ export default function TradeEdit() {
           </button>
         )}
       </div>
+      {existing ? (
+        <ImageGallery tradeId={existing.id} />
+      ) : (
+        <p className="text-sm text-muted">Save the trade first, then open it to attach screenshots.</p>
+      )}
       <TradeForm initial={existing} submitLabel={existing ? 'Save changes' : 'Add trade'} onSubmit={save} />
     </div>
   )

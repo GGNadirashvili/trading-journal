@@ -127,3 +127,16 @@ Newest entries go at the bottom.
 - **Mistake:** the "now" default for entry time called `new Date()` during render; lint flagged it as impure.
   Changed to a lazy `useState(() => ...)` initializer.
 - **Not done yet:** screenshots (next commit; they need a saved trade to attach to).
+
+## 11. feat(trades): screenshot upload and gallery
+
+- **What:** `imagesApi.ts` (list / upload / delete) and an `ImageGallery` on the edit page. Add screenshots by
+  clicking, drag and drop, or pasting from the clipboard (Cmd+V). Click a thumbnail to enlarge, hover for delete.
+- **Goal:** attach the chart screenshots to each trade, privately.
+- **How it stays private:** files go in the private `screenshots` bucket under `<user id>/<trade id>/<random>.ext`
+  (the storage policy from commit 4 checks that first folder). The page shows one-hour signed URLs, never
+  public links. If the database insert fails after the upload, the file is removed so no orphan stays behind.
+- **Limit by design:** screenshots attach to a saved trade, so the new-trade page says "save first".
+- **Checked in demo mode:** a simulated clipboard paste produced a thumbnail on the page.
+- **Not verified yet:** the real Supabase upload, signed URL and storage policy (no project yet). This is the
+  riskiest untested piece, so it is first on the list once Supabase exists.
