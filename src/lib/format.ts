@@ -1,3 +1,5 @@
+import { formatDate } from '../i18n/dates'
+
 export function money(n: number, opts: { sign?: boolean } = {}): string {
   const abs = Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const sign = n < 0 ? '-' : opts.sign && n > 0 ? '+' : ''
@@ -7,6 +9,9 @@ export function money(n: number, opts: { sign?: boolean } = {}): string {
 export const pnlColor = (n: number) => (n > 0 ? 'text-green' : n < 0 ? 'text-loss' : 'text-muted')
 
 export { formatDate as fmtDate, formatTime as fmtTime } from '../i18n/dates'
+
+/** A day key (YYYY-MM-DD) shown as a date in the language's format. */
+export const dayLabel = (key: string, locale: string): string => formatDate(new Date(`${key}T12:00:00`).toISOString(), locale)
 
 /** Whole minutes between entry and exit, or null when there is no exit time. */
 export function holdMinutes(entry: string, exit: string | null): number | null {

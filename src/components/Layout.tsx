@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, LayoutDashboard, ListOrdered, LogOut, Settings } from 'lucide-react'
+import { BarChart3, BookOpen, LayoutDashboard, ListOrdered, LogOut, Settings, Wallet } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
 import { DEMO } from '../lib/demo'
@@ -8,6 +8,7 @@ import LanguageSwitch from './LanguageSwitch'
 
 const NAV: { to: string; label: MessageKey; icon: typeof LayoutDashboard }[] = [
   { to: '/', label: 'nav.dashboard', icon: LayoutDashboard },
+  { to: '/accounts', label: 'nav.accounts', icon: Wallet },
   { to: '/trades', label: 'nav.trades', icon: ListOrdered },
   { to: '/review', label: 'nav.review', icon: BookOpen },
   { to: '/reports', label: 'nav.reports', icon: BarChart3 },

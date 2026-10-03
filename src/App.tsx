@@ -7,6 +7,7 @@ import { AccountsProvider } from './lib/AccountsProvider'
 import { AuthProvider } from './lib/auth'
 import { SettingsProvider } from './lib/SettingsProvider'
 import { TradesProvider } from './lib/TradesProvider'
+import Accounts from './pages/Accounts'
 import Admin from './pages/Admin'
 import Dashboard from './pages/Dashboard'
 import Reports from './pages/Reports'
@@ -28,6 +29,7 @@ export default function App() {
                     <Routes>
                       <Route element={<Layout />}>
                         <Route index element={<Dashboard />} />
+                        <Route path="accounts" element={<Accounts />} />
                         <Route path="trades" element={<Trades />} />
                         <Route path="trades/new" element={<TradeEdit />} />
                         <Route path="trades/:id" element={<TradeEdit />} />

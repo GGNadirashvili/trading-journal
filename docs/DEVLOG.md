@@ -803,3 +803,30 @@ Newest entries go at the bottom.
 - **Mistake:** my scripted edit of `App.tsx` produced wrong indentation (the same slip I made twice before in
   this project); I rewrote the whole file instead of patching it, and the compiler found nothing else.
 - **Deployment note:** not pushed yet (needs migrations 0005 and 0006 in the real database first).
+
+## 49. feat(accounts): the Accounts page
+
+- **What:** a new **Accounts** page (wallet icon in the sidebar). **Active accounts** are shown as cards with
+  the balance and profit, a progress bar to the goal ("$4,000 to the goal"), and a drawdown bar with the loss
+  limit and "You can still lose $1,000", plus size, trade count and dates. A **History** list holds passed and
+  failed accounts (with the day they ended), newest first. Each card has Edit, View trades, Mark passed, Mark
+  failed (both ask Yes/No), Remove manual result, and Delete (says how many trades stay with no account).
+- **Add / edit form:** account id, size, max drawdown, profit goal (as the balance to reach, with "= $3,000
+  profit" shown), drawdown type (trailing is the default), the trailing lock, an optional **current balance**
+  (so an account that already has results starts at its real balance), an optional highest balance so far, the
+  opening date, and a checkbox to put your existing trades that have no account onto the new account. A
+  **live preview** shows the balance, loss limit, room to lose and distance to the goal as you type.
+- **Goal:** the owner's current account: add it once with these numbers and see its condition.
+- **How the current balance is stored:** you type the balance the account shows today (for example 49,000); the
+  app saves the difference between that and "size plus the journaled trades" as a balance adjustment, so later
+  trades add to it. Editing an account without touching that field keeps the stored adjustment unchanged.
+- **Checked by hand in demo mode:** the active demo account (7 trades, net -92.10) shows $49,907.90; its loss
+  limit is 48,219.90 (peak 50,219.90 minus 2,000), so 1,688 of room and 16% of the drawdown used. The failed demo
+  account hit 47,900 on Aug 6, below its 48,000 limit, so it sits in the history. **The owner's own numbers
+  entered through the form** (size 50,000, drawdown 2,000, goal 53,000, current 49,000) preview as balance
+  49,000, loss limit 48,000, can lose 1,000, 4,000 to the goal, and the saved card shows -$1,000 and 50% of the
+  drawdown used. With two active accounts the trade form no longer preselects one and requires a choice.
+- **Georgian wording change:** I had translated "Reports" as "ანგარიშები", which is also the natural word for
+  "Accounts". Reports is now "სტატისტიკა" (statistics) so the two menu items are different.
+- **Not done yet:** the account filter on the dashboard, trade log and reports, account condition cards on the
+  dashboard, and a detail page with a balance chart.
