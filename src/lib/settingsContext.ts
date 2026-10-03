@@ -13,7 +13,10 @@ export interface SettingsState {
   addSymbol: (code: string, pointValue: number) => Promise<void>
   updateSymbol: (id: string, pointValue: number) => Promise<void>
   removeSymbol: (id: string) => Promise<void>
-  addOption: (kind: OptionKind, name: string) => Promise<void>
+  addOption: (kind: OptionKind, name: string, nameKa: string) => Promise<void>
+  setOptionKa: (id: string, nameKa: string) => Promise<void>
+  /** The name to show for an emotion, tag or setup in the current language. `name` is the English name saved on trades. */
+  label: (kind: OptionKind, name: string) => string
   removeOption: (id: string) => Promise<void>
 }
 

@@ -1,3 +1,4 @@
+import { translate } from '../i18n/translate'
 import { DEMO } from './demo'
 import { DEFAULT_EMOTIONS, DEFAULT_SYMBOLS, type OptionItem, type OptionKind, type SymbolDef } from './settingsTypes'
 import { supabase } from './supabase'
@@ -21,7 +22,7 @@ let demoSymbols: SymbolDef[] | null = null
 let demoOptions: OptionItem[] | null = null
 const demoSym = () => (demoSymbols ??= DEFAULT_SYMBOLS.map((s) => ({ ...s, id: crypto.randomUUID() })))
 const demoOpt = () =>
-  (demoOptions ??= DEFAULT_EMOTIONS.map((name) => ({ id: crypto.randomUUID(), kind: 'emotion' as const, name })))
+  (demoOptions ??= DEFAULT_EMOTIONS.map((name) => ({ id: crypto.randomUUID(), kind: 'emotion' as const, name, nameKa: translate('ka', `emotion.${name}`) })))
 
 interface SymbolRow {
   id: string
@@ -65,23 +66,53 @@ export async function deleteSymbol(id: string): Promise<void> {
   check(await supabase.from('symbols').delete().eq('id', id))
 }
 
+interface OptionRow {
+  id: string
+  kind: OptionKind
+  name: string
+  name_ka?: string | null
+}
+const optFromRow = (r: OptionRow): OptionItem => ({ id: r.id, kind: r.kind, name: r.name, nameKa: r.name_ka ?? null })
+
 export async function listOptions(): Promise<OptionItem[]> {
   if (DEMO) return [...demoOpt()]
-  const rows = check(await supabase.from('options').select('id, kind, name').order('name'))
-  return rows as OptionItem[]
+  const res = await supabase.from('options').select('id, kind, name, name_ka').order('name')
+  // Migration 0003 not run yet: the column is missing. Load without it so the app keeps working.
+  if (res.error?.code === '42703') {
+    return (check(await supabase.from('options').select('id, kind, name').order('name')) as OptionRow[]).map(optFromRow)
+  }
+  return (check(res) as OptionRow[]).map(optFromRow)
 }
 
-export async function addOption(kind: OptionKind, name: string): Promise<OptionItem> {
+export async function addOption(kind: OptionKind, name: string, nameKa: string): Promise<OptionItem> {
   const clean = name.trim()
+  const cleanKa = nameKa.trim()
   if (DEMO) {
-    if (demoOpt().some((o) => o.kind === kind && o.name === clean)) throw new DuplicateError(clean)
-    const o = { id: crypto.randomUUID(), kind, name: clean }
-    demoOpt().push(o)
+    const list = demoOpt()
+    if (list.some((o) => o.kind === kind && o.name === clean)) throw new DuplicateError(clean)
+    if (list.some((o) => o.kind === kind && o.nameKa === cleanKa)) throw new DuplicateError(cleanKa)
+    const o = { id: crypto.randomUUID(), kind, name: clean, nameKa: cleanKa }
+    list.push(o)
     return o
   }
-  const res = await supabase.from('options').insert({ kind, name: clean }).select('id, kind, name').single()
+  const res = await supabase.from('options').insert({ kind, name: clean, name_ka: cleanKa }).select('id, kind, name, name_ka').single()
+  if (res.error?.code === '23505') throw new DuplicateError(res.error.message.includes('name_ka') ? cleanKa : clean)
+  return optFromRow(check(res) as OptionRow)
+}
+
+/** Change only the Georgian name. The English name is what trades store, so it is never renamed. */
+export async function updateOptionKa(id: string, nameKa: string): Promise<void> {
+  const clean = nameKa.trim()
+  if (DEMO) {
+    const list = demoOpt()
+    const me = list.find((o) => o.id === id)
+    if (me && list.some((o) => o.id !== id && o.kind === me.kind && o.nameKa === clean)) throw new DuplicateError(clean)
+    demoOptions = list.map((o) => (o.id === id ? { ...o, nameKa: clean } : o))
+    return
+  }
+  const res = await supabase.from('options').update({ name_ka: clean }).eq('id', id)
   if (res.error?.code === '23505') throw new DuplicateError(clean)
-  return check(res) as OptionItem
+  check(res)
 }
 
 export async function deleteOption(id: string): Promise<void> {

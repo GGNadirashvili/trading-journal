@@ -34,7 +34,7 @@ export function buildBackup(trades: Trade[], reviews: WeeklyReview[], symbols: S
     trades,
     weeklyReviews: reviews,
     symbols: symbols.map(({ code, pointValue }) => ({ code, pointValue })),
-    options: options.map(({ kind, name }) => ({ kind, name })),
+    options: options.map(({ kind, name, nameKa }) => ({ kind, name, nameKa })),
   }
 }
 

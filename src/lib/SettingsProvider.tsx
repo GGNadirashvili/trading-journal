@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useI18n } from '../i18n/context'
+import { optionLabel } from './labels'
 import * as api from './settingsApi'
 import { SettingsContext, type SettingsState } from './settingsContext'
 import { DEFAULT_EMOTIONS, DEFAULT_SYMBOLS, type OptionItem, type OptionKind, type SymbolDef } from './settingsTypes'
 
 const fallbackSymbols: SymbolDef[] = DEFAULT_SYMBOLS.map((s) => ({ ...s, id: `default-${s.code}` }))
-const fallbackOptions: OptionItem[] = DEFAULT_EMOTIONS.map((name) => ({ id: `default-${name}`, kind: 'emotion', name }))
+const fallbackOptions: OptionItem[] = DEFAULT_EMOTIONS.map((name) => ({ id: `default-${name}`, kind: 'emotion', name, nameKa: null }))
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
+  const { lang } = useI18n()
   const [symbols, setSymbols] = useState<SymbolDef[]>(fallbackSymbols)
   const [options, setOptions] = useState<OptionItem[]>(fallbackOptions)
   const [loading, setLoading] = useState(true)
@@ -34,9 +37,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     await api.deleteSymbol(id)
     setSymbols((cur) => cur.filter((s) => s.id !== id))
   }, [])
-  const addOption = useCallback(async (kind: OptionKind, name: string) => {
-    const o = await api.addOption(kind, name)
+  const addOption = useCallback(async (kind: OptionKind, name: string, nameKa: string) => {
+    const o = await api.addOption(kind, name, nameKa)
     setOptions((cur) => [...cur, o].sort((a, b) => a.name.localeCompare(b.name)))
+  }, [])
+  const setOptionKa = useCallback(async (id: string, nameKa: string) => {
+    await api.updateOptionKa(id, nameKa)
+    setOptions((cur) => cur.map((o) => (o.id === id ? { ...o, nameKa: nameKa.trim() } : o)))
   }, [])
   const removeOption = useCallback(async (id: string) => {
     await api.deleteOption(id)
@@ -55,9 +62,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       updateSymbol,
       removeSymbol,
       addOption,
+      setOptionKa,
+      label: (kind, name) => optionLabel(options, lang, kind, name),
       removeOption,
     }),
-    [loading, error, symbols, options, addSymbol, updateSymbol, removeSymbol, addOption, removeOption],
+    [loading, error, symbols, options, lang, addSymbol, updateSymbol, removeSymbol, addOption, setOptionKa, removeOption],
   )
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
 }

@@ -9,7 +9,10 @@ export type OptionKind = 'emotion' | 'tag' | 'setup'
 export interface OptionItem {
   id: string
   kind: OptionKind
+  /** English name. This is the value saved on trades. */
   name: string
+  /** Georgian name, shown when the app is in Georgian. Null for items created before Georgian names existed. */
+  nameKa: string | null
 }
 
 // Used before the settings tables exist, and in demo mode.

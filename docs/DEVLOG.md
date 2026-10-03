@@ -571,3 +571,26 @@ Newest entries go at the bottom.
   (emotion vs setup) is allowed, and running the file a second time is harmless.
 - **Owner action:** run this file once in the Supabase SQL editor. Until then the app keeps working and falls
   back to the built-in translations; the new add form (next commits) needs the column.
+
+## 38. feat(admin): English and Georgian names for emotions, tags and setups
+
+- **What:** every emotion, tag and setup now has an English name (the value saved on trades) and a Georgian
+  name (what the app shows in Georgian). On the Admin page each list is a table with both names; adding an item
+  requires both. A pencil edits the Georgian name only. Why only that one: the English name is what trades
+  store, so renaming it would silently detach old trades from it. The data layer got `optionLabel()` (which
+  name to show for a language) and `validateNames()`, with 8 new tests (47 pass in total).
+- **Goal:** the owner asked for both values to be asked for and used.
+- **Rules:** both names are required. The English field must not contain Georgian letters, which catches the
+  two fields being swapped. A duplicate English or Georgian name is refused. If the Georgian name is missing
+  (items created before this change, or if migration 0003 is not run yet), the built-in emotion translation is
+  used, otherwise the English name.
+- **Safe before the migration:** loading the lists falls back to the old query if the `name_ka` column does not
+  exist yet, so pulling this code before running 0003 does not break the app. Adding items needs the column.
+- **Checked in the browser (demo mode):** typing the words into the wrong fields showed "The English name must
+  not contain Georgian letters. Did you swap the two fields?" and added nothing; a correct pair
+  (restless / მოუსვენარი) was added, the form cleared and the error disappeared.
+- **Mistake in my test, not in the app:** my select-all keystroke did not register, so my second attempt was
+  appended to the first and I briefly thought the add was broken. I selected the field text through the page
+  instead and the add worked. I am recording it because it cost a wrong first conclusion.
+- **Not done yet:** the new names are not shown on the trade form, trade log and reports yet; that is the next
+  commit.
