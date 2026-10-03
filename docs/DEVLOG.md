@@ -683,3 +683,26 @@ Newest entries go at the bottom.
   locally, not yet with a real second login on the live site.
 - **Owner action:** run this migration once in the Supabase SQL editor before creating the friend's account, and
   after 0003.
+
+## 43. feat(accounts): prop-firm account rules engine
+
+- **What:** `src/lib/accounts.ts`: a pure function `evaluateAccount(account, trades)` that works out where a
+  prop-firm account stands: balance, loss limit ("floor"), how much you can still lose, how much is left to the
+  profit goal, progress bars, and whether it is active, passed or failed (with the day it ended). No screens yet.
+- **Goal:** the owner trades prop-firm accounts (current one: 50k size, 2k max drawdown, 53k goal, now about 49k
+  so 1k of room left). The numbers must be right before they are shown.
+- **Rules built in:**
+  - the floor can be **static** (start minus drawdown), **trailing** (follows the highest balance after each
+    trade) or **trailing end-of-day** (follows the highest closing balance, counted once the day is over); the
+    trailing types can stop rising once the floor reaches the starting balance (how most firms do it);
+  - a trade that brings the balance **to or below** the floor fails the account; reaching the goal passes it;
+    whichever comes first ends the account and later trades no longer move its balance;
+  - a **balance adjustment** lets an account that already has results start at its real balance (49k) and a
+    known earlier **peak** is respected; a **manual** passed/failed result overrides the numbers (for example
+    when the firm ends an account for a rule the numbers cannot show).
+- **Tests:** 17 new tests with hand-computed numbers, including the owner's own account (balance 49,000, floor
+  48,000, 1,000 of room, 4,000 to the goal, half the drawdown used) (64 pass in total).
+- **Assumption to confirm:** I do not know which floor type the owner's firm uses (many use trailing). The form
+  will let each account pick one; trailing after each trade is the default because it is the strictest, so the
+  app never shows more room than the firm would allow. Only closed trades are known, so intraday dips and open
+  profit cannot be seen.
