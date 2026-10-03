@@ -515,3 +515,16 @@ Newest entries go at the bottom.
   ran a scan for leftover literal text rather than trusting the search. (3) In the trade row I had to
   rename the `t` (trade) prop to `trade` so that `t()` could be the translate function.
 - **Tests:** 2 new tests for plural strings and emotion names (39 pass in total).
+
+## 35. feat(i18n): translate the weekly review
+
+- **What:** the whole weekly review page and the saved-reviews list: week navigation, the four "looking
+  back" boxes with their hints, the next-week outlook, "What I expected" card, bias values (ზრდადი / კლებადი /
+  ნეიტრალური / გაურკვეველი), the Save button, the confirmation and the Yes/No questions. Week ranges follow
+  the language ("7 სექ – 13 სექ, 2026").
+- **Goal:** the page you write your own analysis in should be fully in the language you think in.
+- **Checked in the browser (demo mode):** typed a note and saved; the confirmation, the week header, the bias
+  dropdown options and the list entry (week, "7 ტრეიდი", P&L, note excerpt) were all Georgian. Type-check,
+  lint and 39 tests pass; a scan found no remaining English text in the two files' markup.
+- **Reminder:** your own text (analysis, notes) is stored exactly as typed in whichever language you write.
+  Only the labels around it change with the language switch.

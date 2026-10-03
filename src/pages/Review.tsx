@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import ReviewList, { type ReviewListItem } from '../components/ReviewList'
+import { useI18n } from '../i18n/context'
 import { useConfirm } from '../lib/confirmContext'
 import { money, pnlColor } from '../lib/format'
 import { BIASES, deleteReview, emptyReview, getReview, isReviewEmpty, listReviews, saveReview, type Bias, type WeeklyReview } from '../lib/reviewsApi'
@@ -37,7 +38,8 @@ function Card({ title, subtitle, children }: { title: string; subtitle?: string;
 
 export default function Review() {
   const { loading, error } = useTrades()
-  if (loading) return <p className="text-muted">Loading…</p>
+  const { t } = useI18n()
+  if (loading) return <p className="text-muted">{t('common.loading')}</p>
   if (error) return <p className="text-loss">{error}</p>
   return <WeekView />
 }
@@ -46,6 +48,7 @@ export default function Review() {
 function WeekView() {
   const { trades } = useTrades()
   const confirm = useConfirm()
+  const { t, locale } = useI18n()
   // Open on the week of the newest trade, otherwise the week before today.
   const [week, setWeek] = useState(() => (trades[0] ? weekStartOf(new Date(trades[0].entryTime)) : addWeeks(weekStartOf(new Date()), -1)))
   const [dirty, setDirty] = useState(false)
@@ -73,7 +76,7 @@ function WeekView() {
     [reviews, trades],
   )
 
-  const leaveOk = async () => !dirty || (await confirm('You have unsaved changes. Leave without saving?', { title: 'Unsaved changes' }))
+  const leaveOk = async () => !dirty || (await confirm(t('review.unsavedBody'), { title: t('review.unsavedTitle') }))
 
   async function open(w: string) {
     if (!(await leaveOk())) return
@@ -89,11 +92,11 @@ function WeekView() {
     setDirty(false)
     setBlank(true)
     setEditorKey((k) => k + 1)
-    setNotice(`Saved the review for ${formatWeek(r.weekStart)}. It is in the "Saved reviews" list; click it to read or edit.`)
+    setNotice(t('review.saved', { week: formatWeek(r.weekStart, locale) }))
   }
 
   async function remove(w: string) {
-    if (!(await confirm(`Delete the review for ${formatWeek(w)}? This cannot be undone.`, { title: 'Delete review', danger: true }))) return
+    if (!(await confirm(t('review.deleteBody', { week: formatWeek(w, locale) }), { title: t('review.deleteTitle'), danger: true }))) return
     try {
       await deleteReview(w)
       setReviews((cur) => cur.filter((x) => x.weekStart !== w))
@@ -111,16 +114,16 @@ function WeekView() {
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="max-w-4xl space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="mr-auto text-xl font-semibold">Weekly review</h1>
-          <button onClick={() => open(addWeeks(week, -1))} title="Previous week" className="rounded p-1 text-muted hover:text-green">
+          <h1 className="mr-auto text-xl font-semibold">{t('review.title')}</h1>
+          <button onClick={() => open(addWeeks(week, -1))} title={t('review.prevWeek')} className="rounded p-1 text-muted hover:text-green">
             <ChevronLeft size={20} />
           </button>
-          <span className="min-w-44 text-center text-sm font-semibold">{formatWeek(week)}</span>
-          <button onClick={() => open(addWeeks(week, 1))} title="Next week" className="rounded p-1 text-muted hover:text-green">
+          <span className="min-w-44 text-center text-sm font-semibold">{formatWeek(week, locale)}</span>
+          <button onClick={() => open(addWeeks(week, 1))} title={t('review.nextWeek')} className="rounded p-1 text-muted hover:text-green">
             <ChevronRight size={20} />
           </button>
           <button onClick={() => open(addWeeks(weekStartOf(new Date()), -1))} className="rounded border border-line px-2 py-1 text-xs text-muted hover:text-green">
-            Last week
+            {t('review.lastWeek')}
           </button>
         </div>
         {notice && <p className="rounded-lg border border-green p-3 text-sm text-green">{notice}</p>}
@@ -159,6 +162,7 @@ function ReviewEditor({
 }) {
   const { trades } = useTrades()
   const confirm = useConfirm()
+  const { t, locale } = useI18n()
   const [review, setReview] = useState<WeeklyReview>(() => emptyReview(week))
   const [previous, setPrevious] = useState<WeeklyReview | null>(null)
   const [loaded, setLoaded] = useState(false)
@@ -197,7 +201,7 @@ function ReviewEditor({
 
   async function save() {
     // Typing into a blank form for a week that already has a saved review would replace it, so ask first.
-    if (alreadySaved && !loadedExisting && !(await confirm(`A review for ${formatWeek(week)} is already saved. Replace it with this one?`, { title: 'Replace saved review' }))) return
+    if (alreadySaved && !loadedExisting && !(await confirm(t('review.replaceBody', { week: formatWeek(week, locale) }), { title: t('review.replaceTitle') }))) return
     setSaving(true)
     setError(null)
     try {
@@ -209,7 +213,7 @@ function ReviewEditor({
     }
   }
 
-  if (!loaded) return <p className="text-muted">Loading…</p>
+  if (!loaded) return <p className="text-muted">{t('common.loading')}</p>
 
   const expected = previous && (previous.bias || previous.outlook || previous.plan || previous.keyLevels) ? previous : null
 
@@ -217,10 +221,10 @@ function ReviewEditor({
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          ['Net P&L', <span key="p" className={pnlColor(stats.netPnl)}>{money(stats.netPnl)}</span>],
-          ['Trades', stats.trades],
-          ['Win rate', `${(stats.winRate * 100).toFixed(0)}%`],
-          ['Wins / Losses', `${stats.wins} / ${stats.losses}`],
+          [t('review.stat.net'), <span key="p" className={pnlColor(stats.netPnl)}>{money(stats.netPnl)}</span>],
+          [t('review.stat.trades'), stats.trades],
+          [t('review.stat.winRate'), `${(stats.winRate * 100).toFixed(0)}%`],
+          [t('review.stat.winsLosses'), `${stats.wins} / ${stats.losses}`],
         ].map(([label, value]) => (
           <div key={String(label)} className="rounded-xl border border-line bg-surface p-3">
             <div className="text-xs text-muted">{label}</div>
@@ -230,46 +234,46 @@ function ReviewEditor({
       </div>
 
       {expected && (
-        <Card title="What I expected for this week" subtitle="Written at the end of the previous week. Compare it with what actually happened.">
+        <Card title={t('review.expected.title')} subtitle={t('review.expected.sub')}>
           <div className="space-y-2 text-sm">
-            {expected.bias && <p><span className="text-muted">Bias:</span> <span className="font-semibold capitalize">{expected.bias}</span></p>}
-            {expected.outlook && <p className="whitespace-pre-wrap"><span className="text-muted">Thoughts:</span> {expected.outlook}</p>}
-            {expected.keyLevels && <p className="whitespace-pre-wrap"><span className="text-muted">Key levels:</span> {expected.keyLevels}</p>}
-            {expected.plan && <p className="whitespace-pre-wrap"><span className="text-muted">Plan:</span> {expected.plan}</p>}
+            {expected.bias && <p><span className="text-muted">{t('review.expected.bias')}</span> <span className="font-semibold capitalize">{t(`bias.${expected.bias}`)}</span></p>}
+            {expected.outlook && <p className="whitespace-pre-wrap"><span className="text-muted">{t('review.expected.thoughts')}</span> {expected.outlook}</p>}
+            {expected.keyLevels && <p className="whitespace-pre-wrap"><span className="text-muted">{t('review.expected.levels')}</span> {expected.keyLevels}</p>}
+            {expected.plan && <p className="whitespace-pre-wrap"><span className="text-muted">{t('review.expected.plan')}</span> {expected.plan}</p>}
           </div>
         </Card>
       )}
 
-      <Card title="Looking back at this week" subtitle="Be honest. This is only for you.">
-        <Box label="Emotional analysis" hint="How did I feel? Where did emotions drive decisions (fear, FOMO, revenge, overconfidence)?" value={review.emotional} onChange={(v) => set('emotional', v)} />
-        <Box label="Technical analysis" hint="What did the market do? Were my setups, entries and exits right?" value={review.technical} onChange={(v) => set('technical', v)} />
-        <Box label="Mistakes I made" hint="What exactly did I do wrong? Be specific." value={review.mistakes} onChange={(v) => set('mistakes', v)} />
-        <Box label="Lessons and what I will do differently" value={review.lessons} onChange={(v) => set('lessons', v)} rows={4} />
+      <Card title={t('review.back.title')} subtitle={t('review.back.sub')}>
+        <Box label={t('review.emotional')} hint={t('review.emotional.hint')} value={review.emotional} onChange={(v) => set('emotional', v)} />
+        <Box label={t('review.technical')} hint={t('review.technical.hint')} value={review.technical} onChange={(v) => set('technical', v)} />
+        <Box label={t('review.mistakes')} hint={t('review.mistakes.hint')} value={review.mistakes} onChange={(v) => set('mistakes', v)} />
+        <Box label={t('review.lessons')} value={review.lessons} onChange={(v) => set('lessons', v)} rows={4} />
       </Card>
 
-      <Card title="Next week outlook" subtitle={`My thoughts about the market for the week of ${formatWeek(addWeeks(week, 1))}.`}>
+      <Card title={t('review.next.title')} subtitle={t('review.next.sub', { week: formatWeek(addWeeks(week, 1), locale) })}>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium">Market bias</span>
+          <span className="mb-1 block text-sm font-medium">{t('review.bias')}</span>
           <select className={`${area} sm:w-60`} value={review.bias ?? ''} onChange={(e) => set('bias', (e.target.value || null) as Bias | null)}>
-            <option value="">Not set</option>
+            <option value="">{t('review.bias.none')}</option>
             {BIASES.map((b) => (
               <option key={b} value={b} className="capitalize">
-                {b}
+                {t(`bias.${b}`)}
               </option>
             ))}
           </select>
         </label>
-        <Box label="Market thoughts" hint="Where do I think the market is going, and why? Events to watch (CPI, FOMC, earnings)." value={review.outlook} onChange={(v) => set('outlook', v)} />
-        <Box label="Key levels" hint="Support, resistance, prior highs and lows." value={review.keyLevels} onChange={(v) => set('keyLevels', v)} rows={3} />
-        <Box label="Game plan and rules" hint="What will I trade, how much, and what will I NOT do?" value={review.plan} onChange={(v) => set('plan', v)} rows={4} />
+        <Box label={t('review.outlook')} hint={t('review.outlook.hint')} value={review.outlook} onChange={(v) => set('outlook', v)} />
+        <Box label={t('review.levels')} hint={t('review.levels.hint')} value={review.keyLevels} onChange={(v) => set('keyLevels', v)} rows={3} />
+        <Box label={t('review.plan')} hint={t('review.plan.hint')} value={review.plan} onChange={(v) => set('plan', v)} rows={4} />
       </Card>
 
       {error && <p className="text-sm text-loss">{error}</p>}
       <div className="flex items-center gap-3">
         <button onClick={save} disabled={saving || isReviewEmpty(review)} className="rounded-lg bg-green px-5 py-2 font-semibold text-black disabled:opacity-40">
-          {saving ? 'Saving…' : 'Save review'}
+          {saving ? t('review.saving') : t('review.save')}
         </button>
-        {isReviewEmpty(review) && <span className="text-xs text-muted">Write something to enable saving.</span>}
+        {isReviewEmpty(review) && <span className="text-xs text-muted">{t('review.writeFirst')}</span>}
       </div>
     </div>
   )
