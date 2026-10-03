@@ -102,7 +102,7 @@ export const en = {
   'form.exitTime': 'Exit time',
   'form.pnl': 'P&L ($), blank = from prices',
   'form.setup': 'Setup',
-  'form.setupHint': 'e.g. opening range break',
+  'form.setupNone': 'No setup',
   'form.tags': 'Tags',
   'form.noTags': 'No tags yet. Add some on the Admin page.',
   'form.emotionalState': 'Emotional state',

@@ -28,8 +28,8 @@ interface Props {
 }
 
 export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
-  const { symbols, pointValues, optionNames } = useSettings()
-  const { t, te } = useI18n()
+  const { symbols, pointValues, optionNames, label } = useSettings()
+  const { t } = useI18n()
   const [symbol, setSymbol] = useState(initial?.symbol ?? symbols[0]?.code ?? '')
   const [direction, setDirection] = useState<Direction>(initial?.direction ?? 'long')
   const [qty, setQty] = useState(String(initial?.qty ?? 1))
@@ -126,18 +126,21 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
           <input className={input} type="number" step="any" value={pnl} onChange={(e) => setPnl(e.target.value)} />
         </Field>
         <Field label={t('form.setup')}>
-          <input className={input} list="setups" value={setup} onChange={(e) => setSetup(e.target.value)} placeholder={t('form.setupHint')} />
-          <datalist id="setups">
-            {optionNames('setup').map((n) => (
-              <option key={n} value={n} />
+          <select className={input} value={setup} onChange={(e) => setSetup(e.target.value)}>
+            <option value="">{t('form.setupNone')}</option>
+            {/* a setup that was later removed from the list stays selectable on the trades that use it */}
+            {[...optionNames('setup'), ...(setup && !optionNames('setup').includes(setup) ? [setup] : [])].map((n) => (
+              <option key={n} value={n}>
+                {label('setup', n)}
+              </option>
             ))}
-          </datalist>
+          </select>
         </Field>
       </div>
 
       <div>
         <span className="mb-2 block text-xs uppercase tracking-wider text-muted">{t('form.tags')}</span>
-        <ChipPicker options={optionNames('tag')} selected={tags} onToggle={toggle(setTags)} emptyHint={t('form.noTags')} />
+        <ChipPicker options={optionNames('tag')} selected={tags} onToggle={toggle(setTags)} emptyHint={t('form.noTags')} label={(v) => label('tag', v)} />
       </div>
 
       <section className="space-y-4 rounded-xl border border-line bg-surface p-4">
@@ -147,7 +150,7 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
           selected={emotionTags}
           onToggle={toggle(setEmotionTags)}
           emptyHint={t('form.noEmotions')}
-          label={te}
+          label={(v) => label('emotion', v)}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={t('form.before')}>

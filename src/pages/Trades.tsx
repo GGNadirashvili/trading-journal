@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { dayKey } from '../lib/stats'
 import { useI18n } from '../i18n/context'
+import { useSettings } from '../lib/settingsContext'
 import { fmtDate, fmtTime, holdMinutes, money, pnlColor } from '../lib/format'
 import { useTrades } from '../lib/tradesContext'
 import type { Trade } from '../lib/types'
@@ -20,6 +21,7 @@ export default function Trades() {
   const { trades, loading, error } = useTrades()
   const navigate = useNavigate()
   const { t } = useI18n()
+  const { label } = useSettings()
   const [params, setParams] = useSearchParams()
   const date = params.get('date')
   const [query, setQuery] = useState('')
@@ -35,7 +37,19 @@ export default function Trades() {
         (symbol === 'all' || t.symbol === symbol) &&
         (!date || dayKey(t.entryTime) === date) &&
         (!q ||
-          [t.symbol, t.notes, t.setup, t.emotionBefore, t.emotionAfter, ...t.tags, ...t.emotionTags]
+          [
+            t.symbol,
+            t.notes,
+            t.setup,
+            t.emotionBefore,
+            t.emotionAfter,
+            ...t.tags,
+            ...t.emotionTags,
+            // also match the names as shown on screen, so a Georgian search finds Georgian labels
+            t.setup && label('setup', t.setup),
+            ...t.tags.map((x) => label('tag', x)),
+            ...t.emotionTags.map((x) => label('emotion', x)),
+          ]
             .filter(Boolean)
             .some((s) => s!.toLowerCase().includes(q))),
     )
@@ -45,7 +59,7 @@ export default function Trades() {
       const y = b[sort.key]
       return (x < y ? -1 : x > y ? 1 : 0) * sign
     })
-  }, [trades, query, symbol, date, sort])
+  }, [trades, query, symbol, date, sort, label])
 
   const toggle = (key: SortKey) =>
     setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' }))
@@ -121,7 +135,8 @@ export default function Trades() {
 }
 
 function Row({ trade, onOpen }: { trade: Trade; onOpen: () => void }) {
-  const { t, te, locale } = useI18n()
+  const { t, locale } = useI18n()
+  const { label } = useSettings()
   const minutes = holdMinutes(trade.entryTime, trade.exitTime)
   const hold = minutes === null ? '-' : minutes < 60 ? t('unit.minutes', { n: minutes }) : t('unit.hoursMinutes', { h: Math.floor(minutes / 60), m: minutes % 60 })
   return (
@@ -136,7 +151,7 @@ function Row({ trade, onOpen }: { trade: Trade; onOpen: () => void }) {
       <td className={CELL}>{trade.exitPrice ?? '-'}</td>
       <td className={`${CELL} text-muted`}>{hold}</td>
       <td className={`${CELL} font-semibold ${pnlColor(trade.pnl)}`}>{money(trade.pnl)}</td>
-      <td className={`${CELL} text-muted`}>{trade.emotionTags.map(te).join(', ') || '-'}</td>
+      <td className={`${CELL} text-muted`}>{trade.emotionTags.map((e) => label('emotion', e)).join(', ') || '-'}</td>
     </tr>
   )
 }

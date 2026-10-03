@@ -594,3 +594,23 @@ Newest entries go at the bottom.
   instead and the add worked. I am recording it because it cost a wrong first conclusion.
 - **Not done yet:** the new names are not shown on the trade form, trade log and reports yet; that is the next
   commit.
+
+## 39. feat(ui): show emotion, tag and setup names in the current language
+
+- **What:** the trade form (emotion and tag chips), the trade log (emotion column and search), and the
+  Reports emotions table now show each item's English or Georgian name depending on the language. The Setup
+  field is now a pick-list of your setups (it was free text with suggestions), so its names can be translated
+  too; a trade whose setup was later removed from the list still shows it. The backup file includes both names.
+- **Goal:** finish the bilingual lists: add once with both names, see the right one everywhere.
+- **Search:** the trade log search also matches the names as shown on screen, so typing Georgian finds
+  Georgian-labelled emotions and tags.
+- **Cleanup:** the earlier `te()` emotion helper is gone; the built-in translations are now only a fallback
+  inside `optionLabel()` for items that have no stored Georgian name.
+- **Checked in the browser (demo mode):** added the emotion restless / მოუსვენარი, opened the new-trade form
+  without reloading: the chip read "restless" in English and "მოუსვენარი" in Georgian after pressing the
+  language button; the trade log's emotion column showed Georgian names; searching the Georgian prefix
+  "იმედგაც" returned exactly the 3 "frustrated" trades. Type-check, lint and 47 tests pass.
+- **Behavior change to be aware of:** the Setup field no longer accepts free text. Add setups on the Admin page
+  first (with both names), then pick them on the trade form.
+- **Owner action:** run `0003_option_names_ka.sql` once in the Supabase SQL editor (the README lists it now).
+  Not verified against the real database until then.

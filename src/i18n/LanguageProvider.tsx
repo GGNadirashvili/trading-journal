@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { I18nContext, type I18n, type Lang } from './context'
-import { detectLang, LOCALES, translate, translateEmotion, translatePlural } from './translate'
+import { detectLang, LOCALES, translate, translatePlural } from './translate'
 
 const STORAGE_KEY = 'tj-lang'
 
@@ -38,7 +38,6 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
       locale: LOCALES[lang],
       t: (key, params) => translate(lang, key, params),
       tn: (key, n, params) => translatePlural(lang, key, n, params),
-      te: (name) => translateEmotion(lang, name),
     }),
     [lang, setLang],
   )

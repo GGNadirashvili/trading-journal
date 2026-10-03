@@ -30,10 +30,12 @@ See [docs/DEVLOG.md](docs/DEVLOG.md) for every commit, its goal, and the mistake
 ### 1. Supabase
 
 1. Create a free project at <https://supabase.com>.
-2. SQL Editor: run these two files, in order, one after the other:
+2. SQL Editor: run these three files, in order, one after the other:
    [0001_init.sql](supabase/migrations/0001_init.sql) (trades, screenshots, row-level security) and
    [0002_settings_and_reviews.sql](supabase/migrations/0002_settings_and_reviews.sql) (symbols, lists,
-   weekly reviews). Run each only once.
+   weekly reviews) and
+   [0003_option_names_ka.sql](supabase/migrations/0003_option_names_ka.sql) (Georgian names for emotions,
+   tags and setups). Run each only once.
 3. Authentication -> Users -> Add user: create your own email + password (tick "Auto confirm").
 4. Authentication -> Sign In / Providers: turn **off** "Allow new users to sign up". Now only your account exists.
 5. Project Settings -> API: copy the Project URL and the `anon` public key.

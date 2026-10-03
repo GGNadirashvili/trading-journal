@@ -5,6 +5,7 @@ import { weekdayNames } from '../i18n/dates'
 import { money, pnlColor } from '../lib/format'
 import { byEmotion, byHour, bySymbol, byWeekday, equityCurve, type Bucket } from '../lib/reports'
 import { inRange, type Range } from '../lib/stats'
+import { useSettings } from '../lib/settingsContext'
 import { useTrades } from '../lib/tradesContext'
 
 const RANGES: Range[] = ['30D', '90D', '180D', 'ALL']
@@ -58,7 +59,8 @@ function PnlBars({ data }: { data: Bucket[] }) {
 
 export default function Reports() {
   const { trades, loading, error } = useTrades()
-  const { t, te, locale } = useI18n()
+  const { t, locale } = useI18n()
+  const { label } = useSettings()
   const [range, setRange] = useState<Range>('ALL')
   const filtered = useMemo(() => inRange(trades, range), [trades, range])
 
@@ -137,7 +139,7 @@ export default function Reports() {
               <tbody>
                 {emotion.map((b) => (
                   <tr key={b.label} className="border-t border-line">
-                    <td className="py-2 font-medium">{b.label === '(none)' ? t('reports.none') : te(b.label)}</td>
+                    <td className="py-2 font-medium">{b.label === '(none)' ? t('reports.none') : label('emotion', b.label)}</td>
                     <td>{b.trades}</td>
                     <td>{(b.winRate * 100).toFixed(0)}%</td>
                     <td className={pnlColor(b.avgPnl)}>{money(b.avgPnl)}</td>

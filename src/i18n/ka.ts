@@ -92,7 +92,7 @@ export const ka: Record<MessageKey, string> = {
   'form.exitTime': 'გასვლის დრო',
   'form.pnl': 'P&L ($), ცარიელი = ფასებიდან',
   'form.setup': 'სეტაპი',
-  'form.setupHint': 'მაგ. გახსნის დიაპაზონის გარღვევა',
+  'form.setupNone': 'სეტაპის გარეშე',
   'form.tags': 'ტეგები',
   'form.noTags': 'ტეგები ჯერ არ არის. დაამატეთ ადმინ გვერდზე.',
   'form.emotionalState': 'ემოციური მდგომარეობა',
