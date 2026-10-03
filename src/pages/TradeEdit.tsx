@@ -2,6 +2,7 @@ import { Trash2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ImageGallery from '../components/ImageGallery'
 import TradeForm from '../components/TradeForm'
+import { useConfirm } from '../lib/confirmContext'
 import { useTrades } from '../lib/tradesContext'
 import type { TradeInput } from '../lib/tradesApi'
 
@@ -10,6 +11,7 @@ export default function TradeEdit() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { trades, loading, add, update, remove } = useTrades()
+  const confirm = useConfirm()
   const existing = id ? trades.find((t) => t.id === id) : undefined
 
   if (loading) return <p className="text-muted">Loading…</p>
@@ -22,7 +24,7 @@ export default function TradeEdit() {
   }
 
   async function del() {
-    if (existing && window.confirm('Delete this trade? This cannot be undone.')) {
+    if (existing && (await confirm('Delete this trade and its screenshots? This cannot be undone.', { title: 'Delete trade', danger: true }))) {
       await remove(existing.id)
       navigate('/trades')
     }

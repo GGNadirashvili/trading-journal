@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
+import { useConfirm } from '../../lib/confirmContext'
 import { useSettings } from '../../lib/settingsContext'
 import { useTrades } from '../../lib/tradesContext'
 
@@ -8,6 +9,7 @@ const input = 'rounded-lg border border-line bg-bg px-3 py-2 text-sm text-fg out
 export default function SymbolsEditor() {
   const { symbols, addSymbol, updateSymbol, removeSymbol } = useSettings()
   const { trades } = useTrades()
+  const confirm = useConfirm()
   const [code, setCode] = useState('')
   const [value, setValue] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -32,10 +34,10 @@ export default function SymbolsEditor() {
     })
   }
 
-  function remove(id: string, symbol: string) {
+  async function remove(id: string, symbol: string) {
     const used = trades.filter((t) => t.symbol === symbol).length
     const note = used ? `\n\n${used} existing trade(s) use ${symbol}. They are kept, but you will not be able to pick ${symbol} for new trades.` : ''
-    if (window.confirm(`Delete symbol ${symbol}?${note}`)) void run(() => removeSymbol(id))
+    if (await confirm(`Delete symbol ${symbol}?${note}`, { title: 'Delete symbol', danger: true })) void run(() => removeSymbol(id))
   }
 
   function changeValue(id: string, current: number, raw: string) {

@@ -1,5 +1,6 @@
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import AuthGate from './components/AuthGate'
+import ConfirmProvider from './components/ConfirmProvider'
 import Layout from './components/Layout'
 import { AuthProvider } from './lib/auth'
 import { SettingsProvider } from './lib/SettingsProvider'
@@ -18,19 +19,21 @@ export default function App() {
       <AuthGate>
         <SettingsProvider>
           <TradesProvider>
-            <HashRouter>
-              <Routes>
-                <Route element={<Layout />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="trades" element={<Trades />} />
-                  <Route path="trades/new" element={<TradeEdit />} />
-                  <Route path="trades/:id" element={<TradeEdit />} />
-                  <Route path="review" element={<Review />} />
-                  <Route path="reports" element={<Reports />} />
-                  <Route path="admin" element={<Admin />} />
-                </Route>
-              </Routes>
-            </HashRouter>
+            <ConfirmProvider>
+              <HashRouter>
+                <Routes>
+                  <Route element={<Layout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="trades" element={<Trades />} />
+                    <Route path="trades/new" element={<TradeEdit />} />
+                    <Route path="trades/:id" element={<TradeEdit />} />
+                    <Route path="review" element={<Review />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="admin" element={<Admin />} />
+                  </Route>
+                </Routes>
+              </HashRouter>
+            </ConfirmProvider>
           </TradesProvider>
         </SettingsProvider>
       </AuthGate>

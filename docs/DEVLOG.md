@@ -428,3 +428,20 @@ Newest entries go at the bottom.
   starts blank after a save instead of reloading.
 - **Not verified yet:** the same flow against the real database (migration 0002 must be applied; the owner's
   last message showed it was still missing).
+
+## 30. feat(ui): Yes/No confirmation dialog for deletes
+
+- **What:** a shared in-app dialog (`ConfirmProvider` + `useConfirm()`) with **No** and **Yes** buttons replaces
+  the browser's built-in popups everywhere: deleting a trade, a screenshot, a symbol, an emotion/tag/setup and
+  a weekly review, plus the two non-delete questions ("Leave without saving?" and "Replace the saved review?").
+  Delete dialogs have a red Yes. The dialog explains the effect, for example "2 existing trade(s) use ES. They
+  are kept...".
+- **Goal:** the owner asked for a Yes/No confirmation on delete buttons; the in-app dialog matches the app's
+  style and is clearer than a system popup.
+- **Safety details:** No is focused when the dialog opens, so a stray Enter cannot delete anything. Escape or a
+  click outside the box also counts as No. A second question replaces the first (answered No).
+- **Checked in demo mode** by driving the real page: No kept ES, Escape kept ES, clicking outside kept ES, a
+  click inside the box left it open, Yes deleted ES. No `window.confirm` call is left in `src/`.
+- **Mistake:** while testing I clicked at screen coordinates I had misjudged and hit Yes instead of No, which
+  deleted the demo symbol ES (demo data only, nothing real). I then reproduced the No path through the page
+  itself to prove the dialog was right and my aim was wrong, rather than assuming the code was buggy.

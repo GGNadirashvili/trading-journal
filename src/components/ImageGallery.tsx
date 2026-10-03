@@ -1,8 +1,10 @@
 import { ImagePlus, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useConfirm } from '../lib/confirmContext'
 import { deleteImage, listImages, uploadImage, type TradeImage } from '../lib/imagesApi'
 
 export default function ImageGallery({ tradeId }: { tradeId: string }) {
+  const confirm = useConfirm()
   const [images, setImages] = useState<TradeImage[]>([])
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -47,7 +49,7 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
   }, [addFiles])
 
   async function remove(img: TradeImage) {
-    if (!window.confirm('Delete this screenshot?')) return
+    if (!(await confirm('Delete this screenshot? This cannot be undone.', { title: 'Delete screenshot', danger: true }))) return
     try {
       await deleteImage(img)
       setImages((cur) => cur.filter((i) => i.id !== img.id))

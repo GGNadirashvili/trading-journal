@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import ReviewList, { type ReviewListItem } from '../components/ReviewList'
+import { useConfirm } from '../lib/confirmContext'
 import { money, pnlColor } from '../lib/format'
 import { BIASES, deleteReview, emptyReview, getReview, isReviewEmpty, listReviews, saveReview, type Bias, type WeeklyReview } from '../lib/reviewsApi'
 import { computeStats, dayKey } from '../lib/stats'
@@ -44,6 +45,7 @@ export default function Review() {
 // Mounted only after the trades have loaded, so the starting week can depend on them.
 function WeekView() {
   const { trades } = useTrades()
+  const confirm = useConfirm()
   // Open on the week of the newest trade, otherwise the week before today.
   const [week, setWeek] = useState(() => (trades[0] ? weekStartOf(new Date(trades[0].entryTime)) : addWeeks(weekStartOf(new Date()), -1)))
   const [dirty, setDirty] = useState(false)
@@ -71,10 +73,10 @@ function WeekView() {
     [reviews, trades],
   )
 
-  const leaveOk = () => !dirty || window.confirm('You have unsaved changes. Leave without saving?')
+  const leaveOk = async () => !dirty || (await confirm('You have unsaved changes. Leave without saving?', { title: 'Unsaved changes' }))
 
-  function open(w: string) {
-    if (!leaveOk()) return
+  async function open(w: string) {
+    if (!(await leaveOk())) return
     setDirty(false)
     setBlank(false)
     setNotice(null)
@@ -91,7 +93,7 @@ function WeekView() {
   }
 
   async function remove(w: string) {
-    if (!window.confirm(`Delete the review for ${formatWeek(w)}? This cannot be undone.`)) return
+    if (!(await confirm(`Delete the review for ${formatWeek(w)}? This cannot be undone.`, { title: 'Delete review', danger: true }))) return
     try {
       await deleteReview(w)
       setReviews((cur) => cur.filter((x) => x.weekStart !== w))
@@ -156,6 +158,7 @@ function ReviewEditor({
   onSaved: (r: WeeklyReview) => void
 }) {
   const { trades } = useTrades()
+  const confirm = useConfirm()
   const [review, setReview] = useState<WeeklyReview>(() => emptyReview(week))
   const [previous, setPrevious] = useState<WeeklyReview | null>(null)
   const [loaded, setLoaded] = useState(false)
@@ -194,7 +197,7 @@ function ReviewEditor({
 
   async function save() {
     // Typing into a blank form for a week that already has a saved review would replace it, so ask first.
-    if (alreadySaved && !loadedExisting && !window.confirm(`A review for ${formatWeek(week)} is already saved. Replace it with this one?`)) return
+    if (alreadySaved && !loadedExisting && !(await confirm(`A review for ${formatWeek(week)} is already saved. Replace it with this one?`, { title: 'Replace saved review' }))) return
     setSaving(true)
     setError(null)
     try {

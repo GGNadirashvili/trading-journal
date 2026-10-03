@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
+import { useConfirm } from '../../lib/confirmContext'
 import { useSettings } from '../../lib/settingsContext'
 import type { OptionKind } from '../../lib/settingsTypes'
 
@@ -15,6 +16,7 @@ interface Props {
 
 export default function ListEditor({ kind, title, hint, usage }: Props) {
   const { options, addOption, removeOption } = useSettings()
+  const confirm = useConfirm()
   const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const items = options.filter((o) => o.kind === kind)
@@ -33,7 +35,7 @@ export default function ListEditor({ kind, title, hint, usage }: Props) {
   async function remove(id: string, itemName: string) {
     const used = usage(itemName)
     const note = used ? `\n\n${used} existing trade(s) use it. They keep it; it just disappears from the pick-list.` : ''
-    if (!window.confirm(`Remove "${itemName}"?${note}`)) return
+    if (!(await confirm(`Remove "${itemName}"?${note}`, { title: `Remove ${kind}`, danger: true }))) return
     setError(null)
     try {
       await removeOption(id)
