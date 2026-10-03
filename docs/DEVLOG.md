@@ -553,3 +553,21 @@ Newest entries go at the bottom.
      send corrections; every sentence is a single line in `src/i18n/ka.ts`. Trading words are transliterated
      the way I assumed traders say them (ლონგი, შორტი, ბექაფი, სქრინშოტი, სეტაპი); change them if you use
      different ones.
+
+## 37. feat(db): Georgian names for emotions, tags and setups
+
+- **What:** `supabase/migrations/0003_option_names_ka.sql` adds `options.name_ka` (the Georgian name). `name`
+  stays the English name and is still the value saved on trades; `name_ka` is only what is shown when the app
+  is in Georgian. The 12 built-in emotions get their Georgian names. Two items of the same kind cannot share a
+  Georgian name (a unique index), because they would look identical on screen.
+- **Goal:** the owner wants every new emotion, tag or setup to have both an English and a Georgian name, and
+  the app to show the one matching the language. The previous "emotions are stored as typed" approach could
+  show two identical-looking chips in Georgian (for example the built-in "calm" and a hand-typed "მშვიდი").
+- **Design choice:** trades keep storing the English name, so no trade has to be rewritten and Reports keeps
+  grouping correctly. Only the display changes with the language.
+- **Verified before touching the real database** (local throw-away Postgres, migrations 0001, 0002 and 0003
+  in order): 12 of 12 emotions got a Georgian name, a custom tag created before 0003 survived with no Georgian
+  name, a duplicate Georgian name and a blank one were rejected, the same Georgian text in a different kind
+  (emotion vs setup) is allowed, and running the file a second time is harmless.
+- **Owner action:** run this file once in the Supabase SQL editor. Until then the app keeps working and falls
+  back to the built-in translations; the new add form (next commits) needs the column.
