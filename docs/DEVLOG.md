@@ -864,3 +864,20 @@ Newest entries go at the bottom.
 - **Mistake caught before testing:** my first version computed each trade's date from the UTC date instead of the
   local day, which could show the wrong day near midnight. I replaced it with the same local-day helper the rest
   of the app uses.
+
+## 52. docs: accounts and sessions in the README, and a combined migration paste
+
+- **What:** the README now describes accounts, sessions, win rate per session, how to enter an account that
+  already has results, and lists all six migrations.
+- **Why a combined paste:** four migrations (0003 to 0006) were waiting, and running four files one by one is
+  easy to get wrong. I built one text with the four in order (kept outside the repo, because the individual
+  files stay the source of truth) and tested THAT exact text against a copy of the owner's current database
+  state (migrations 0001 and 0002 applied, one existing trade and one saved review): it ran without errors, the
+  trade and the review were kept, the 12 emotions got Georgian names, a newly created user was seeded with 12
+  emotions by the trigger, and the new tables exist.
+- **What was probed on the real database before that:** the session column, the Georgian-name column and the
+  accounts table were all missing, so none of 0003 to 0006 has been applied there.
+- **Not pushed on purpose:** pushing deploys the live site, and the live site would then write columns that do
+  not exist yet in the real database (saving a trade would fail). Push only after the migrations are run.
+- **Final checks:** type-check, lint, 68 tests and a production build pass; the production bundle was not
+  re-inspected for demo data after this change (it was before, and demo code is only enabled in development).

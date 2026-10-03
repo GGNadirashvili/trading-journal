@@ -4,7 +4,9 @@ Live site: <https://ggnadirashvili.github.io/trading-journal/> (needs your login
 
 A private, personal trading journal for MNQ and ES futures. It is for notes and statistics only.
 
-- Log trades with the emotional state before and after, tags, notes and screenshots.
+- Prop-firm accounts: add an account (id, size, max drawdown, profit goal), see its condition (balance, how much you can still lose, distance to the goal), passed / failed status, and a history of finished accounts.
+- Log trades on an account, with a mandatory trading session, the emotional state before and after, tags, notes and screenshots.
+- Win rate per session (Asia, London, NY Premarket, NY AM, NY Lunch, NY PM, Outside of session).
 - Weekly review: emotional and technical analysis, mistakes, and your outlook for next week.
 - Admin page: manage symbols (with $ per point), emotions, tags and setups; backup export; password change.
 - English and Georgian (ქართული) with a language button in the sidebar; the choice is remembered. Texts live in `src/i18n/en.ts` and `src/i18n/ka.ts`; add or fix a Georgian word there.
@@ -32,14 +34,16 @@ See [docs/DEVLOG.md](docs/DEVLOG.md) for every commit, its goal, and the mistake
 ### 1. Supabase
 
 1. Create a free project at <https://supabase.com>.
-2. SQL Editor: run these four files, in order, one after the other:
+2. SQL Editor: run these six files, in order, one after the other:
    [0001_init.sql](supabase/migrations/0001_init.sql) (trades, screenshots, row-level security) and
    [0002_settings_and_reviews.sql](supabase/migrations/0002_settings_and_reviews.sql) (symbols, lists,
    weekly reviews) and
    [0003_option_names_ka.sql](supabase/migrations/0003_option_names_ka.sql) (Georgian names for emotions,
    tags and setups) and
    [0004_seed_new_users.sql](supabase/migrations/0004_seed_new_users.sql) (starting lists for every new
-   account). Run each only once.
+   account),
+   [0005_trade_session.sql](supabase/migrations/0005_trade_session.sql) (trading session on each trade) and
+   [0006_accounts.sql](supabase/migrations/0006_accounts.sql) (prop-firm accounts). Run each only once.
 3. Authentication -> Users -> Add user: create your own email + password (tick "Auto confirm").
 4. Authentication -> Sign In / Providers: turn **off** "Allow new users to sign up". Now only your account exists.
 5. Project Settings -> API: copy the Project URL and the `anon` public key.
@@ -57,9 +61,17 @@ npm run dev
 Demo mode: put `VITE_DEMO=1` in `.env.local` to try the UI with fake in-memory data and no login
 (development only; production builds never include it). Remove it to use your real data.
 
-### 3. Add trades
+### 3. Add your prop-firm account, then trades
 
-Use **Trades -> New trade**. Leave P&L empty to compute it from the entry and exit prices using the point value
+Open **Accounts -> Add account**. For an account that already has results, type the **current balance** (for
+example 49,000 on a 50,000 account) and the app works out the rest. Choose the **drawdown type** your firm uses
+(trailing follows your highest balance and is the strictest; the form shows a live preview so you can compare it
+with your firm's dashboard). Only closed trades are known, so intraday dips and open profit are not seen. An account
+passes when its balance reaches the goal and fails when it reaches the loss limit; you can also mark it by hand.
+Finished accounts move to the history and take no new trades, so when one fails you add the next.
+
+
+Then use **Trades -> New trade** (choose the account and the session; both are required). Leave P&L empty to compute it from the entry and exit prices using the point value
 of the symbol (set on the Admin page), or type the final P&L yourself. Open a trade afterwards to add
 screenshots (click, drop, or paste with Cmd+V).
 
@@ -96,8 +108,8 @@ Even when the site URL is public, nobody can read your trades without your Supab
 
 ## Project layout
 
-- `src/lib/stats.ts`, `reports.ts`, `calendar.ts`, `weeks.ts`: pure, tested logic (`*.test.ts`)
+- `src/lib/stats.ts`, `reports.ts`, `calendar.ts`, `weeks.ts`, `accounts.ts`: pure, tested logic (`*.test.ts`)
 - `src/lib/tradesApi.ts`, `imagesApi.ts`: the only code that talks to Supabase
-- `src/pages/`: Dashboard, Trades, TradeEdit, Review, Reports, Admin, Login
+- `src/pages/`: Dashboard, Accounts, AccountDetail, Trades, TradeEdit, Review, Reports, Admin, Login
 - `src/components/`: layout, P&L calendar, gauges, trade form, image gallery
 - `supabase/migrations/`: database schema and security policies
