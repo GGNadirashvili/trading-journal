@@ -15,7 +15,7 @@ describe('csv', () => {
     const t: Trade = {
       id: '1', symbol: 'ES', direction: 'short', qty: 1, entryPrice: 5000, exitPrice: 4995,
       entryTime: '2026-09-07T10:00:00.000Z', exitTime: null, pnl: 250, setup: null,
-      tags: ['trend', 'news'], emotionBefore: 'calm, focused', emotionAfter: null, emotionTags: ['calm'], notes: null, session: 'ny_am',
+      tags: ['trend', 'news'], emotionBefore: 'calm, focused', emotionAfter: null, emotionTags: ['calm'], notes: null, session: 'ny_am', accountId: null,
     }
     const lines = tradesToCsv([t]).split('\n')
     expect(lines).toHaveLength(2)

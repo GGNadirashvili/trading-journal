@@ -271,4 +271,14 @@ export const ka: Record<MessageKey, string> = {
   'reports.col.session': 'სესია',
   'reports.sessionNote': 'მოგების წილი = მოგებული ტრეიდები გაყოფილი ამ სესიის ყველა ტრეიდზე. ნულოვანი შედეგი მოგებად არ ითვლება. სესიების დამატებამდე შენახული ტრეიდები ჩანს როგორც „მითითებული არ არის“.',
   'reports.winRateTip': '{rate}% ({trades} ტრეიდიდან {wins})',
+
+  'account.status.active': 'აქტიური',
+  'account.status.passed': 'გავლილია',
+  'account.status.failed': 'ჩაიშალა',
+  'form.account': 'ანგარიში',
+  'form.accountPick': 'აირჩიეთ ანგარიში…',
+  'form.accountRequired': 'აირჩიეთ ანგარიში, რომელსაც ეს ტრეიდი ეკუთვნის.',
+  'form.noAccountsYet': 'ანგარიშები ჯერ არ გაქვთ. ჯერ დაამატეთ თქვენი პროპ ანგარიში.',
+  'form.allAccountsClosed': 'თქვენი ყველა ანგარიში დასრულებულია (გავლილი ან ჩაშლილი). ახალი ტრეიდების დასამატებლად დაამატეთ ახალი ანგარიში.',
+  'form.addAccount': 'ანგარიშის დამატება',
 }

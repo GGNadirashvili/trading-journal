@@ -1,6 +1,8 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { pnlFromPrices } from '../lib/contracts'
 import { useI18n } from '../i18n/context'
+import { useAccounts } from '../lib/accountsContext'
 import { fromLocalInput, toLocalInput } from '../lib/format'
 import { useSettings } from '../lib/settingsContext'
 import type { TradeInput } from '../lib/tradesApi'
@@ -31,6 +33,11 @@ interface Props {
 export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   const { symbols, pointValues, optionNames, label } = useSettings()
   const { t } = useI18n()
+  const { accounts, active, states, selected } = useAccounts()
+  // Only accounts still in play can take new trades. A trade being edited keeps its own account even if it has finished.
+  const ownAccount = initial?.accountId ? accounts.find((a) => a.id === initial.accountId) : undefined
+  const accountChoices = [...active, ...(ownAccount && !active.some((a) => a.id === ownAccount.id) ? [ownAccount] : [])]
+  const [accountId, setAccountId] = useState<string>(() => initial?.accountId ?? (active.some((a) => a.id === selected) ? selected : active.length === 1 ? active[0].id : ''))
   const [symbol, setSymbol] = useState(initial?.symbol ?? symbols[0]?.code ?? '')
   const [direction, setDirection] = useState<Direction>(initial?.direction ?? 'long')
   // Starts empty on purpose: the session must be chosen for every trade, there is no default.
@@ -58,6 +65,8 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
     e.preventDefault()
     setError(null)
     if (!session) return setError(t('form.sessionRequired'))
+    // With accounts set up, every trade must name one. Trades that already had none may stay that way.
+    if (accounts.length > 0 && !accountId && initial?.accountId !== null) return setError(t('form.accountRequired'))
     const q = Number(qty)
     const ep = optNum(entryPrice)
     const xp = optNum(exitPrice)
@@ -89,6 +98,7 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
         emotionTags,
         notes: optText(notes),
         session,
+        accountId: accountId || null,
       })
     } catch (err) {
       setError((err as Error).message)
@@ -98,6 +108,29 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
 
   return (
     <form onSubmit={submit} className="space-y-6">
+      {accounts.length === 0 || accountChoices.length === 0 ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-warn p-3 text-sm text-warn">
+          <span>{accounts.length === 0 ? t('form.noAccountsYet') : t('form.allAccountsClosed')}</span>
+          <Link to="/accounts" className="rounded-lg bg-green px-3 py-1.5 font-semibold text-black">
+            {t('form.addAccount')}
+          </Link>
+        </div>
+      ) : (
+        <Field label={t('form.account')}>
+          <select className={`${input} sm:w-80`} value={accountId} onChange={(e) => setAccountId(e.target.value)} required={initial?.accountId !== null}>
+            <option value="" disabled={initial?.accountId !== null}>
+              {t('form.accountPick')}
+            </option>
+            {accountChoices.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+                {states[a.id].status === 'active' ? '' : ` (${t(`account.status.${states[a.id].status}`)})`}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Field label={t('form.symbol')}>
           <select className={input} value={symbol} onChange={(e) => setSymbol(e.target.value)} required>

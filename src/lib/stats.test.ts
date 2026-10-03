@@ -25,6 +25,7 @@ const trade = (pnl: number, time: string, over: Partial<Trade> = {}): Trade => (
   emotionTags: [],
   notes: null,
   session: null,
+  accountId: null,
   ...over,
 })
 

@@ -9,6 +9,8 @@ export interface TradesState {
   add: (t: TradeInput) => Promise<Trade>
   update: (id: string, t: TradeInput) => Promise<void>
   remove: (id: string) => Promise<void>
+  /** Gives every trade without an account to this account, then reloads the list. Returns how many changed. */
+  assignUnassigned: (accountId: string) => Promise<number>
 }
 
 export const TradesContext = createContext<TradesState | null>(null)

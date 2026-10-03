@@ -20,4 +20,6 @@ export interface Trade {
   notes: string | null
   /** Null only for trades saved before sessions existed. */
   session: Session | null
+  /** The prop-firm account this trade belongs to; null for trades with no account. */
+  accountId: string | null
 }

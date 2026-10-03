@@ -21,6 +21,7 @@ interface TradeRow {
   emotion_tags: string[]
   notes: string | null
   session: string | null
+  account_id: string | null
 }
 
 // numeric columns can come back as strings from PostgREST, so coerce them.
@@ -43,6 +44,7 @@ const fromRow = (r: TradeRow): Trade => ({
   emotionTags: r.emotion_tags ?? [],
   notes: r.notes,
   session: isSession(r.session) ? r.session : null,
+  accountId: r.account_id ?? null,
 })
 
 export type TradeInput = Omit<Trade, 'id'>
@@ -63,6 +65,7 @@ const toRow = (t: TradeInput) => ({
   emotion_tags: t.emotionTags,
   notes: t.notes,
   session: t.session satisfies Session | null,
+  account_id: t.accountId,
 })
 
 // In-memory store used only by demo mode.
@@ -104,4 +107,15 @@ export async function deleteTrade(id: string): Promise<void> {
     return
   }
   check(await supabase.from('trades').delete().eq('id', id))
+}
+
+/** Puts every trade that has no account onto `accountId`. Returns how many trades were changed. */
+export async function assignUnassignedTrades(accountId: string): Promise<number> {
+  if (DEMO) {
+    let n = 0
+    demoStore = demo().map((t) => (t.accountId === null ? (n++, { ...t, accountId }) : t))
+    return n
+  }
+  const rows = check(await supabase.from('trades').update({ account_id: accountId }).is('account_id', null).select('id'))
+  return (rows as { id: string }[]).length
 }

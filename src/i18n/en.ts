@@ -288,6 +288,17 @@ export const en = {
   'reports.col.session': 'Session',
   'reports.sessionNote': 'Win rate = winning trades divided by all trades in that session. A break-even trade is not a win. Trades saved before sessions existed are listed as "Not set".',
   'reports.winRateTip': '{rate}% ({wins} of {trades} trades)',
+
+  // Accounts (shared by the form and the account screens)
+  'account.status.active': 'Active',
+  'account.status.passed': 'Passed',
+  'account.status.failed': 'Failed',
+  'form.account': 'Account',
+  'form.accountPick': 'Select an account…',
+  'form.accountRequired': 'Choose the account this trade belongs to.',
+  'form.noAccountsYet': 'You have no accounts yet. Add your prop-firm account first.',
+  'form.allAccountsClosed': 'All your accounts are finished (passed or failed). Add a new account to keep adding trades.',
+  'form.addAccount': 'Add account',
 } as const
 
 export type MessageKey = keyof typeof en

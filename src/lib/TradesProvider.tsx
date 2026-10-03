@@ -34,9 +34,15 @@ export function TradesProvider({ children }: { children: ReactNode }) {
     setTrades((cur) => cur.filter((x) => x.id !== id))
   }, [])
 
+  const assignUnassigned = useCallback(async (accountId: string) => {
+    const n = await api.assignUnassignedTrades(accountId)
+    setTrades((await api.listTrades()).sort(byEntryDesc))
+    return n
+  }, [])
+
   const value = useMemo<TradesState>(
-    () => ({ trades, loading, error, add, update, remove }),
-    [trades, loading, error, add, update, remove],
+    () => ({ trades, loading, error, add, update, remove, assignUnassigned }),
+    [trades, loading, error, add, update, remove, assignUnassigned],
   )
   return <TradesContext.Provider value={value}>{children}</TradesContext.Provider>
 }

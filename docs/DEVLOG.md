@@ -779,3 +779,27 @@ Newest entries go at the bottom.
   the same policy covers updates, but I have not run a meaningful update test.
 - **Not idempotent:** like 0002, this file must be run once.
 - **Owner action:** run it in the Supabase SQL editor after 0005, before using the accounts screens.
+
+## 48. feat(accounts): store accounts and attach each trade to one
+
+- **What:** the app side of accounts, with no new screens yet. Trades now carry an `accountId`. New pieces: an
+  accounts API (list, create, edit, mark passed/failed by hand, delete), an `AccountsProvider` that works out
+  where every account stands from its trades (using the rules engine from entry 43) and splits them into
+  active accounts and a history, and an **account filter** state (all accounts or one) that remembers your
+  choice and gives the "scoped" trades the dashboard, trade log and reports will use. The trade form has an
+  **Account** dropdown as its first field.
+- **Rules in the trade form:**
+  - when you have accounts, choosing one is required for every new trade;
+  - only accounts still in play (not passed, not failed) are offered, and if there is exactly one, it is chosen
+    for you; if you have none, or all are finished, a yellow notice with an "Add account" button replaces the
+    dropdown;
+  - editing a trade that belongs to a finished account keeps that account in its list;
+  - trades that existed before accounts (no account) can still be saved without one.
+- **Why only active accounts take new trades:** a failed or passed account is over; adding trades to it would
+  make the history wrong. When an account fails you add the next one.
+- **Demo data** now has a current account and an older one that failed in August, so history can be checked.
+- **Checked in the browser (demo mode):** the new-trade form shows "Account" first, offers only the active demo
+  account, preselects it, and marks it required. Type-check, lint and 68 tests pass.
+- **Mistake:** my scripted edit of `App.tsx` produced wrong indentation (the same slip I made twice before in
+  this project); I rewrote the whole file instead of patching it, and the compiler found nothing else.
+- **Deployment note:** not pushed yet (needs migrations 0005 and 0006 in the real database first).
