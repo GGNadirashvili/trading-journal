@@ -52,3 +52,15 @@ Newest entries go at the bottom.
   useless without the owner's login.
 - **Not verified yet:** the SQL has not run against a real Supabase project (none exists yet). It will be
   tested once the project is created, and any fix will be a separate commit.
+
+## 5. feat(domain): trade types, contract values, stats
+
+- **What:** `Trade` type, MNQ/ES (plus NQ/MES) point values and `pnlFromPrices`, and pure statistics in
+  `src/lib/stats.ts`: win rate, profit factor, expectancy, avg win/loss, daily totals, trade and day
+  streaks. Vitest tests with hand-computed numbers (`npm test`, 8 pass).
+- **Goal:** the numbers the dashboard shows must be right, so they live in pure, tested functions
+  separate from any UI or database code.
+- **Definitions chosen:** only closed trades count toward results; open trades are only counted.
+  A trade with P&L of exactly 0 is "wash". Profit factor is `null` (shown as "-") when there are no
+  losses. A trade belongs to the day it was entered, in local time.
+- **Order change:** done before auth, because auth needs a real Supabase project and this does not.
