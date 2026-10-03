@@ -1,3 +1,4 @@
+import DataAndAccount from '../components/admin/DataAndAccount'
 import ListEditor from '../components/admin/ListEditor'
 import SymbolsEditor from '../components/admin/SymbolsEditor'
 import { useSettings } from '../lib/settingsContext'
@@ -31,6 +32,7 @@ export default function Admin() {
         hint="Your named trade setups. They are suggested in the Setup field of the trade form."
         usage={(n) => trades.filter((t) => t.setup === n).length}
       />
+      <DataAndAccount />
     </div>
   )
 }

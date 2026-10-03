@@ -87,3 +87,10 @@ export async function saveReview(r: WeeklyReview): Promise<void> {
   )
   if (error) throw new Error(error.message)
 }
+
+export async function listReviews(): Promise<WeeklyReview[]> {
+  if (DEMO) return [...demoStore.values()].sort((a, b) => a.weekStart.localeCompare(b.weekStart))
+  const { data, error } = await supabase.from('weekly_reviews').select('*').order('week_start')
+  if (error) throw new Error(error.message)
+  return (data as Row[]).map(fromRow)
+}

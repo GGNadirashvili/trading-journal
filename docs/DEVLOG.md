@@ -386,3 +386,22 @@ Newest entries go at the bottom.
 - **Admin security:** the app has a single user, signups are off, and every table has row-level security, so
   the person who can open Admin is the only one who can read or change anything. The next commit shows the
   signup status on the Admin page and adds data export and password change.
+
+## 28. feat(admin): security status, backup export and password change
+
+- **What:** three more cards on the Admin page:
+  - **Security:** shows who is signed in and asks Supabase live whether new signups are disabled. If they are
+    ever enabled it shows a red warning with where to switch them off.
+  - **Backup:** "Download backup (JSON)" (trades, weekly reviews, symbols, lists) and "Download trades (CSV)".
+    Screenshots are not included; they stay in Supabase Storage.
+  - **Change password:** new password twice, minimum 8 characters, through Supabase auth.
+- **Goal:** the owner wants to be the only admin. Single user + signups off + row-level security already
+  enforces that; this makes the state visible and gives a way to keep a copy of the data.
+- **Tests:** 2 new tests for CSV quoting and the trades CSV row (23 pass in total).
+- **Checked:** the signup endpoint (`/auth/v1/settings`) answers browser requests from localhost (CORS
+  header present) and reports `disable_signup: true` for the real project. The page was checked in demo mode;
+  in demo mode the signup check says it cannot run and the password form is hidden.
+- **Not verified yet (needs the owner's login):** the live signup status on the page, the password change,
+  and the JSON download with real data.
+- **Mistake:** lint flagged setting state synchronously inside the effect for the signup check; I made the
+  initial state depend on configuration instead.
