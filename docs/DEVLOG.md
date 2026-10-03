@@ -445,3 +445,14 @@ Newest entries go at the bottom.
 - **Mistake:** while testing I clicked at screen coordinates I had misjudged and hit Yes instead of No, which
   deleted the demo symbol ES (demo data only, nothing real). I then reproduced the No path through the page
   itself to prove the dialog was right and my aim was wrong, rather than assuming the code was buggy.
+
+## 31. style: gap after the dropdown arrow
+
+- **What:** one global CSS rule gives every dropdown its own chevron arrow with a gap after it (2.5rem of right
+  padding), instead of the browser's default arrow that sat tight against the right edge.
+- **Goal:** the owner pointed out the "All symbols" dropdown on the Trades page had no gap after the arrow.
+  A single rule fixes it for all dropdowns (month/year in the calendar, symbol/direction in the trade form,
+  market bias in the weekly review) so they match.
+- **Checked:** production build passes; screenshot of the Trades page in demo mode shows the gap.
+- **Note:** I fixed it globally on purpose rather than only on that one select, so the dropdowns do not end up
+  looking different from each other. The other dropdowns were not individually screenshotted.
