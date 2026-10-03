@@ -756,3 +756,26 @@ Newest entries go at the bottom.
 - **Deployment note:** these session commits are committed locally but **not pushed yet**, on purpose. Pushing
   deploys the live site automatically, and the live site would then try to save the new `session` column before
   migration 0005 exists in the real database, so saving trades there would fail.
+
+## 47. feat(db): prop-firm accounts
+
+- **What:** `supabase/migrations/0006_accounts.sql`: an `accounts` table (account id, size, max drawdown, profit
+  goal as a target balance, drawdown type, trailing lock, balance adjustment, known earlier peak, manual
+  passed/failed with a date, opening date) and `trades.account_id`. Row-level security keeps accounts private to
+  their owner. The trades policy now also requires that a trade can only point at an account of the SAME user.
+  Deleting an account keeps its trades (they simply have no account).
+- **Goal:** track the owner's prop-firm accounts (current: 50k, 2k drawdown, 53k goal, now about 49k) and which
+  trades belong to which account.
+- **Why the extra trades rule:** a foreign key alone only checks that an account exists, not whose it is, so
+  without the new check a user who guessed another user's account id could attach their own trade to it.
+- **Verified locally with two simulated users (throw-away Postgres, migrations 0001 to 0006):** an older trade
+  survives with no account; the owner's account is created with the defaults (trailing, lock on) and the old
+  trade is attached to it; the friend sees only their own accounts, cannot edit or delete the owner's account,
+  cannot save a trade on it, and can save a trade on their own account; both users may use the same account
+  name; six bad inputs are rejected (goal not above the size, zero drawdown, blank name, unknown drawdown type,
+  manual status without a date, duplicate name for the same user); deleting an account keeps its trade.
+- **Weakness in my own test:** the "move a trade onto someone else's account" check ran when that user had no
+  trade yet, so it proved nothing. The "save a trade on someone else's account" check does prove the rule, and
+  the same policy covers updates, but I have not run a meaningful update test.
+- **Not idempotent:** like 0002, this file must be run once.
+- **Owner action:** run it in the Supabase SQL editor after 0005, before using the accounts screens.
