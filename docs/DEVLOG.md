@@ -288,3 +288,23 @@ Newest entries go at the bottom.
   never breaks because of a missing migration. The admin page will show that error.
 - **No visible change yet:** nothing reads the settings until the next commits.
 - **Checked:** type-check and lint. Not exercised against the real database yet (migration pending).
+
+## 22. feat(trades): use managed symbols and labels in the form and import
+
+- **What:** the trade form takes its symbol dropdown, emotion chips and tag chips from the settings, and offers
+  setup names as suggestions. Tags are now chips picked from the managed list, not a comma-separated text
+  box. The P&L-from-prices calculation (`pnlFromPrices`) and the import parser take the point values from
+  the settings instead of a hard-coded table, so any symbol you add with a point value works. New shared
+  `ChipPicker` component. Removed the old hard-coded `emotions.ts`.
+- **Goal:** what you can pick must be what you manage on the Admin page.
+- **Old data stays visible:** if a trade has an emotion, tag or symbol that was later removed from the lists,
+  it still shows (and can be toggled off) in that trade's form, and the symbol stays selectable. Removing an
+  item from a list never changes old trades.
+- **Tests updated:** the P&L and parser tests now pass the point-value table (22 pass).
+- **Checked in a demo-mode browser tab:** dropdown shows MNQ and ES, no Fees field, 12 emotion chips, tags hint.
+- **Mistakes:** (1) I changed function signatures first and let the type-checker point out the one caller I had
+  not updated (the form), then fixed it; it was caught before committing. (2) My browser check first showed the
+  Overview instead of the form because the tab had not finished loading; I reloaded with a cache-busting
+  query and re-read the page text.
+- **Tooling:** added a second dev-server config ("demo", port 5174, `VITE_DEMO=1`) so I can look at the UI with
+  fake data while `.env.local` points at the real Supabase project.

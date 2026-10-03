@@ -39,7 +39,8 @@ function direction(v: string | undefined): Direction | null {
 
 const atLocal = (date: string, time: string) => new Date(`${date}T${time.length === 5 ? time + ':00' : time}`)
 
-export function parseRows(rows: RawRow[]): ParseResult {
+/** `pointValues` maps a symbol code to dollars per point; it is used when a row has prices but no P&L. */
+export function parseRows(rows: RawRow[], pointValues: Record<string, number>): ParseResult {
   const trades: TradeInput[] = []
   const errors: string[] = []
 
@@ -66,8 +67,8 @@ export function parseRows(rows: RawRow[]): ParseResult {
     if ([entry, exit, net].some((x) => x !== null && Number.isNaN(x))) return fail('prices and pnl must be numbers')
 
     if (net === null) {
-      const gross = pnlFromPrices(symbol, dir, qty, entry, exit)
-      if (gross === null) return fail('give pnl, or entry and exit prices for a known symbol (MNQ, ES, NQ, MES)')
+      const gross = pnlFromPrices(pointValues, symbol, dir, qty, entry, exit)
+      if (gross === null) return fail('give pnl, or entry and exit prices for a symbol set up on the Admin page')
       net = gross
     }
 
@@ -101,7 +102,7 @@ export function parseRows(rows: RawRow[]): ParseResult {
 }
 
 /** Parse pasted JSON: an array of rows, or an object with a `trades` array. */
-export function parseJson(text: string): ParseResult {
+export function parseJson(text: string, pointValues: Record<string, number>): ParseResult {
   let data: unknown
   try {
     data = JSON.parse(text)
@@ -110,5 +111,5 @@ export function parseJson(text: string): ParseResult {
   }
   const rows = Array.isArray(data) ? data : (data as { trades?: unknown })?.trades
   if (!Array.isArray(rows)) return { trades: [], errors: ['Expected a JSON array of trades (or {"trades": [...]})'] }
-  return parseRows(rows as RawRow[])
+  return parseRows(rows as RawRow[], pointValues)
 }

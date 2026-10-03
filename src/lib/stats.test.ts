@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { pnlFromPrices } from './contracts'
+
 import { computeStats, currentStreak, dailyTotals, dayStreak, inRange, tradeStreak } from './stats'
 import type { Trade } from './types'
 
@@ -86,15 +87,17 @@ describe('streaks', () => {
   })
 })
 
+const PV = { MNQ: 2, ES: 50 }
+
 describe('pnlFromPrices', () => {
   it('uses point values and direction', () => {
-    expect(pnlFromPrices('MNQ', 'long', 2, 20000, 20010)).toBe(40) // 10 pts * $2 * 2
-    expect(pnlFromPrices('ES', 'short', 1, 5000, 4995)).toBe(250) // 5 pts * $50
-    expect(pnlFromPrices('ES', 'long', 1, 5000, 4995)).toBe(-250)
+    expect(pnlFromPrices(PV, 'MNQ', 'long', 2, 20000, 20010)).toBe(40) // 10 pts * $2 * 2
+    expect(pnlFromPrices(PV, 'ES', 'short', 1, 5000, 4995)).toBe(250) // 5 pts * $50
+    expect(pnlFromPrices(PV, 'ES', 'long', 1, 5000, 4995)).toBe(-250)
   })
   it('returns null for unknown symbol or missing price', () => {
-    expect(pnlFromPrices('XYZ', 'long', 1, 1, 2)).toBeNull()
-    expect(pnlFromPrices('ES', 'long', 1, null, 2)).toBeNull()
+    expect(pnlFromPrices(PV, 'XYZ', 'long', 1, 1, 2)).toBeNull()
+    expect(pnlFromPrices(PV, 'ES', 'long', 1, null, 2)).toBeNull()
   })
 })
 

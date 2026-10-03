@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { money, pnlColor } from '../lib/format'
 import { parseJson, parseRows, type ParseResult, type RawRow } from '../lib/importTrades'
+import { useSettings } from '../lib/settingsContext'
 import { useTrades } from '../lib/tradesContext'
 
 type Mode = 'grid' | 'json'
@@ -27,21 +28,23 @@ const JSON_EXAMPLE = `[
   { "date": "2026-09-07", "time": "10:15", "symbol": "ES", "direction": "short", "pnl": -120.5 }
 ]`
 
-const emptyRow = (): RawRow => ({ date: '', time: '', symbol: 'MNQ', direction: 'long', qty: '1' })
+const emptyRow = (symbol: string): RawRow => ({ date: '', time: '', symbol, direction: 'long', qty: '1' })
 const isEmpty = (r: RawRow) => !r.date && !r.pnl && !r.entry && !r.exit && !r.notes && !r.emotionTags
 
 export default function Import() {
   const { addMany } = useTrades()
+  const { pointValues, symbols } = useSettings()
   const navigate = useNavigate()
+  const defaultSymbol = symbols[0]?.code ?? ''
   const [mode, setMode] = useState<Mode>('grid')
-  const [rows, setRows] = useState<RawRow[]>([emptyRow(), emptyRow(), emptyRow()])
+  const [rows, setRows] = useState<RawRow[]>(() => [emptyRow(defaultSymbol), emptyRow(defaultSymbol), emptyRow(defaultSymbol)])
   const [json, setJson] = useState('')
   const [busy, setBusy] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
 
   const result: ParseResult = useMemo(
-    () => (mode === 'grid' ? parseRows(rows.filter((r) => !isEmpty(r))) : json.trim() ? parseJson(json) : { trades: [], errors: [] }),
-    [mode, rows, json],
+    () => (mode === 'grid' ? parseRows(rows.filter((r) => !isEmpty(r)), pointValues) : json.trim() ? parseJson(json, pointValues) : { trades: [], errors: [] }),
+    [mode, rows, json, pointValues],
   )
 
   const setCell = (i: number, key: keyof RawRow, value: string) =>
@@ -117,7 +120,7 @@ export default function Import() {
               </tbody>
             </table>
           </div>
-          <button onClick={() => setRows((cur) => [...cur, { ...emptyRow(), date: cur.at(-1)?.date ?? '' }])} className="flex items-center gap-2 text-sm text-green">
+          <button onClick={() => setRows((cur) => [...cur, { ...emptyRow(defaultSymbol), date: cur.at(-1)?.date ?? '' }])} className="flex items-center gap-2 text-sm text-green">
             <Plus size={16} /> Add row
           </button>
         </div>
