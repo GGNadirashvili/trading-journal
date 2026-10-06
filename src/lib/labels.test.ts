@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { hasGeorgian, optionLabel, validateNames } from './labels'
+import { georgianName, hasGeorgian, optionLabel, validateNames } from './labels'
 import type { OptionItem } from './settingsTypes'
 
 const options: OptionItem[] = [
@@ -32,6 +32,26 @@ describe('optionLabel', () => {
     ]
     expect(optionLabel(two, 'ka', 'tag', 'trend')).toBe('ტრენდი (ტეგი)')
     expect(optionLabel(two, 'ka', 'setup', 'trend')).toBe('ტრენდი (სეტაპი)')
+  })
+})
+
+describe('damaged Georgian names', () => {
+  // What the database held after a wrongly encoded paste: UTF-8 bytes read as Mac Roman.
+  const damaged: OptionItem[] = [
+    { id: '1', kind: 'emotion', name: 'calm', nameKa: '·Éõ·É®·Éï·Éò·Éì·Éò' },
+    { id: '2', kind: 'emotion', name: 'restless', nameKa: '·Éõ·Éù·É£·É°·Éï·Éî·Éú·Éê·É†·Éò' }, // custom item: trusted as it is
+    { id: '3', kind: 'tag', name: 'cpi', nameKa: 'CPI' }, // a Georgian name that is just a Latin acronym is legitimate
+  ]
+  it('ignores a damaged name on a built-in emotion and falls back to the built-in translation', () => {
+    expect(georgianName(damaged[0])).toBeNull()
+    expect(optionLabel(damaged, 'ka', 'emotion', 'calm')).toBe('მშვიდი')
+  })
+  it('keeps custom items and Latin-only names exactly as stored', () => {
+    expect(georgianName(damaged[1])).toBe('·Éõ·Éù·É£·É°·Éï·Éî·Éú·Éê·É†·Éò')
+    expect(optionLabel(damaged, 'ka', 'tag', 'cpi')).toBe('CPI')
+  })
+  it('English is never affected', () => {
+    expect(optionLabel(damaged, 'en', 'emotion', 'calm')).toBe('calm')
   })
 })
 

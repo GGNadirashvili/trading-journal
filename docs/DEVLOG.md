@@ -923,3 +923,34 @@ Newest entries go at the bottom.
   and a session on the live site, and the seeding trigger for a real new account.
 - **Order that worked:** migrations first, then push. Pushing first would have deployed code that writes columns
   the database did not have yet.
+
+## 56. fix: garbled Georgian emotion names (wrong clipboard encoding)
+
+- **Symptom (reported by the owner with a screenshot):** on the Admin page and the trade form the 12 built-in
+  emotion names showed as garbage like `·Éõ·É®·Éï·Éò·Éì·Éò`, while all other Georgian text was fine.
+- **Cause (my mistake):** I copied migrations to the clipboard with `pbcopy` in a shell that has no locale set.
+  In that case macOS reads the text as the old Mac Roman encoding, which turns the UTF-8 bytes of Georgian
+  letters into those characters. Only migrations 0003 and 0004 contain Georgian text, so only the 12 built-in
+  emotion names in the database (and the starting list given to new accounts) were damaged. The app's own text
+  was not affected, because it reaches the browser through the build, not the clipboard.
+- **Why I missed it:** after copying, I only ever read back the first line of the clipboard, which is plain
+  English, never a Georgian line; and my local database tests read the files directly, which cannot show a
+  clipboard problem. I reproduced the exact garbling afterwards, and it matches the owner's screenshot.
+- **Fix, in three parts:**
+  1. `0007_fix_georgian_names.sql` repairs the saved names (only built-in emotions whose Georgian name has no
+     Georgian letter at all, so a name you edited or added yourself is never overwritten) and replaces the
+     starting-list function for new accounts. It is pure ASCII: Georgian is written as `\XXXX` escapes that the
+     database turns into the real letters, so no clipboard can damage it.
+  2. `0003` and `0004` were rewritten the same way (same meaning, now pure ASCII), so nobody who copies them
+     later hits the same problem.
+  3. The app now ignores a damaged Georgian name on a built-in emotion and uses its built-in translation, so
+     the names look right as soon as the new version is live, even before 0007 is run.
+- **Verified:** I rebuilt your situation in a throw-away database by running 0003 and 0004 with the same
+  garbling, then ran 0007: all 12 names on the owner's and on a second account were correct, a hand-edited name
+  and a custom emotion were left alone, a new account created afterwards was seeded correctly, and running 0007
+  twice is harmless. The escape form decodes to the exact original Georgian word. 0003 and 0004 still behave as
+  before. 73 tests pass (3 new, covering damaged and legitimate Georgian names).
+- **Not verified on the real database:** the repair itself (needs the owner to run it); I cannot read their rows
+  without their login.
+- **Lesson for the rest of the project:** any text with non-ASCII characters that goes through the clipboard
+  must be checked line by line after copying, or written as ASCII escapes.

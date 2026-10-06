@@ -16,18 +16,18 @@ begin
 
   insert into public.options (user_id, kind, name, name_ka)
   values
-    (new.id, 'emotion', 'calm', 'მშვიდი'),
-    (new.id, 'emotion', 'confident', 'თავდაჯერებული'),
-    (new.id, 'emotion', 'focused', 'კონცენტრირებული'),
-    (new.id, 'emotion', 'patient', 'მომთმენი'),
-    (new.id, 'emotion', 'anxious', 'შეშფოთებული'),
-    (new.id, 'emotion', 'fomo', 'FOMO (გამოტოვების შიში)'),
-    (new.id, 'emotion', 'revenge', 'შურისძიება'),
-    (new.id, 'emotion', 'greedy', 'ხარბი'),
-    (new.id, 'emotion', 'frustrated', 'იმედგაცრუებული'),
-    (new.id, 'emotion', 'tired', 'დაღლილი'),
-    (new.id, 'emotion', 'bored', 'მოწყენილი'),
-    (new.id, 'emotion', 'overconfident', 'ზედმეტად თავდაჯერებული')
+    (new.id, 'emotion', 'calm', U&'\10DB\10E8\10D5\10D8\10D3\10D8'),
+    (new.id, 'emotion', 'confident', U&'\10D7\10D0\10D5\10D3\10D0\10EF\10D4\10E0\10D4\10D1\10E3\10DA\10D8'),
+    (new.id, 'emotion', 'focused', U&'\10D9\10DD\10DC\10EA\10D4\10DC\10E2\10E0\10D8\10E0\10D4\10D1\10E3\10DA\10D8'),
+    (new.id, 'emotion', 'patient', U&'\10DB\10DD\10DB\10D7\10DB\10D4\10DC\10D8'),
+    (new.id, 'emotion', 'anxious', U&'\10E8\10D4\10E8\10E4\10DD\10D7\10D4\10D1\10E3\10DA\10D8'),
+    (new.id, 'emotion', 'fomo', U&'FOMO (\10D2\10D0\10DB\10DD\10E2\10DD\10D5\10D4\10D1\10D8\10E1 \10E8\10D8\10E8\10D8)'),
+    (new.id, 'emotion', 'revenge', U&'\10E8\10E3\10E0\10D8\10E1\10EB\10D8\10D4\10D1\10D0'),
+    (new.id, 'emotion', 'greedy', U&'\10EE\10D0\10E0\10D1\10D8'),
+    (new.id, 'emotion', 'frustrated', U&'\10D8\10DB\10D4\10D3\10D2\10D0\10EA\10E0\10E3\10D4\10D1\10E3\10DA\10D8'),
+    (new.id, 'emotion', 'tired', U&'\10D3\10D0\10E6\10DA\10D8\10DA\10D8'),
+    (new.id, 'emotion', 'bored', U&'\10DB\10DD\10EC\10E7\10D4\10DC\10D8\10DA\10D8'),
+    (new.id, 'emotion', 'overconfident', U&'\10D6\10D4\10D3\10DB\10D4\10E2\10D0\10D3 \10D7\10D0\10D5\10D3\10D0\10EF\10D4\10E0\10D4\10D1\10E3\10DA\10D8')
   on conflict do nothing;
 
   return new;

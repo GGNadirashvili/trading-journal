@@ -2,7 +2,7 @@ import { Check, Pencil, Trash2, X } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useI18n } from '../../i18n/context'
 import { useConfirm } from '../../lib/confirmContext'
-import { validateNames } from '../../lib/labels'
+import { georgianName, validateNames } from '../../lib/labels'
 import { DuplicateError } from '../../lib/settingsApi'
 import { useSettings } from '../../lib/settingsContext'
 import type { OptionKind } from '../../lib/settingsTypes'
@@ -111,8 +111,8 @@ export default function ListEditor({ kind, title, hint, usage }: Props) {
                     </span>
                   ) : (
                     <span className="flex items-center gap-1">
-                      {o.nameKa ?? <span className="text-warn">{label(kind, o.name) !== o.name ? label(kind, o.name) : t('admin.list.missingKa')}</span>}
-                      <button onClick={() => setEditing({ id: o.id, value: o.nameKa ?? '' })} title={t('admin.list.editKa')} className="p-1 text-muted hover:text-green">
+                      {georgianName(o) ?? <span className="text-warn">{label(kind, o.name) !== o.name ? label(kind, o.name) : t('admin.list.missingKa')}</span>}
+                      <button onClick={() => setEditing({ id: o.id, value: georgianName(o) ?? '' })} title={t('admin.list.editKa')} className="p-1 text-muted hover:text-green">
                         <Pencil size={14} />
                       </button>
                     </span>
