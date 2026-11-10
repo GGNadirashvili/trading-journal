@@ -954,3 +954,25 @@ Newest entries go at the bottom.
   without their login.
 - **Lesson for the rest of the project:** any text with non-ASCII characters that goes through the clipboard
   must be checked line by line after copying, or written as ASCII escapes.
+
+## 57. feat(db): market notes and their screenshots
+
+- **What:** `supabase/migrations/0008_notes.sql`: a `notes` table (when the note is about, optional title, text,
+  optional session, optional symbol, tags) and a `note_images` table for screenshots, both private to their owner
+  by row-level security. A screenshot can only be attached to a note of the SAME user (same guard as for trades
+  and accounts). The file is pure ASCII.
+- **Goal:** the owner sometimes opens the market, takes no trade, and writes notes and screenshots anyway. Those
+  need a home that is not a trade.
+- **Design:** session and symbol are optional on a note (only trades require a session). A note needs no title.
+  Whether a note has at least some text, a title or a screenshot is checked by the app, not the database,
+  because the database cannot see screenshots.
+- **Verified locally (throw-away Postgres, migrations 0001 to 0008 in order, two simulated users):** a note
+  saves with its time and tags set; a screenshot record attaches; a text-only note is accepted; the second user
+  sees 0 notes and 0 screenshot records and cannot edit or delete the first user's note, cannot attach a
+  screenshot to it, and cannot save a note naming the first user as owner; an invalid session is rejected;
+  deleting a note removes its screenshot records.
+- **Gap found while testing, to fix in the app (and it also applies to trades, an older flaw of mine):** deleting
+  a note or trade removes the screenshot RECORDS but not the image FILES in storage, which would stay behind and
+  use up the 1 GB free space. The next commit deletes the files too.
+- **Owner action:** run this file once in the Supabase SQL editor after the notes screens are deployed.
+- **Housekeeping:** my local test-database folder had been cleaned up by the system; I reinstalled it.
