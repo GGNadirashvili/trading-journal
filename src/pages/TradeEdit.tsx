@@ -43,7 +43,7 @@ export default function TradeEdit() {
         )}
       </div>
       {existing ? (
-        <ImageGallery tradeId={existing.id} />
+        <ImageGallery owner={{ kind: 'trade', id: existing.id }} />
       ) : (
         <p className="text-sm text-muted">{t('trade.saveFirst')}</p>
       )}

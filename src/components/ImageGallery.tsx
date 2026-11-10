@@ -1,34 +1,36 @@
-import { ImagePlus, X } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { X } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import { useI18n } from '../i18n/context'
 import { useConfirm } from '../lib/confirmContext'
-import { deleteImage, listImages, uploadImage, type TradeImage } from '../lib/imagesApi'
+import { deleteImage, listImages, uploadImage, type ImageOwner, type StoredImage } from '../lib/imagesApi'
+import ImageDropZone from './ImageDropZone'
 
-export default function ImageGallery({ tradeId }: { tradeId: string }) {
+/** Screenshots of a saved trade or note: add, view full size, delete. */
+export default function ImageGallery({ owner, onCountChange }: { owner: ImageOwner; onCountChange?: (count: number) => void }) {
   const confirm = useConfirm()
   const { t } = useI18n()
-  const [images, setImages] = useState<TradeImage[]>([])
+  const [images, setImages] = useState<StoredImage[]>([])
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [dragging, setDragging] = useState(false)
-  const [open, setOpen] = useState<TradeImage | null>(null)
-  const fileInput = useRef<HTMLInputElement>(null)
+  const [open, setOpen] = useState<StoredImage | null>(null)
+
+  const { kind, id } = owner
 
   useEffect(() => {
-    listImages(tradeId)
+    listImages({ kind, id })
       .then(setImages)
       .catch((e: Error) => setError(e.message))
-  }, [tradeId])
+  }, [kind, id])
+
+  useEffect(() => onCountChange?.(images.length), [images.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const addFiles = useCallback(
     async (files: File[]) => {
-      const imgs = files.filter((f) => f.type.startsWith('image/'))
-      if (!imgs.length) return
       setBusy(true)
       setError(null)
       try {
-        for (const f of imgs) {
-          const created = await uploadImage(tradeId, f)
+        for (const f of files) {
+          const created = await uploadImage({ kind, id }, f)
           setImages((cur) => [...cur, created])
         }
       } catch (e) {
@@ -37,23 +39,13 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
         setBusy(false)
       }
     },
-    [tradeId],
+    [kind, id],
   )
 
-  // Paste a screenshot straight from the clipboard.
-  useEffect(() => {
-    const onPaste = (e: ClipboardEvent) => {
-      const files = [...(e.clipboardData?.files ?? [])]
-      if (files.length) void addFiles(files)
-    }
-    window.addEventListener('paste', onPaste)
-    return () => window.removeEventListener('paste', onPaste)
-  }, [addFiles])
-
-  async function remove(img: TradeImage) {
+  async function remove(img: StoredImage) {
     if (!(await confirm(t('shots.deleteBody'), { title: t('shots.deleteTitle'), danger: true }))) return
     try {
-      await deleteImage(img)
+      await deleteImage(kind, img)
       setImages((cur) => cur.filter((i) => i.id !== img.id))
     } catch (e) {
       setError((e as Error).message)
@@ -63,52 +55,14 @@ export default function ImageGallery({ tradeId }: { tradeId: string }) {
   return (
     <section className="space-y-3 rounded-xl border border-line bg-surface p-4">
       <h2 className="font-semibold">{t('shots.title')}</h2>
-      <div
-        onDragOver={(e) => {
-          e.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setDragging(false)
-          void addFiles([...e.dataTransfer.files])
-        }}
-        onClick={() => fileInput.current?.click()}
-        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed py-6 text-sm ${
-          dragging ? 'border-green text-green' : 'border-line text-muted'
-        }`}
-      >
-        <ImagePlus size={18} />
-        {busy ? t('shots.uploading') : t('shots.drop')}
-        <input
-          ref={fileInput}
-          type="file"
-          accept="image/*"
-          multiple
-          hidden
-          onChange={(e) => {
-            void addFiles([...(e.target.files ?? [])])
-            e.target.value = ''
-          }}
-        />
-      </div>
+      <ImageDropZone onFiles={addFiles} busy={busy} />
       {error && <p className="text-sm text-loss">{error}</p>}
       {images.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {images.map((img) => (
             <div key={img.id} className="group relative">
-              <img
-                src={img.url}
-                alt={t('shots.alt')}
-                onClick={() => setOpen(img)}
-                className="aspect-video w-full cursor-zoom-in rounded-lg border border-line object-cover"
-              />
-              <button
-                onClick={() => remove(img)}
-                title={t('shots.deleteTitle')}
-                className="absolute right-1 top-1 hidden rounded-full bg-black/80 p-1 text-loss group-hover:block"
-              >
+              <img src={img.url} alt={t('shots.alt')} onClick={() => setOpen(img)} className="aspect-video w-full cursor-zoom-in rounded-lg border border-line object-cover" />
+              <button onClick={() => remove(img)} title={t('shots.deleteTitle')} className="absolute right-1 top-1 hidden rounded-full bg-black/80 p-1 text-loss group-hover:block">
                 <X size={14} />
               </button>
             </div>

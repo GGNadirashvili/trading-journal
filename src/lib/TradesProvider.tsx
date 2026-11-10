@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { deleteWithImages } from './imagesApi'
 import * as api from './tradesApi'
 import { TradesContext, type TradesState } from './tradesContext'
 import type { Trade } from './types'
@@ -30,7 +31,7 @@ export function TradesProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const remove = useCallback(async (id: string) => {
-    await api.deleteTrade(id)
+    await deleteWithImages({ kind: 'trade', id }, () => api.deleteTrade(id))
     setTrades((cur) => cur.filter((x) => x.id !== id))
   }, [])
 

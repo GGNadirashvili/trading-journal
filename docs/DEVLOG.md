@@ -976,3 +976,17 @@ Newest entries go at the bottom.
   use up the 1 GB free space. The next commit deletes the files too.
 - **Owner action:** run this file once in the Supabase SQL editor after the notes screens are deployed.
 - **Housekeeping:** my local test-database folder had been cleaned up by the system; I reinstalled it.
+
+## 58. refactor(images): one screenshot system for trades and notes, and delete the files too
+
+- **What:** the screenshot code no longer assumes a trade. `imagesApi` now works on an "owner" (a trade or a
+  note), with a shared `ImageDropZone` (click, drop, or paste with Cmd+V) used by the gallery and, next, by the
+  new-note form. Deleting a trade now also removes its image files from storage.
+- **Goal:** notes need screenshots exactly like trades do, and this avoids two copies of the same code.
+- **Fixes an older flaw of mine:** until now deleting a trade removed its screenshot records but left the image
+  FILES in storage forever, quietly using up the 1 GB free space (and the owner had asked about storage). Files
+  are now looked up first, the trade is deleted, then the files are removed; if removing a file fails, the
+  delete still stands. Files left behind by trades deleted BEFORE this change are not cleaned up by it.
+- **Checked in the browser (demo mode):** pasting a screenshot onto a trade still shows its thumbnail. Type-check,
+  lint and 73 tests pass.
+- **Not tested:** deleting files from real storage (needs a login); the demo mode only clears its in-memory copy.
