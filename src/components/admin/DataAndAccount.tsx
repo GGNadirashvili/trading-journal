@@ -1,8 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { buildBackup, download, tradesToCsv } from '../../lib/backup'
 import { useI18n } from '../../i18n/context'
+import { useAccounts } from '../../lib/accountsContext'
 import { useAuth } from '../../lib/authContext'
 import { DEMO } from '../../lib/demo'
+import { useNotes } from '../../lib/notesContext'
 import { listReviews } from '../../lib/reviewsApi'
 import { useSettings } from '../../lib/settingsContext'
 import { supabase } from '../../lib/supabase'
@@ -35,6 +37,8 @@ export default function DataAndAccount() {
   const { t } = useI18n()
   const { trades } = useTrades()
   const { symbols, options } = useSettings()
+  const { accounts } = useAccounts()
+  const { notes } = useNotes()
   const signup = useSignupStatus()
   const [pw, setPw] = useState('')
   const [pw2, setPw2] = useState('')
@@ -45,7 +49,7 @@ export default function DataAndAccount() {
     setExportError(null)
     try {
       const reviews = await listReviews()
-      download(`trading-journal-backup-${today()}.json`, JSON.stringify(buildBackup(trades, reviews, symbols, options), null, 2), 'application/json')
+      download(`trading-journal-backup-${today()}.json`, JSON.stringify(buildBackup(trades, reviews, symbols, options, accounts, notes), null, 2), 'application/json')
     } catch (e) {
       setExportError((e as Error).message)
     }

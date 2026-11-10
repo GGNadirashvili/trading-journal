@@ -990,3 +990,28 @@ Newest entries go at the bottom.
 - **Checked in the browser (demo mode):** pasting a screenshot onto a trade still shows its thumbnail. Type-check,
   lint and 73 tests pass.
 - **Not tested:** deleting files from real storage (needs a login); the demo mode only clears its in-memory copy.
+
+## 59. feat(notes): market notes with screenshots
+
+- **What:** a **Notes** section (sticky-note icon in the sidebar) for days you watch the market but take no
+  trade. A note has a date and time, an optional session, an optional symbol, an optional title, free text and
+  tags from your tag list, plus any number of screenshots. The list shows the newest first with the session,
+  symbol, a preview of the text, tags and "N screenshots", and can be searched (title, text, symbol, tags) and
+  filtered by session. Opening a note edits it, and Delete asks Yes/No and also removes its screenshot files.
+- **Screenshots on a new note:** you can paste (Cmd+V), drop or pick screenshots before saving. They are held in
+  memory, shown as previews, and uploaded when you save the note. If an upload fails the note is still saved,
+  and its page opens with a message so you can add the screenshot again.
+- **Rules:** a note needs some text, a title or a screenshot (checked by the app); session and symbol are
+  optional (only trades require a session); the account filter does not apply to notes.
+- **Backup:** the JSON backup now includes notes, and also your prop-firm accounts, which I had left out when I
+  built accounts (a gap I found while adding notes). Screenshots are still not part of the backup.
+- **Checked in the browser (demo mode):** the section appears in the sidebar; two sample notes list correctly;
+  a new note with a pasted screenshot and some text saved, appeared first as "1 screenshot", and opened with its
+  text and image; deleting it asked Yes/No and removed it; saving a completely empty note was refused with
+  "Write something, add a title, or add a screenshot."; the whole section reads correctly in Georgian.
+  Type-check, lint and 74 tests pass.
+- **If migration 0008 has not been run yet:** the Notes page shows a yellow message telling the owner to run it;
+  nothing else in the app is affected.
+- **Not tested on the real database:** saving notes and uploading note screenshots (needs 0008 and a login).
+- **Possible later improvement:** trades still need to be saved before screenshots can be added; the same
+  "add screenshots before saving" approach could be used there.

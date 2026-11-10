@@ -7,6 +7,7 @@ A private, personal trading journal for MNQ and ES futures. It is for notes and 
 - Prop-firm accounts: add an account (id, size, max drawdown, profit goal), see its condition (balance, how much you can still lose, distance to the goal), passed / failed status, and a history of finished accounts.
 - Log trades on an account, with a mandatory trading session, the emotional state before and after, tags, notes and screenshots.
 - Win rate per session (Asia, London, NY Premarket, NY AM, NY Lunch, NY PM, Outside of session).
+- Notes: write about the market on days you take no trade (optional session, symbol, tags) and attach screenshots.
 - Weekly review: emotional and technical analysis, mistakes, and your outlook for next week.
 - Admin page: manage symbols (with $ per point), emotions, tags and setups; backup export; password change.
 - English and Georgian (ქართული) with a language button in the sidebar; the choice is remembered. Texts live in `src/i18n/en.ts` and `src/i18n/ka.ts`; add or fix a Georgian word there.
@@ -34,7 +35,7 @@ See [docs/DEVLOG.md](docs/DEVLOG.md) for every commit, its goal, and the mistake
 ### 1. Supabase
 
 1. Create a free project at <https://supabase.com>.
-2. SQL Editor: run these six files, in order, one after the other:
+2. SQL Editor: run these eight files, in order, one after the other:
    [0001_init.sql](supabase/migrations/0001_init.sql) (trades, screenshots, row-level security) and
    [0002_settings_and_reviews.sql](supabase/migrations/0002_settings_and_reviews.sql) (symbols, lists,
    weekly reviews) and
@@ -43,7 +44,10 @@ See [docs/DEVLOG.md](docs/DEVLOG.md) for every commit, its goal, and the mistake
    [0004_seed_new_users.sql](supabase/migrations/0004_seed_new_users.sql) (starting lists for every new
    account),
    [0005_trade_session.sql](supabase/migrations/0005_trade_session.sql) (trading session on each trade) and
-   [0006_accounts.sql](supabase/migrations/0006_accounts.sql) (prop-firm accounts). Run each only once.
+   [0006_accounts.sql](supabase/migrations/0006_accounts.sql) (prop-firm accounts),
+   [0007_fix_georgian_names.sql](supabase/migrations/0007_fix_georgian_names.sql) (repairs Georgian names that were
+   pasted with the wrong text encoding; safe to run on a database that never had the problem) and
+   [0008_notes.sql](supabase/migrations/0008_notes.sql) (market notes). Run each only once.
 3. Authentication -> Users -> Add user: create your own email + password (tick "Auto confirm").
 4. Authentication -> Sign In / Providers: turn **off** "Allow new users to sign up". Now only your account exists.
 5. Project Settings -> API: copy the Project URL and the `anon` public key.
@@ -110,6 +114,12 @@ Even when the site URL is public, nobody can read your trades without your Supab
 
 - `src/lib/stats.ts`, `reports.ts`, `calendar.ts`, `weeks.ts`, `accounts.ts`: pure, tested logic (`*.test.ts`)
 - `src/lib/tradesApi.ts`, `imagesApi.ts`: the only code that talks to Supabase
-- `src/pages/`: Dashboard, Accounts, AccountDetail, Trades, TradeEdit, Review, Reports, Admin, Login
+- `src/pages/`: Dashboard, Accounts, AccountDetail, Trades, TradeEdit, Notes, NoteEdit, Review, Reports, Admin, Login
 - `src/components/`: layout, P&L calendar, gauges, trade form, image gallery
 - `supabase/migrations/`: database schema and security policies
+
+## Copying SQL: one warning
+
+When you copy a migration to paste it into Supabase, make sure Georgian (or any non-English) text is not in it, or
+check the pasted text line by line. Pasting through some terminals mangles accented and Georgian letters
+(this happened once, see docs/DEVLOG.md entry 56). The migration files in this repo are pure ASCII for that reason.

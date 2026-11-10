@@ -1,3 +1,5 @@
+import type { Account } from './accounts'
+import type { Note } from './notesApi'
 import type { WeeklyReview } from './reviewsApi'
 import type { OptionItem, SymbolDef } from './settingsTypes'
 import type { Trade } from './types'
@@ -23,16 +25,20 @@ export interface Backup {
   note: string
   trades: Trade[]
   weeklyReviews: WeeklyReview[]
+  accounts: Account[]
+  notes: Note[]
   symbols: Omit<SymbolDef, 'id'>[]
   options: Omit<OptionItem, 'id'>[]
 }
 
-export function buildBackup(trades: Trade[], reviews: WeeklyReview[], symbols: SymbolDef[], options: OptionItem[]): Backup {
+export function buildBackup(trades: Trade[], reviews: WeeklyReview[], symbols: SymbolDef[], options: OptionItem[], accounts: Account[], notes: Note[]): Backup {
   return {
     exportedAt: new Date().toISOString(),
     note: 'Screenshots are not included; they stay in Supabase Storage.',
     trades,
     weeklyReviews: reviews,
+    accounts,
+    notes,
     symbols: symbols.map(({ code, pointValue }) => ({ code, pointValue })),
     options: options.map(({ kind, name, nameKa }) => ({ kind, name, nameKa })),
   }

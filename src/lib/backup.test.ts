@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { csvCell, tradesToCsv } from './backup'
+import type { Account } from './accounts'
+import { buildBackup, csvCell, tradesToCsv } from './backup'
+import type { Note } from './notesApi'
 import type { Trade } from './types'
 
 describe('csv', () => {
@@ -22,5 +24,18 @@ describe('csv', () => {
     expect(lines[0].startsWith('entry_time,exit_time,symbol')).toBe(true)
     expect(lines[0]).toContain(',session,')
     expect(lines[1]).toBe('2026-09-07T10:00:00.000Z,,ES,short,1,5000,4995,250,ny_am,,trend; news,calm,"calm, focused",,')
+  })
+})
+
+describe('buildBackup', () => {
+  it('includes trades, reviews, accounts, notes, symbols and lists', () => {
+    const account: Account = { id: 'a', name: 'Select 50k', startBalance: 50000, maxDrawdown: 2000, profitGoal: 53000, drawdownType: 'trailing_eod', adjustment: -1005.5, peakBaseline: 50034, manualStatus: null, manualClosedAt: null, openedAt: '2026-09-01' }
+    const note: Note = { id: 'n', notedAt: '2026-09-07T09:40:00.000Z', title: 'Open', body: 'no setup', session: 'ny_am', symbol: 'MNQ', tags: [] }
+    const b = buildBackup([], [], [{ id: 's', code: 'ES', pointValue: 50 }], [{ id: 'o', kind: 'emotion', name: 'calm', nameKa: null }], [account], [note])
+    expect(b.accounts).toEqual([account])
+    expect(b.notes).toEqual([note])
+    expect(b.symbols).toEqual([{ code: 'ES', pointValue: 50 }]) // internal ids are left out
+    expect(b.options).toEqual([{ kind: 'emotion', name: 'calm', nameKa: null }])
+    expect(b.note).toContain('Screenshots are not included')
   })
 })
