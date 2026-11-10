@@ -1015,3 +1015,17 @@ Newest entries go at the bottom.
 - **Not tested on the real database:** saving notes and uploading note screenshots (needs 0008 and a login).
 - **Possible later improvement:** trades still need to be saved before screenshots can be added; the same
   "add screenshots before saving" approach could be used there.
+
+## 60. feat(trades): exit time starts equal to the entry time on a new trade
+
+- **What:** on a new trade the exit time is now filled in with the same value as the entry time (the current
+  time), instead of being empty. If you change the entry time, the exit time follows it until you set the exit
+  time yourself; after that it stays where you put it. Existing trades keep their own entry and exit times.
+- **Goal:** the owner asked for the exit time to be pre-selected like the entry time, to save a step.
+- **Detail:** both times come from one single reading of the clock, so they are exactly equal and cannot differ
+  by a minute because two separate clock readings straddled a minute boundary.
+- **Checked in the browser (demo mode):** a new trade opened with entry and exit both 22:22; changing the entry to
+  09:45 moved the exit to 09:45; setting the exit to 10:05 and then changing the entry to 09:50 left the exit at
+  10:05; an existing demo trade still showed its own 09:30 and 09:50. Type-check, lint and 74 tests pass.
+- **Not done on purpose:** the form does not stop you from putting the exit before the entry; nothing was asked
+  for that and it never checked before either.

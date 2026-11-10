@@ -45,8 +45,12 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
   const [qty, setQty] = useState(String(initial?.qty ?? 1))
   const [entryPrice, setEntryPrice] = useState(initial?.entryPrice?.toString() ?? '')
   const [exitPrice, setExitPrice] = useState(initial?.exitPrice?.toString() ?? '')
-  const [entryTime, setEntryTime] = useState(() => toLocalInput(initial?.entryTime ?? new Date().toISOString()))
-  const [exitTime, setExitTime] = useState(toLocalInput(initial?.exitTime ?? null))
+  // A new trade starts with the current time as BOTH entry and exit (one value, so they are exactly equal).
+  // Until you set the exit time yourself, it follows the entry time. An existing trade keeps its own times.
+  const [now] = useState(() => toLocalInput(new Date().toISOString()))
+  const [entryTime, setEntryTime] = useState(() => (initial ? toLocalInput(initial.entryTime) : now))
+  const [exitTime, setExitTime] = useState(() => (initial ? toLocalInput(initial.exitTime) : now))
+  const [exitFollowsEntry, setExitFollowsEntry] = useState(!initial)
   const [pnl, setPnl] = useState(initial ? String(initial.pnl) : '')
   const [setup, setSetup] = useState(initial?.setup ?? '')
   const [tags, setTags] = useState<string[]>(initial?.tags ?? [])
@@ -167,10 +171,27 @@ export default function TradeForm({ initial, submitLabel, onSubmit }: Props) {
           <input className={input} type="number" step="any" value={exitPrice} onChange={(e) => setExitPrice(e.target.value)} />
         </Field>
         <Field label={t('form.entryTime')}>
-          <input className={input} type="datetime-local" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} required />
+          <input
+            className={input}
+            type="datetime-local"
+            value={entryTime}
+            onChange={(e) => {
+              setEntryTime(e.target.value)
+              if (exitFollowsEntry) setExitTime(e.target.value)
+            }}
+            required
+          />
         </Field>
         <Field label={t('form.exitTime')}>
-          <input className={input} type="datetime-local" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
+          <input
+            className={input}
+            type="datetime-local"
+            value={exitTime}
+            onChange={(e) => {
+              setExitTime(e.target.value)
+              setExitFollowsEntry(false)
+            }}
+          />
         </Field>
         <Field label={t('form.pnl')}>
           <input className={input} type="number" step="any" value={pnl} onChange={(e) => setPnl(e.target.value)} />
