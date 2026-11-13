@@ -1029,3 +1029,19 @@ Newest entries go at the bottom.
   10:05; an existing demo trade still showed its own 09:30 and 09:50. Type-check, lint and 74 tests pass.
 - **Not done on purpose:** the form does not stop you from putting the exit before the entry; nothing was asked
   for that and it never checked before either.
+
+## 61. fix(dashboard): the P&L calendar opens on the current month
+
+- **Problem (reported by the owner):** the calendar on the main page was not showing the current month.
+- **Cause:** I had made it open on the month of the most recent trade, so that last week's imported trades were
+  visible right away. That made sense while the journal held only old data; with live trading it shows an old
+  month whenever you have not traded this month.
+- **What:** the calendar now always opens on today's month. A small **Today** button (დღეს in Georgian) next to
+  the month arrows jumps back to it after browsing older months. The arrows and month/year pickers work as
+  before.
+- **Checked in the browser (demo mode, with the clock at 13 Nov 2026):** it opened on November 2026; two clicks on
+  the previous-month arrow went to October and September (where the demo trades are, 5 trading days shown);
+  Today returned to November 2026. Type-check, lint and 74 tests pass.
+- **Mistake in my test, not in the app:** my first test script looked for the calendar in the wrong kind of page
+  element and failed; I fixed the script and re-ran it.
+- **Left as it was, on purpose:** the Weekly review page still opens on the week of your newest trade.

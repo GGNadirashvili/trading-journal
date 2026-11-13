@@ -11,10 +11,9 @@ import type { Trade } from '../lib/types'
 const tint = (pnl: number, trades: number) =>
   trades === 0 ? 'bg-surface' : pnl > 0 ? 'bg-green/15 border-green/40' : pnl < 0 ? 'bg-loss/15 border-loss/40' : 'bg-surface-2'
 
-// Open on the month of the most recent trade, so the latest week is visible right away.
-function initialCursor(trades: Trade[]) {
-  const latest = trades[0] // trades are sorted newest first
-  const d = latest ? new Date(latest.entryTime) : new Date()
+// The calendar opens on the current month (the "Today" button comes back to it).
+function currentMonth() {
+  const d = new Date()
   return { year: d.getFullYear(), month: d.getMonth() }
 }
 
@@ -26,7 +25,7 @@ export default function PnlCalendar({ trades }: { trades: Trade[] }) {
   const { t, tn, locale } = useI18n()
   const months = useMemo(() => monthNames(locale), [locale])
   const weekdays = useMemo(() => weekdayNames(locale), [locale])
-  const [cursor, setCursor] = useState(() => initialCursor(trades))
+  const [cursor, setCursor] = useState(currentMonth)
 
   const totals = useMemo(() => dailyTotals(trades), [trades])
   const weeks = useMemo(() => buildMonthGrid(cursor.year, cursor.month, totals), [cursor, totals])
@@ -68,6 +67,9 @@ export default function PnlCalendar({ trades }: { trades: Trade[] }) {
         </select>
         <button onClick={() => shift(1)} title={t('cal.nextMonth')} className="rounded p-1 text-muted hover:text-green">
           <ChevronRight size={18} />
+        </button>
+        <button onClick={() => setCursor(currentMonth())} className="rounded border border-line px-2 py-1 text-xs text-muted hover:text-green">
+          {t('cal.today')}
         </button>
       </div>
 

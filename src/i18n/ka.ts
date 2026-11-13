@@ -49,6 +49,7 @@ export const ka: Record<MessageKey, string> = {
   'cal.prevMonth': 'წინა თვე',
   'cal.nextMonth': 'შემდეგი თვე',
   'cal.weekly': 'კვირა',
+  'cal.today': 'დღეს',
 
   'common.delete': 'წაშლა',
   'confirm.title': 'დარწმუნებული ხართ?',

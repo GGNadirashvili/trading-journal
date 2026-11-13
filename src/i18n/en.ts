@@ -56,6 +56,7 @@ export const en = {
   'cal.prevMonth': 'Previous month',
   'cal.nextMonth': 'Next month',
   'cal.weekly': 'Weekly',
+  'cal.today': 'Today',
 
   // Common
   'common.delete': 'Delete',
